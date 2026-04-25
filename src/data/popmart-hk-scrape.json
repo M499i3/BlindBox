@@ -1,0 +1,240 @@
+{
+  "scrapedAt": "2026-04-25T18:56:20.063Z",
+  "sourceUrl": "https://www.popmart.com/hk",
+  "page": "/",
+  "buildId": "20260421042335",
+  "locale": "hk",
+  "locales": [
+    "unlocale",
+    "hk",
+    "zh-hant-HK",
+    "en-HK"
+  ],
+  "assetPrefix": "https://cdn-global-popgat.popmart.com/global-web/hk-prod/popgat",
+  "countryLanguages": {
+    "hk": {
+      "languages": [
+        "zh-hant",
+        "en"
+      ]
+    },
+    "mo": {
+      "languages": [
+        "zh-hant",
+        "en"
+      ]
+    }
+  },
+  "countryList": [
+    {
+      "code": "FR",
+      "enName": "France",
+      "continent": "Europe"
+    },
+    {
+      "code": "DE",
+      "enName": "Germany",
+      "continent": "Europe"
+    },
+    {
+      "code": "ES",
+      "enName": "Spain",
+      "continent": "Europe"
+    },
+    {
+      "code": "IT",
+      "enName": "Italy",
+      "continent": "Europe"
+    },
+    {
+      "code": "NL",
+      "enName": "Netherlands",
+      "continent": "Europe"
+    },
+    {
+      "code": "SE",
+      "enName": "Sweden",
+      "continent": "Europe"
+    },
+    {
+      "code": "BE",
+      "enName": "Belgium",
+      "continent": "Europe"
+    },
+    {
+      "code": "CH",
+      "enName": "Switzerland",
+      "continent": "Europe"
+    },
+    {
+      "code": "SK",
+      "enName": "Slovakia",
+      "continent": "Europe"
+    },
+    {
+      "code": "AT",
+      "enName": "Austria",
+      "continent": "Europe"
+    },
+    {
+      "code": "CZ",
+      "enName": "Czech Republic",
+      "continent": "Europe"
+    },
+    {
+      "code": "PT",
+      "enName": "Portugal",
+      "continent": "Europe"
+    },
+    {
+      "code": "FI",
+      "enName": "Finland",
+      "continent": "Europe"
+    },
+    {
+      "code": "SI",
+      "enName": "Slovenia",
+      "continent": "Europe"
+    },
+    {
+      "code": "LU",
+      "enName": "Luxembourg",
+      "continent": "Europe"
+    },
+    {
+      "code": "GR",
+      "enName": "Greece",
+      "continent": "Europe"
+    },
+    {
+      "code": "LT",
+      "enName": "Lithuania",
+      "continent": "Europe"
+    },
+    {
+      "code": "HU",
+      "enName": "Hungary",
+      "continent": "Europe"
+    },
+    {
+      "code": "EE",
+      "enName": "Estonia",
+      "continent": "Europe"
+    },
+    {
+      "code": "LV",
+      "enName": "Latvia",
+      "continent": "Europe"
+    },
+    {
+      "code": "DK",
+      "enName": "Denmark",
+      "continent": "Europe"
+    },
+    {
+      "code": "HR",
+      "enName": "Croatia",
+      "continent": "Europe"
+    },
+    {
+      "code": "PL",
+      "enName": "Poland",
+      "continent": "Europe"
+    },
+    {
+      "code": "IE",
+      "enName": "Ireland",
+      "continent": "Europe"
+    },
+    {
+      "code": "AU",
+      "enName": "Australia",
+      "continent": "Oceania"
+    },
+    {
+      "code": "NZ",
+      "enName": "New Zealand",
+      "continent": "Oceania"
+    },
+    {
+      "code": "JP",
+      "enName": "Japan",
+      "continent": "Asia"
+    },
+    {
+      "code": "TW",
+      "enName": "Taiwan, China",
+      "continent": "Asia"
+    },
+    {
+      "code": "MO",
+      "enName": "Macao, China",
+      "continent": "Asia"
+    },
+    {
+      "code": "MY",
+      "enName": "Malaysia",
+      "continent": "Asia"
+    },
+    {
+      "code": "SG",
+      "enName": "Singapore",
+      "continent": "Asia"
+    },
+    {
+      "code": "PH",
+      "enName": "Philippines",
+      "continent": "Asia"
+    },
+    {
+      "code": "ID",
+      "enName": "Indonesia",
+      "continent": "Asia"
+    },
+    {
+      "code": "VN",
+      "enName": "Vietnam",
+      "continent": "Asia"
+    },
+    {
+      "code": "KR",
+      "enName": "South Korea",
+      "continent": "Asia"
+    },
+    {
+      "code": "BR",
+      "enName": "Brazil",
+      "continent": "South America"
+    },
+    {
+      "code": "GB",
+      "enName": "United Kingdom",
+      "continent": "Europe"
+    },
+    {
+      "code": "HK",
+      "enName": "Hong Kong, China",
+      "continent": "Asia"
+    },
+    {
+      "code": "TH",
+      "enName": "Thailand",
+      "continent": "Asia"
+    },
+    {
+      "code": "US",
+      "enName": "United States",
+      "continent": "North America"
+    },
+    {
+      "code": "CA",
+      "enName": "Canada",
+      "continent": "North America"
+    },
+    {
+      "code": "MX",
+      "enName": "Mexico",
+      "continent": "North America"
+    }
+  ]
+}

@@ -1,0 +1,652 @@
+{
+  "scrapedAt": "2026-04-25T18:56:53.578Z",
+  "sourceUrl": "https://www.popmart.com/hk",
+  "jinaReader": "https://r.jina.ai/https://www.popmart.com/hk",
+  "extraSources": [
+    "https://www.popmart.com/hk",
+    "https://www.popmart.com/hk/new-arrivals",
+    "https://www.popmart.com/hk/activities/new-arrivals",
+    "https://www.popmart.com/hk/ip",
+    "https://www.popmart.com/hk/collection/186"
+  ],
+  "ipHints": [
+    "SKULLPANDA",
+    "PUCKY",
+    "CHAKA",
+    "DIMOO",
+    "LABUBU",
+    "MOLLY",
+    "HIRONO"
+  ],
+  "banners": [
+    {
+      "id": "1961",
+      "image": "https://global-static.popmart.com/globalAdmin/1776844373939____pc____.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/1961"
+    },
+    {
+      "id": "2057",
+      "image": "https://global-static.popmart.com/globalAdmin/1777000999869____pc____.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2057"
+    },
+    {
+      "id": "2090",
+      "image": "https://global-static.popmart.com/globalAdmin/1776937450866____pc____.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2090"
+    },
+    {
+      "id": "2088",
+      "image": "https://global-static.popmart.com/globalAdmin/1776908795020____pc____.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2088"
+    },
+    {
+      "id": "2089",
+      "image": "https://global-static.popmart.com/globalAdmin/1776908711631____pc____.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2089"
+    }
+  ],
+  "products": [
+    {
+      "id": "2084",
+      "title": "泡泡萌粒 SKULLPANDA 花的四幕戲系列公仔",
+      "price": "HK$19.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260420_142538_061379____3_____1368x1840.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2084/%E6%B3%A1%E6%B3%A1%E8%90%8C%E7%B2%92%20SKULLPANDA%20%E8%8A%B1%E7%9A%84%E5%9B%9B%E5%B9%95%E6%88%B2%E7%B3%BB%E5%88%97%E5%85%AC%E4%BB%94"
+    },
+    {
+      "id": "2089",
+      "title": "SKULLPANDA花的四幕戲系列手辦",
+      "price": "HK$81.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260420_154047_306506____3_____1368x1840.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2089/SKULLPANDA%E8%8A%B1%E7%9A%84%E5%9B%9B%E5%B9%95%E6%88%B2%E7%B3%BB%E5%88%97%E6%89%8B%E8%BE%A6"
+    },
+    {
+      "id": "2090",
+      "title": "PUCKY 精靈飛行系列 - 毛絨掛件盲盒",
+      "price": "HK$95.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260420_155224_674392____3_____1368x1840.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2090/PUCKY%20%E7%B2%BE%E9%9D%88%E9%A3%9B%E8%A1%8C%E7%B3%BB%E5%88%97%20-%20%E6%AF%9B%E7%B5%A8%E6%8E%9B%E4%BB%B6%E7%9B%B2%E7%9B%92"
+    },
+    {
+      "id": "2088",
+      "title": "SKULLPANDA開到花叢中毛絨公仔掛件",
+      "price": "HK$235.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260420_152609_991762____3_____1368x1840.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2088/SKULLPANDA%E9%96%8B%E5%88%B0%E8%8A%B1%E5%8F%A2%E4%B8%AD%E6%AF%9B%E7%B5%A8%E5%85%AC%E4%BB%94%E6%8E%9B%E4%BB%B6"
+    },
+    {
+      "id": "2086",
+      "title": "SKULLPANDA花的四幕戲系列香氛噴霧",
+      "price": "HK$190.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260420_145640_973314____3_____1368x1840.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2086/SKULLPANDA%E8%8A%B1%E7%9A%84%E5%9B%9B%E5%B9%95%E6%88%B2%E7%B3%BB%E5%88%97%E9%A6%99%E6%B0%9B%E5%99%B4%E9%9C%A7"
+    },
+    {
+      "id": "2085",
+      "title": "SKULLPANDA花的四幕戲系列耳機包",
+      "price": "HK$159.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260420_143813_927938____3_____1368x1840.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2085/SKULLPANDA%E8%8A%B1%E7%9A%84%E5%9B%9B%E5%B9%95%E6%88%B2%E7%B3%BB%E5%88%97%E8%80%B3%E6%A9%9F%E5%8C%85"
+    },
+    {
+      "id": "2083",
+      "title": "CHAKA 燭光漫遊系列手辦",
+      "price": "HK$95.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260420_140845_781717____3_____1368x1840.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2083/CHAKA%20%E7%87%AD%E5%85%89%E6%BC%AB%E9%81%8A%E7%B3%BB%E5%88%97%E6%89%8B%E8%BE%A6"
+    },
+    {
+      "id": "2087",
+      "title": "SKULLPANDA花的四幕戲系列冰箱貼",
+      "price": "HK$69.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260420_151234_919042____3_____1368x1840.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2087/SKULLPANDA%E8%8A%B1%E7%9A%84%E5%9B%9B%E5%B9%95%E6%88%B2%E7%B3%BB%E5%88%97%E5%86%B0%E7%AE%B1%E8%B2%BC"
+    },
+    {
+      "id": "2075",
+      "title": "歡迎來到月球表面系列-擦手巾盲盒",
+      "price": "HK$59.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260414_105041_727961____3_____1368x1840.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2075/%E6%AD%A1%E8%BF%8E%E4%BE%86%E5%88%B0%E6%9C%88%E7%90%83%E8%A1%A8%E9%9D%A2%E7%B3%BB%E5%88%97-%E6%93%A6%E6%89%8B%E5%B7%BE%E7%9B%B2%E7%9B%92"
+    },
+    {
+      "id": "2067",
+      "title": "泡泡餐廳系列迷你收藏卡",
+      "price": "HK$46.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260413_172959_890398____3_____1368x1840.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2067/%E6%B3%A1%E6%B3%A1%E9%A4%90%E5%BB%B3%E7%B3%BB%E5%88%97%E8%BF%B7%E4%BD%A0%E6%94%B6%E8%97%8F%E5%8D%A1"
+    },
+    {
+      "id": "2072",
+      "title": "歡迎來到月球表面系列-圓盤",
+      "price": "HK$59.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260413_190314_439664_________1368x1840.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2072/%E6%AD%A1%E8%BF%8E%E4%BE%86%E5%88%B0%E6%9C%88%E7%90%83%E8%A1%A8%E9%9D%A2%E7%B3%BB%E5%88%97-%E5%9C%93%E7%9B%A4"
+    },
+    {
+      "id": "2065",
+      "title": "星星人隨心配系列-隨行杯盲盒",
+      "price": "HK$159.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260413_162435_447048____20260413-162356_____1368x1840.jpeg?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2065/%E6%98%9F%E6%98%9F%E4%BA%BA%E9%9A%A8%E5%BF%83%E9%85%8D%E7%B3%BB%E5%88%97-%E9%9A%A8%E8%A1%8C%E6%9D%AF%E7%9B%B2%E7%9B%92"
+    },
+    {
+      "id": "2064",
+      "title": "PUCKY夢境心願系列手辦",
+      "price": "HK$81.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260413_160607_277978____3_____1368x1840.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2064/PUCKY%E5%A4%A2%E5%A2%83%E5%BF%83%E9%A1%98%E7%B3%BB%E5%88%97%E6%89%8B%E8%BE%A6"
+    },
+    {
+      "id": "2070",
+      "title": "歡迎來到月球表面系列-阿芙佳朵咖啡斜挎包",
+      "price": "HK$210.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260413_182412_979019_________1368x1840.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2070/%E6%AD%A1%E8%BF%8E%E4%BE%86%E5%88%B0%E6%9C%88%E7%90%83%E8%A1%A8%E9%9D%A2%E7%B3%BB%E5%88%97-%E9%98%BF%E8%8A%99%E4%BD%B3%E6%9C%B5%E5%92%96%E5%95%A1%E6%96%9C%E6%8C%8E%E5%8C%85"
+    },
+    {
+      "id": "2068",
+      "title": "歡迎來到月球表面系列-毛絨法棍包",
+      "price": "HK$200.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260413_175425_985158____3_____1368x1840.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2068/%E6%AD%A1%E8%BF%8E%E4%BE%86%E5%88%B0%E6%9C%88%E7%90%83%E8%A1%A8%E9%9D%A2%E7%B3%BB%E5%88%97-%E6%AF%9B%E7%B5%A8%E6%B3%95%E6%A3%8D%E5%8C%85"
+    },
+    {
+      "id": "2074",
+      "title": "歡迎來到月球表面系列-毛絨吐司坐墊",
+      "price": "HK$210.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260414_103547_340845____3_____1368x1840.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2074/%E6%AD%A1%E8%BF%8E%E4%BE%86%E5%88%B0%E6%9C%88%E7%90%83%E8%A1%A8%E9%9D%A2%E7%B3%BB%E5%88%97-%E6%AF%9B%E7%B5%A8%E5%90%90%E5%8F%B8%E5%9D%90%E5%A2%8A"
+    },
+    {
+      "id": "2025",
+      "title": "THE MONSTERS × 三麗鷗家族系列 - 搪膠毛絨掛件盲盒",
+      "price": "HK$190.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260310_141243_531002____800-800-png_____800x800.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2025"
+    },
+    {
+      "id": "2024",
+      "title": "THE MONSTERS × HELLO KITTY - 搪膠毛絨公仔",
+      "price": "HK$700.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260310_135728_548714____800-png-______800x800.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2024"
+    },
+    {
+      "id": "2063",
+      "title": "DIMOO秘密話劇社系列-搪膠毛絨掛件盲盒 HK$159.00 新品",
+      "price": "",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260407_165442_940409_________900x900.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2063"
+    },
+    {
+      "id": "1665",
+      "title": "THE MONSTERS心底密碼系列 - 搪膠毛絨‌掛件盲盒（A-M）",
+      "price": "HK$95.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20250826_170821_580569____800-png1-6_____800x800.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/1665"
+    },
+    {
+      "id": "266",
+      "title": "LABUBU Time to chill-搪膠毛絨公仔",
+      "price": "HK$466.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260422_114209_336443____aaaaa_____420x420.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/266"
+    },
+    {
+      "id": "2057",
+      "title": "THE MONSTERS × FIFA系列 - 搪膠毛絨掛件 HK$159.00 新品",
+      "price": "",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260331_144236_962878_________900x900.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2057"
+    },
+    {
+      "id": "2042",
+      "title": "MOLLY沿途的風景系列-掛鏈盲盒 HK$95.00 新品",
+      "price": "",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260326_095117_316569____0_____1200x1200.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2042"
+    },
+    {
+      "id": "2053",
+      "title": "THE MONSTERS × FIFA系列 - 長掛繩盲盒 HK$159.00 新品",
+      "price": "",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260331_114031_574442_________900x900.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2053"
+    },
+    {
+      "id": "1474",
+      "title": "泡泡萌粒 跟我去郊遊系列公仔（1 粒裝）",
+      "price": "HK$20.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20250514_170812_064536____1_____1200x1200.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/1474"
+    },
+    {
+      "id": "2055",
+      "title": "THE MONSTERS × FIFA系列 - 玻璃杯盲盒 HK$69.00 新品",
+      "price": "",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260331_140842_326390_________840x840.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2055"
+    },
+    {
+      "id": "1961",
+      "title": "星星人怦然星動系列手辦",
+      "price": "HK$81.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260120_161534_602881____0_____800x800.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/1961"
+    },
+    {
+      "id": "1543",
+      "title": "THE MONSTERS 怪味便利店系列-耳機包",
+      "price": "HK$120.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20250611_175131_248223____1_____1200x1200.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/1543"
+    },
+    {
+      "id": "2052",
+      "title": "THE MONSTERS × FIFA系列 - 足球迷你包盲盒 HK$159.00 新品",
+      "price": "",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260331_111623_115292_________960x960.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2052"
+    },
+    {
+      "id": "1413",
+      "title": "THE MONSTERS 前方高能系列-搪膠毛絨掛件盲盒",
+      "price": "HK$120.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20250715_113729_058875____1_____800x800.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/1413"
+    },
+    {
+      "id": "1904",
+      "title": "HIRONO公路日誌系列-毛絨公仔掛件盲盒",
+      "price": "HK$159.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20251216_153906_647018____0_____800x800.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/1904"
+    },
+    {
+      "id": "2056",
+      "title": "THE MONSTERS × FIFA系列 - 開瓶器冰箱貼盲盒 HK$81.00 新品",
+      "price": "",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260331_142310_681157_________900x900.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2056"
+    },
+    {
+      "id": "2017",
+      "title": "Angry Molly - 心火怒放系列毛絨掛件盲盒",
+      "price": "HK$105.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260220_225220_402024____0_____1200x1200.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2017"
+    },
+    {
+      "id": "1100",
+      "title": "我們都是星星人系列-盲盒掛件",
+      "price": "HK$59.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20240914_145835_993814____1_____1200x1200.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/1100"
+    },
+    {
+      "id": "2061",
+      "title": "漫威鋼鐵俠編年史系列手辦 HK$81.00 新品",
+      "price": "",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260407_161839_909721_________720x720.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2061"
+    },
+    {
+      "id": "1480",
+      "title": "泡泡萌粒 遇見錦鯉系列公仔",
+      "price": "HK$14.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20250515_133753_849256____1_____1200x1200.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/1480"
+    },
+    {
+      "id": "1001",
+      "title": "THE MONSTERS - 坐坐派對搪膠毛絨盲盒",
+      "price": "HK$120.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20250715_112910_510261____1_____800x800.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/1001"
+    },
+    {
+      "id": "1791",
+      "title": "泡泡萌粒 慶祝這一刻系列公仔（1 粒裝）",
+      "price": "HK$25.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20251021_164019_457632____0_____800x800.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/1791"
+    },
+    {
+      "id": "865",
+      "title": "THE MONSTERS 春天野在家系列 - 搪膠毛絨公仔",
+      "price": "HK$583.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20250819_201022_584099____800-png1_____800x800.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/865"
+    },
+    {
+      "id": "2048",
+      "title": "蠟筆小新POP CUBE-2系列手辦 HK$46.00 新品",
+      "price": "",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260330_185906_006415_________900x900.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2048"
+    },
+    {
+      "id": "2039",
+      "title": "MOLLY二十週年系列1/8可動人偶 HK$466.00 新品",
+      "price": "",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260325_175706_939549____0_____960x960.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2039"
+    },
+    {
+      "id": "2049",
+      "title": "蠟筆小新POP CUBE-1系列手辦 HK$46.00 新品",
+      "price": "",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260330_192720_217913_________900x900.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2049"
+    },
+    {
+      "id": "1823",
+      "title": "泡泡萌粒 咖啡工廠系列公仔（1 粒裝）",
+      "price": "HK$19.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20251104_093435_527984____0_____800x800.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/1823"
+    },
+    {
+      "id": "1056",
+      "title": "我們都是星星人系列手辦",
+      "price": "HK$81.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20250610_112451_052621____1_____1200x1200.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/1056"
+    },
+    {
+      "id": "2051",
+      "title": "LABUBU爵士樂手辦 HK$235.00 新品",
+      "price": "",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260331_110005_414558_________900x900.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2051"
+    },
+    {
+      "id": "2066",
+      "title": "泡泡餐廳系列迷你收藏卡—卡冊 HK$159.00 新品",
+      "price": "",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260413_172321_659722_________600x600.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2066"
+    },
+    {
+      "id": "2044",
+      "title": "MOLLY沿途的風景二十週年系列手辦 HK$95.00 新品",
+      "price": "",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260326_102804_142753____0_____900x900.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2044"
+    },
+    {
+      "id": "1192",
+      "title": "Hirono×Le Petit Prince 系列手辦",
+      "price": "HK$81.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20250805_113946_273782____1200png-2_____1200x1200.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/1192"
+    },
+    {
+      "id": "429",
+      "title": "HIRONO The Other One系列手办",
+      "price": "HK$81.00",
+      "image": "https://prod-eurasian-res.popmart.com/default/20230914_111733_280620__1200x1200.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/429"
+    },
+    {
+      "id": "1760",
+      "title": "星星人美味時刻系列手辦",
+      "price": "HK$81.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20250926_165508_635623____0_____800x800.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/1760"
+    },
+    {
+      "id": "1664",
+      "title": "THE MONSTERS心底密碼系列 - 搪膠毛絨‌掛件盲盒（N-Z）",
+      "price": "HK$95.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20250826_170206_965688____800-png1-7_____800x800.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/1664"
+    },
+    {
+      "id": "1818",
+      "title": "CRYBABY Vacation Mode On系列 - 搪膠毛絨掛件盲盒",
+      "price": "HK$159.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20251028_214137_643913____0_____800x800.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/1818"
+    },
+    {
+      "id": "1753",
+      "title": "星星人美味時刻系列-耳機包盲盒",
+      "price": "HK$120.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20250926_140447_541339____0_____800x800.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/1753"
+    },
+    {
+      "id": "2028",
+      "title": "KeyA 未境之夢系列手辦",
+      "price": "HK$105.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260316_140700_380988_________900x900.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2028"
+    },
+    {
+      "id": "1267",
+      "title": "SKULLPANDA冬日樂章系列毛絨公仔",
+      "price": "HK$159.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20250729_161115_892517____800-png1-2_____800x800.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/1267"
+    },
+    {
+      "id": "2069",
+      "title": "歡迎來到月球表面系列-便當包 HK$159.00 新品",
+      "price": "",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260413_181052_323441____800-png_____800x800.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2069"
+    },
+    {
+      "id": "1468",
+      "title": "CRYBABY 豹豹貓貓系列 - 搪膠毛絨掛件盲盒",
+      "price": "HK$95.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260324_152258_156783____1-removebg-preview_____500x500.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/1468"
+    },
+    {
+      "id": "1181",
+      "title": "THE MONSTERS - ANGEL IN CLOUDS 搪膠臉公仔",
+      "price": "HK$1,625.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20241023_095451_797885____1_____1200x1200.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/1181"
+    },
+    {
+      "id": "660",
+      "title": "CRYBABY悲傷俱樂部系列-盲盒毛絨花朵",
+      "price": "HK$81.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20250707_195137_065494____800-png2_____800x800.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/660"
+    },
+    {
+      "id": "2045",
+      "title": "HIRONO小野兔毛絨公仔掛件 HK$235.00 新品",
+      "price": "",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260326_105637_051871____0_____720x720.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2045"
+    },
+    {
+      "id": "1434",
+      "title": "數碼寶貝冰箱貼系列手辦",
+      "price": "HK$81.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20250715_144503_894133____1_____800x800.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/1434"
+    },
+    {
+      "id": "1104",
+      "title": "我們都是星星人系列-耳機包",
+      "price": "HK$120.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20250610_204431_442961____1_____1200x1200.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/1104"
+    },
+    {
+      "id": "1731",
+      "title": "DIMOO如果今天星期八系列手辦",
+      "price": "HK$81.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20250916_210752_016265____0_____800x800.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/1731"
+    },
+    {
+      "id": "1354",
+      "title": "CRYBABY 愛神的眼淚系列-搪膠毛絨吊卡（甜在一起）",
+      "price": "HK$235.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20250723_162801_369771____800-png1_____800x800.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/1354"
+    },
+    {
+      "id": "2080",
+      "title": "歡迎來到月球表面系列-烘焙師毛絨公仔",
+      "price": "HK$260.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260414_115721_039595_________900x900.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2080/%E6%AD%A1%E8%BF%8E%E4%BE%86%E5%88%B0%E6%9C%88%E7%90%83%E8%A1%A8%E9%9D%A2%E7%B3%BB%E5%88%97-%E7%83%98%E7%84%99%E5%B8%AB%E6%AF%9B%E7%B5%A8%E5%85%AC%E4%BB%94"
+    },
+    {
+      "id": "2079",
+      "title": "歡迎來到月球表面系列-冰淇淋毛絨掛件盲盒",
+      "price": "HK$95.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260414_114706_547216_________1080x1080.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2079/%E6%AD%A1%E8%BF%8E%E4%BE%86%E5%88%B0%E6%9C%88%E7%90%83%E8%A1%A8%E9%9D%A2%E7%B3%BB%E5%88%97-%E5%86%B0%E6%B7%87%E6%B7%8B%E6%AF%9B%E7%B5%A8%E6%8E%9B%E4%BB%B6%E7%9B%B2%E7%9B%92"
+    },
+    {
+      "id": "2078",
+      "title": "歡迎來到月球表面系列-蜂蜜毛絨掛件",
+      "price": "HK$120.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260414_113549_414196_________900x900.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2078/%E6%AD%A1%E8%BF%8E%E4%BE%86%E5%88%B0%E6%9C%88%E7%90%83%E8%A1%A8%E9%9D%A2%E7%B3%BB%E5%88%97-%E8%9C%82%E8%9C%9C%E6%AF%9B%E7%B5%A8%E6%8E%9B%E4%BB%B6"
+    },
+    {
+      "id": "2077",
+      "title": "歡迎來到月球表面系列-牛奶小布丁毛絨吊卡",
+      "price": "HK$120.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260414_112607_283423_________900x900.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2077/%E6%AD%A1%E8%BF%8E%E4%BE%86%E5%88%B0%E6%9C%88%E7%90%83%E8%A1%A8%E9%9D%A2%E7%B3%BB%E5%88%97-%E7%89%9B%E5%A5%B6%E5%B0%8F%E5%B8%83%E4%B8%81%E6%AF%9B%E7%B5%A8%E5%90%8A%E5%8D%A1"
+    },
+    {
+      "id": "2076",
+      "title": "歡迎來到月球表面系列-Gelato掛件",
+      "price": "HK$120.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260414_110558_391169_________1200x1200.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2076/%E6%AD%A1%E8%BF%8E%E4%BE%86%E5%88%B0%E6%9C%88%E7%90%83%E8%A1%A8%E9%9D%A2%E7%B3%BB%E5%88%97-Gelato%E6%8E%9B%E4%BB%B6"
+    },
+    {
+      "id": "2073",
+      "title": "歡迎來到月球表面系列-方盤",
+      "price": "HK$59.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260413_191447_071425____2_____400x400.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2073/%E6%AD%A1%E8%BF%8E%E4%BE%86%E5%88%B0%E6%9C%88%E7%90%83%E8%A1%A8%E9%9D%A2%E7%B3%BB%E5%88%97-%E6%96%B9%E7%9B%A4"
+    },
+    {
+      "id": "2071",
+      "title": "歡迎來到月球表面系列-毛絨法棍抱枕（100cm）",
+      "price": "HK$409.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260413_183701_653916_________800x800.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2071/%E6%AD%A1%E8%BF%8E%E4%BE%86%E5%88%B0%E6%9C%88%E7%90%83%E8%A1%A8%E9%9D%A2%E7%B3%BB%E5%88%97-%E6%AF%9B%E7%B5%A8%E6%B3%95%E6%A3%8D%E6%8A%B1%E6%9E%95%EF%BC%88100cm%EF%BC%89"
+    },
+    {
+      "id": "2062",
+      "title": "DIMOO秘密話劇社系列-耳機包盲盒",
+      "price": "HK$120.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260407_164025_015241_________780x780.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2062/DIMOO%E7%A7%98%E5%AF%86%E8%A9%B1%E5%8A%87%E7%A4%BE%E7%B3%BB%E5%88%97-%E8%80%B3%E6%A9%9F%E5%8C%85%E7%9B%B2%E7%9B%92"
+    },
+    {
+      "id": "2046",
+      "title": "Hirono 溫室芒草系列手辦",
+      "price": "HK$81.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260330_181118_783220_________840x840.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2046/Hirono%20%E6%BA%AB%E5%AE%A4%E8%8A%92%E8%8D%89%E7%B3%BB%E5%88%97%E6%89%8B%E8%BE%A6"
+    },
+    {
+      "id": "2040",
+      "title": "MOLLY沿途的風景系列-冰箱貼盲盒",
+      "price": "HK$69.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260326_092356_575233____0_____600x600.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2040/MOLLY%E6%B2%BF%E9%80%94%E7%9A%84%E9%A2%A8%E6%99%AF%E7%B3%BB%E5%88%97-%E5%86%B0%E7%AE%B1%E8%B2%BC%E7%9B%B2%E7%9B%92"
+    },
+    {
+      "id": "2043",
+      "title": "MOLLY沿途的風景系列-香氛蠟燭盲盒",
+      "price": "HK$210.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260326_100901_022866____0_____800x800.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2043/MOLLY%E6%B2%BF%E9%80%94%E7%9A%84%E9%A2%A8%E6%99%AF%E7%B3%BB%E5%88%97-%E9%A6%99%E6%B0%9B%E8%A0%9F%E7%87%AD%E7%9B%B2%E7%9B%92"
+    },
+    {
+      "id": "2054",
+      "title": "THE MONSTERS × FIFA系列 - 迷你掛件燈盲盒",
+      "price": "HK$95.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260331_115930_454661_________1200x1200.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2054/THE%20MONSTERS%20%C3%97%20FIFA%E7%B3%BB%E5%88%97%20-%20%E8%BF%B7%E4%BD%A0%E6%8E%9B%E4%BB%B6%E7%87%88%E7%9B%B2%E7%9B%92"
+    },
+    {
+      "id": "2041",
+      "title": "MOLLY沿途的風景系列-紀念冊迷你包盲盒",
+      "price": "HK$120.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260326_093804_574205____0_____900x900.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2041/MOLLY%E6%B2%BF%E9%80%94%E7%9A%84%E9%A2%A8%E6%99%AF%E7%B3%BB%E5%88%97-%E7%B4%80%E5%BF%B5%E5%86%8A%E8%BF%B7%E4%BD%A0%E5%8C%85%E7%9B%B2%E7%9B%92"
+    },
+    {
+      "id": "2038",
+      "title": "MOLLY迷失的三角龍積木畫",
+      "price": "HK$619.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260325_174414_860131_________720x720.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2038/MOLLY%E8%BF%B7%E5%A4%B1%E7%9A%84%E4%B8%89%E8%A7%92%E9%BE%8D%E7%A9%8D%E6%9C%A8%E7%95%AB"
+    },
+    {
+      "id": "2047",
+      "title": "蠟筆小新POP CUBE-3系列手辦",
+      "price": "HK$46.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260330_183916_808534_________900x900.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2047/%E8%A0%9F%E7%AD%86%E5%B0%8F%E6%96%B0POP%20CUBE-3%E7%B3%BB%E5%88%97%E6%89%8B%E8%BE%A6"
+    },
+    {
+      "id": "2037",
+      "title": "MOLLY20週年紀念收藏冊",
+      "price": "HK$700.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260325_173112_385681____0_____600x600.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2037/MOLLY20%E9%80%B1%E5%B9%B4%E7%B4%80%E5%BF%B5%E6%94%B6%E8%97%8F%E5%86%8A"
+    },
+    {
+      "id": "2036",
+      "title": "MEGA SPACE MOLLY 400% 阿波羅",
+      "price": "HK$1,625.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260325_171528_472987____0_____800x800.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2036/MEGA%20SPACE%20MOLLY%20400%25%20%E9%98%BF%E6%B3%A2%E7%BE%85"
+    },
+    {
+      "id": "2059",
+      "title": "Baby Molly20週年搪膠毛絨吊卡",
+      "price": "HK$159.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260401_131216_830753_________1200x1200.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2059/Baby%20Molly20%E9%80%B1%E5%B9%B4%E6%90%AA%E8%86%A0%E6%AF%9B%E7%B5%A8%E5%90%8A%E5%8D%A1"
+    },
+    {
+      "id": "2058",
+      "title": "THE MONSTERS × FIFA系列 - Catch the Win搪膠毛絨公仔",
+      "price": "HK$700.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260331_145536_091009_________900x900.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2058/THE%20MONSTERS%20%C3%97%20FIFA%E7%B3%BB%E5%88%97%20-%20Catch%20the%20Win%E6%90%AA%E8%86%A0%E6%AF%9B%E7%B5%A8%E5%85%AC%E4%BB%94"
+    },
+    {
+      "id": "2050",
+      "title": "比奇堡的居民們-搞怪毛絨 第二彈",
+      "price": "HK$99.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260331_101556_388648_________800x800.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2050/%E6%AF%94%E5%A5%87%E5%A0%A1%E7%9A%84%E5%B1%85%E6%B0%91%E5%80%91-%E6%90%9E%E6%80%AA%E6%AF%9B%E7%B5%A8%20%E7%AC%AC%E4%BA%8C%E5%BD%88"
+    },
+    {
+      "id": "2035",
+      "title": "MEGA SPACE MOLLY 1000% 阿波羅",
+      "price": "HK$7,319.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260323_113322_941164_________800x800.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2035/MEGA%20SPACE%20MOLLY%201000%25%20%E9%98%BF%E6%B3%A2%E7%BE%85"
+    },
+    {
+      "id": "2034",
+      "title": "火影忍者疾風傳童年系列手辦",
+      "price": "HK$81.00",
+      "image": "https://prod-hk.oss-eu-central-1.aliyuncs.com/default/20260323_114914_043247____800-png-______800x800.png?x-oss-process=image/resize,w_800/quality,q_85/format,webp",
+      "sourceUrl": "https://www.popmart.com/hk/products/2034/%E7%81%AB%E5%BD%B1%E5%BF%8D%E8%80%85%E7%96%BE%E9%A2%A8%E5%82%B3%E7%AB%A5%E5%B9%B4%E7%B3%BB%E5%88%97%E6%89%8B%E8%BE%A6"
+    }
+  ]
+}
