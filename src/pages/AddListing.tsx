@@ -9,7 +9,7 @@ export default function AddListing() {
   const navigate = useNavigate();
   const { createListing } = useAppState();
   const products = popmartShowcase.products.slice(0, 30);
-  const [image, setImage] = useState<string>(getDefaultListingImage());
+  const [image, setImage] = useState<string>('');
   const [title, setTitle] = useState('');
   const [itemName, setItemName] = useState('');
   const [price, setPrice] = useState('');
