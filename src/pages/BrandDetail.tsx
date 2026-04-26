@@ -2,9 +2,11 @@ import React, { useMemo } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate, useParams } from 'react-router-dom';
 import TopBar from '@/src/components/TopBar';
+import { useAppState } from '@/src/context/AppState';
 import {
   deriveBrandLabel,
   productsByBrandSlug,
+  popmartShowcase,
 } from '@/src/lib/popmartShowcase';
 
 function titleCase(slug: string) {
@@ -16,55 +18,35 @@ function titleCase(slug: string) {
 export default function BrandDetail() {
   const { id: slug = '' } = useParams();
   const navigate = useNavigate();
+  const { toggleOwned, isOwned } = useAppState();
 
-  const matched = useMemo(() => productsByBrandSlug(slug), [slug]);
   const displayName = titleCase(slug);
+  const isPopmartBrand = displayName.toLowerCase().replace(/\s+/g, '') === 'popmart' || displayName.toLowerCase() === 'pop mart';
+  const matched = useMemo(
+    () => (isPopmartBrand ? popmartShowcase.products : productsByBrandSlug(slug)),
+    [isPopmartBrand, slug]
+  );
   const hero =
     matched[0]?.image ??
     'https://global-static.popmart.com/globalAdmin/1776844373939____pc____.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp';
 
-  const series = useMemo(
-    () =>
-      matched.slice(0, 8).map((p, idx) => ({
-        id: p.id,
-        title: p.title,
-        progress: `${Math.min(12, idx + 3)}/12`,
-        percent: Math.min(100, 20 + idx * 12),
-        image: p.image,
-      })),
-    [matched]
-  );
+  const ipSeries = useMemo(() => {
+    const map = new Map<string, { ip: string; image: string; count: number }>();
+    for (const p of matched) {
+      const ip = deriveBrandLabel(p.title);
+      if (!ip || ip === 'Pop Mart') continue;
+      if (!map.has(ip)) map.set(ip, { ip, image: p.image, count: 0 });
+      map.get(ip)!.count += 1;
+    }
+    return Array.from(map.values()).slice(0, 30);
+  }, [matched]);
 
   return (
     <div className="animate-in fade-in duration-500 min-h-screen bg-background pb-32">
       <TopBar
         showBack
         title={displayName}
-        rightElement={
-          <div className="flex gap-4">
-            <button
-              type="button"
-              className="text-primary"
-              onClick={() => navigate('/explore')}
-              aria-label="已加入收藏冊"
-            >
-              <span
-                className="material-symbols-outlined"
-                style={{ fontVariationSettings: "'FILL' 1" }}
-              >
-                check_circle
-              </span>
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate('/search')}
-              className="text-black"
-              aria-label="搜尋"
-            >
-              <span className="material-symbols-outlined">search</span>
-            </button>
-          </div>
-        }
+        rightElement={<></>}
       />
 
       <main className="pt-20 px-5 space-y-10 max-w-screen-md mx-auto">
@@ -82,14 +64,14 @@ export default function BrandDetail() {
           <div className="space-y-4">
             <h2 className="text-3xl font-bold text-on-surface">{displayName}</h2>
             <p className="text-on-surface-variant leading-relaxed text-sm">
-              以下為與「{displayName}」相關的官網商品（原型資料）。點卡片可進入商品頁，或到市集搜尋同款。
+              依層級瀏覽：品牌 → IP → 系列 → 商品。
             </p>
 
             <div className="flex gap-10 mt-2">
               <div className="flex flex-col">
-                <span className="text-2xl font-bold text-primary">{series.length}</span>
+                <span className="text-2xl font-bold text-primary">{ipSeries.length}</span>
                 <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mt-1">
-                  系列項目
+                  IP
                 </span>
               </div>
               <div className="flex flex-col">
@@ -104,58 +86,41 @@ export default function BrandDetail() {
 
         <section>
           <div className="flex justify-between items-end mb-6">
-            <h3 className="text-xl font-bold text-on-surface">系列 / 商品</h3>
-            <button
-              type="button"
-              onClick={() =>
-                navigate(`/search?q=${encodeURIComponent(deriveBrandLabel(matched[0]?.title ?? displayName))}`)
-              }
-              className="text-xs font-bold text-primary"
-            >
-              在市集搜尋
-            </button>
+            <h3 className="text-xl font-bold text-secondary">IP</h3>
           </div>
           <div className="grid grid-cols-2 gap-grid-gutter">
-            {series.map((item) => (
-              <motion.div
-                key={item.id}
+            {ipSeries.map((item) => (
+              <motion.button
+                key={item.ip}
+                type="button"
                 whileTap={{ scale: 0.98 }}
-                onClick={() => navigate(`/product/${item.id}`)}
-                className="group relative flex flex-col gap-4 cursor-pointer"
+                onClick={() => navigate(`/series/${encodeURIComponent(item.ip)}`)}
+                className="glass-card rounded-2xl overflow-hidden text-left"
               >
-                <div className="relative aspect-square rounded-2xl overflow-hidden glass-card">
-                  <img
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    src={item.image}
-                    referrerPolicy="no-referrer"
-                    alt=""
-                  />
-                  <div className="absolute top-3 right-3 z-10">
+                <div className="relative aspect-square bg-neutral-100">
+                  <img className="w-full h-full object-cover" src={item.image} referrerPolicy="no-referrer" alt="" />
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleOwned(`series:${item.ip}`);
+                    }}
+                    className="absolute top-2 right-2 w-9 h-9 rounded-full bg-black/45 backdrop-blur-md flex items-center justify-center border border-white/15 active:scale-90 transition-transform"
+                    aria-label="加入收藏冊"
+                  >
                     <span
-                      className="material-symbols-outlined text-primary drop-shadow-md"
-                      style={{ fontVariationSettings: "'FILL' 1" }}
+                      className="material-symbols-outlined text-white text-[20px]"
+                      style={{ fontVariationSettings: isOwned(`series:${item.ip}`) ? "'FILL' 1" : "'FILL' 0" }}
                     >
                       check_circle
                     </span>
-                  </div>
+                  </button>
                 </div>
-                <div>
-                  <h4 className="font-bold text-on-surface mb-1 line-clamp-2 text-sm leading-snug">
-                    {item.title}
-                  </h4>
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1 h-1 bg-black/[0.06] rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-gradient-to-r from-primary to-tertiary-fixed"
-                        style={{ width: `${item.percent}%` }}
-                      />
-                    </div>
-                    <span className="text-[10px] font-bold text-on-surface-variant whitespace-nowrap">
-                      {item.progress}
-                    </span>
-                  </div>
+                <div className="p-4">
+                  <p className="text-sm font-bold text-on-surface">{item.ip}</p>
+                  <p className="text-[11px] text-on-surface-variant mt-1">{item.count} 款</p>
                 </div>
-              </motion.div>
+              </motion.button>
             ))}
           </div>
         </section>

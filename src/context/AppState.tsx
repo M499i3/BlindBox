@@ -31,6 +31,12 @@ type AppStateValue = {
   addToCart: (listingId: string) => void;
   removeFromCart: (listingId: string) => void;
   isInCart: (listingId: string) => boolean;
+  ownedIds: string[];
+  toggleOwned: (id: string) => void;
+  isOwned: (id: string) => boolean;
+  wishIds: string[];
+  toggleWish: (id: string) => void;
+  isWished: (id: string) => boolean;
 };
 
 const STORAGE_KEY = 'blindbox_app_state_v1';
@@ -41,6 +47,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const [avatarDataUrl, setAvatarDataUrl] = useState<string | null>(null);
   const [listings, setListings] = useState<Listing[]>([]);
   const [cartIds, setCartIds] = useState<string[]>([]);
+  const [ownedIds, setOwnedIds] = useState<string[]>([]);
+  const [wishIds, setWishIds] = useState<string[]>([]);
 
   const seededPosts = useMemo<Listing[]>(
     () =>
@@ -73,10 +81,14 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         avatarDataUrl?: string | null;
         listings?: Listing[];
         cartIds?: string[];
+        ownedIds?: string[];
+        wishIds?: string[];
       };
       setAvatarDataUrl(parsed.avatarDataUrl ?? null);
       setListings(parsed.listings ?? []);
       setCartIds(parsed.cartIds ?? []);
+      setOwnedIds(parsed.ownedIds ?? []);
+      setWishIds(parsed.wishIds ?? []);
     } catch {
       // ignore malformed local data
     }
@@ -85,9 +97,9 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     localStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify({ avatarDataUrl, listings, cartIds })
+      JSON.stringify({ avatarDataUrl, listings, cartIds, ownedIds, wishIds })
     );
-  }, [avatarDataUrl, listings, cartIds]);
+  }, [avatarDataUrl, listings, cartIds, ownedIds, wishIds]);
 
   const createListing = (input: Omit<Listing, 'id' | 'createdAt' | 'sellerName'>) => {
     const id = `l_${Date.now()}`;
@@ -110,6 +122,17 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   };
 
   const isInCart = (listingId: string) => cartIds.includes(listingId);
+
+  const toggleOwned = (id: string) => {
+    setOwnedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  };
+  const isOwned = (id: string) => ownedIds.includes(id);
+
+  const toggleWish = (id: string) => {
+    setWishIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  };
+  const isWished = (id: string) => wishIds.includes(id);
+
   const posts = useMemo(() => [...listings, ...seededPosts], [listings, seededPosts]);
   const getPostById = (id: string) => posts.find((p) => p.id === id);
 
@@ -125,8 +148,14 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       addToCart,
       removeFromCart,
       isInCart,
+      ownedIds,
+      toggleOwned,
+      isOwned,
+      wishIds,
+      toggleWish,
+      isWished,
     }),
-    [avatarDataUrl, listings, posts, cartIds]
+    [avatarDataUrl, listings, posts, cartIds, ownedIds, wishIds]
   );
 
   return <AppStateContext.Provider value={value}>{children}</AppStateContext.Provider>;

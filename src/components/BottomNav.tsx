@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Grid3X3, Home, MessageCircle, UserRound } from 'lucide-react';
+import { Compass, Home, Mail, UserRound } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 
 const links: {
@@ -9,14 +9,14 @@ const links: {
   Icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
 }[] = [
   { to: '/', label: '首頁', Icon: Home },
-  { to: '/explore', label: '圖鑑', Icon: Grid3X3 },
-  { to: '/chat', label: '聊聊', Icon: MessageCircle },
+  { to: '/explore', label: '探索', Icon: Compass },
+  { to: '/chat', label: '消息', Icon: Mail },
   { to: '/profile', label: '我的', Icon: UserRound },
 ];
 
 export default function BottomNav() {
   return (
-    <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[470px] z-50 bg-[#f6f6f6]/95 backdrop-blur-md border-t border-black/[0.08] flex justify-around items-center px-4 pb-7 pt-3 shadow-[0_-4px_24px_rgba(0,0,0,0.06)]">
+    <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[470px] z-50 bg-background/80 backdrop-blur-xl border-t border-outline-variant flex justify-around items-center px-4 pb-7 pt-3 shadow-[0_-18px_44px_rgba(25,27,34,0.10)]">
       {links.map(({ to, label, Icon }) => (
         <NavLink
           key={to}
@@ -24,7 +24,7 @@ export default function BottomNav() {
           className={({ isActive }) =>
             cn(
               'flex flex-col items-center justify-center gap-1 transition-all duration-200 active:scale-95 min-w-[56px]',
-              isActive ? 'text-black' : 'text-[#7b7b7b] hover:text-black'
+              isActive ? 'text-primary' : 'text-on-surface-variant hover:text-on-background'
             )
           }
         >

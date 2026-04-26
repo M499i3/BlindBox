@@ -8,6 +8,8 @@ import ChatDetail from './pages/ChatDetail';
 import Profile from './pages/Profile';
 import ProductDetail from './pages/ProductDetail';
 import BrandDetail from './pages/BrandDetail';
+import SeriesDetail from './pages/SeriesDetail';
+import SubseriesDetail from './pages/SubseriesDetail';
 import PurchaseHistory from './pages/PurchaseHistory';
 import AddListing from './pages/AddListing';
 import SearchResults from './pages/SearchResults';
@@ -40,6 +42,8 @@ export default function App() {
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/listing/:id" element={<ListingDetail />} />
         <Route path="/brand/:id" element={<BrandDetail />} />
+        <Route path="/series/:id" element={<SeriesDetail />} />
+        <Route path="/subseries" element={<SubseriesDetail />} />
         <Route path="/chat/:id" element={<ChatDetail />} />
       </Routes>
     </Router>

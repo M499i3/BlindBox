@@ -9,6 +9,7 @@ export default function PurchaseHistory() {
   const navigate = useNavigate();
   const orders = popmartShowcase.products.slice(4, 7).map((p, i) => ({
     id: p.id,
+    listingId: `pm_${p.id}`,
     title: p.title,
     seller: `賣家_${i + 1}`,
     date: `2024-11-${24 - i} 14:20`,
@@ -85,7 +86,7 @@ export default function PurchaseHistory() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => navigate(`/product/${order.id}`)}
+                  onClick={() => navigate(`/listing/${order.listingId}`)}
                   className="px-6 py-2 rounded-full premium-gradient text-white text-xs font-bold active:scale-95 transition-all shadow-lg shadow-primary/25"
                 >
                   查看詳情

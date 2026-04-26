@@ -1,53 +1,33 @@
 @import "tailwindcss";
 
 @theme {
-  --color-surface-container: #f5f5f5;
-  --color-surface-dim: #e8e8e8;
-  --color-surface-tint: #181818;
-  --color-inverse-on-surface: #121212;
-  --color-surface-container-low: #ffffff;
+  /* Premium Collectible Aesthetic (light) */
+  --color-background: #faf8ff;
+  --color-on-background: #191b22;
+
+  --color-surface: #ededf6; /* surface-container */
+  --color-surface-container: #e7e7f0; /* surface-container-high */
+  --color-surface-variant: #e2e2eb;
+
+  --color-on-surface: #191b22;
+  --color-on-surface-variant: #434653;
+
+  --color-outline: #737784;
+  --color-outline-variant: #c3c6d5;
+
+  --color-primary: #0047ab; /* primary-container */
   --color-on-primary: #ffffff;
-  --color-primary-fixed: #ffeded;
+  --color-primary-container: #dae2ff; /* primary-fixed */
+  --color-on-primary-container: #001946; /* on-primary-fixed */
+
+  --color-secondary: #fd8b00; /* secondary-container */
+  --color-on-secondary: #603100; /* on-secondary-container */
+
+  --color-tertiary: #8b2e01; /* tertiary-container */
+  --color-on-tertiary: #ffffff;
+
+  --color-error: #ba1a1a;
   --color-on-error: #ffffff;
-  --color-background: #e8e8e8;
-  --color-on-background: #181818;
-  --color-on-primary-fixed-variant: #6d6d6d;
-  --color-surface-container-high: #ececec;
-  --color-inverse-primary: #ff2b2b;
-  --color-primary-fixed-dim: #ffcccc;
-  --color-on-surface: #161616;
-  --color-error-container: #ff1a1a;
-  --color-tertiary: #ffd84d;
-  --color-on-surface-variant: #6c6c6c;
-  --color-primary: #ff1a1a;
-  --color-error: #ff1a1a;
-  --color-secondary-container: #efefef;
-  --color-on-primary-fixed: #1a1a1a;
-  --color-outline-variant: #d6d6d6;
-  --color-primary-container: #fff2f2;
-  --color-on-primary-container: #737373;
-  --color-secondary-fixed-dim: #ececec;
-  --color-on-secondary-container: #454545;
-  --color-surface-container-lowest: #ffffff;
-  --color-on-tertiary-container: #5e5300;
-  --color-inverse-surface: #202020;
-  --color-surface-bright: #ffffff;
-  --color-on-secondary-fixed: #222222;
-  --color-surface-variant: #f1f1f1;
-  --color-surface: #f3f3f3;
-  --color-on-tertiary: #4c4100;
-  --color-tertiary-fixed: #fff4b5;
-  --color-on-tertiary-fixed: #292200;
-  --color-tertiary-container: #fff8d6;
-  --color-on-error-container: #ffffff;
-  --color-secondary: #6a6a6a;
-  --color-secondary-fixed: #f2f2f2;
-  --color-on-secondary-fixed-variant: #5f5f5f;
-  --color-tertiary-fixed-dim: #ffe178;
-  --color-on-tertiary-fixed-variant: #5a4c00;
-  --color-on-secondary: #202020;
-  --color-surface-container-highest: #e9e9e9;
-  --color-outline: #b5b5b5;
 
   --spacing-unit: 8px;
   --spacing-container-margin: 20px;
@@ -57,20 +37,31 @@
   --spacing-stack-md: 12px;
   --spacing-stack-lg: 24px;
 
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   
   --radius-3xl: 1.5rem;
 }
 
 @utility glass-card {
-  background: #fafafa;
-  border: 1px solid rgba(24, 24, 24, 0.1);
-  border-radius: 20px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  background: var(--color-surface);
+  border: 1px solid color-mix(in oklab, var(--color-outline-variant) 80%, transparent);
+  border-radius: 24px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.75) inset,
+    0 8px 20px rgba(25, 27, 34, 0.06);
+}
+
+@utility elevated-card {
+  background: var(--color-surface-container);
+  border: 1px solid color-mix(in oklab, var(--color-outline-variant) 80%, transparent);
+  border-radius: 24px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.80) inset,
+    0 12px 26px rgba(25, 27, 34, 0.08);
 }
 
 @utility premium-gradient {
-  background: linear-gradient(180deg, #ff2e2e 0%, #ff1a1a 100%);
+  background: linear-gradient(180deg, #0047ab 0%, #00327d 100%);
 }
 
 @utility no-scrollbar {
@@ -79,10 +70,64 @@
   }
 }
 
+@layer components {
+  /* iOS-like rounded search field */
+  .ui-search {
+    @apply relative;
+  }
+
+  .ui-search input[type="search"] {
+    background: #f3f3fc; /* surface-container-low */
+    border: 1px solid rgba(195, 198, 213, 0.9); /* outline-variant */
+    color: var(--color-on-surface);
+    border-radius: 9999px;
+    padding: 12px 16px 12px 44px;
+    width: 100%;
+    outline: none;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.85) inset,
+      0 8px 20px rgba(25, 27, 34, 0.05);
+    transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+  }
+
+  .ui-search input[type="search"]::placeholder {
+    color: rgba(67, 70, 83, 0.75);
+  }
+
+  .ui-search:focus-within input[type="search"] {
+    border-color: rgba(0, 71, 171, 0.55);
+    box-shadow:
+      0 0 0 4px rgba(0, 71, 171, 0.12),
+      0 1px 0 rgba(255, 255, 255, 0.9) inset,
+      0 12px 26px rgba(25, 27, 34, 0.08);
+    background: #ffffff;
+  }
+
+  .ui-search input[type="search"]:not(:placeholder-shown) {
+    border-color: rgba(115, 119, 132, 0.35);
+  }
+
+  .ui-search .ui-search-icon {
+    @apply absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none;
+    color: rgba(67, 70, 83, 0.70);
+    transition: color 180ms ease;
+  }
+
+  .ui-search:focus-within .ui-search-icon {
+    color: rgba(0, 71, 171, 0.85);
+  }
+}
+
 @layer base {
   body {
-    @apply bg-background text-on-background font-sans antialiased selection:bg-red-500/30;
+    @apply bg-background text-on-background font-sans antialiased;
+    background: var(--color-background);
+    color: var(--color-on-background);
     min-height: 100dvh;
+  }
+
+  ::selection {
+    background: rgba(0, 71, 171, 0.16);
   }
   
   .material-symbols-outlined {

@@ -9,9 +9,7 @@ import { useAppState } from '@/src/context/AppState';
 export default function Profile() {
   const navigate = useNavigate();
   const { avatarDataUrl, listings } = useAppState();
-  const listingPreview = listings.length
-    ? listings.slice(0, 2).map((l) => ({ id: l.id, title: l.title, price: l.price, image: l.image, isUser: true }))
-    : popmartShowcase.products.slice(0, 2).map((p) => ({ id: p.id, title: p.title, price: p.price, image: p.image, isUser: false }));
+  const listingPreview = listings.slice(0, 2).map((l) => ({ id: l.id, title: l.title, price: l.price, image: l.image }));
 
   const stats = [
     { label: '收藏數', value: '42' },
@@ -43,9 +41,6 @@ export default function Profile() {
         title="個人檔案"
         rightElement={
           <>
-            <button type="button" onClick={() => navigate('/search')} className="text-black" aria-label="搜尋">
-              <span className="material-symbols-outlined">search</span>
-            </button>
             <button
               type="button"
               onClick={() => navigate('/profile/edit')}
@@ -127,33 +122,43 @@ export default function Profile() {
               查看全部
             </button>
           </div>
-          <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
-            {listingPreview.map((p) => (
-              <motion.button
-                key={p.id}
-                type="button"
-                whileTap={{ scale: 0.98 }}
-                onClick={() => navigate(p.isUser ? `/listing/${p.id}` : `/product/${p.id}`)}
-                className="flex-shrink-0 w-40 glass-card rounded-2xl overflow-hidden text-left"
-              >
-                <div className="aspect-square relative bg-neutral-100">
-                  <img
-                    className="w-full h-full object-cover"
-                    src={p.image}
-                    referrerPolicy="no-referrer"
-                    alt=""
-                  />
-                  <div className="absolute top-2 right-2 px-2 py-0.5 bg-black/60 backdrop-blur-md rounded text-[8px] font-bold text-white border border-white/10">
-                    上架中
+          {listingPreview.length > 0 ? (
+            <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
+              {listingPreview.map((p) => (
+                <motion.button
+                  key={p.id}
+                  type="button"
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => navigate(`/listing/${p.id}`)}
+                  className="flex-shrink-0 w-40 glass-card rounded-2xl overflow-hidden text-left"
+                >
+                  <div className="aspect-square relative bg-neutral-100">
+                    <img className="w-full h-full object-cover" src={p.image} referrerPolicy="no-referrer" alt="" />
+                    <div className="absolute top-2 right-2 px-2 py-0.5 bg-black/60 backdrop-blur-md rounded text-[8px] font-bold text-white border border-white/10">
+                      上架中
+                    </div>
                   </div>
-                </div>
-                <div className="p-3">
-                  <h4 className="text-xs font-bold text-on-surface line-clamp-2 leading-snug">{p.title}</h4>
-                  <p className="text-sm font-bold text-primary mt-1">{p.price}</p>
-                </div>
-              </motion.button>
-            ))}
-          </div>
+                  <div className="p-3">
+                    <h4 className="text-xs font-bold text-on-surface line-clamp-2 leading-snug">{p.title}</h4>
+                    <p className="text-sm font-bold text-primary mt-1">{p.price}</p>
+                  </div>
+                </motion.button>
+              ))}
+            </div>
+          ) : (
+            <div className="glass-card rounded-2xl p-5 text-sm text-on-surface-variant">
+              還沒有上架貼文，先去新增一篇吧。
+              <div className="mt-4">
+                <button
+                  type="button"
+                  onClick={() => navigate('/add-listing')}
+                  className="premium-gradient text-white px-5 py-2.5 rounded-full text-xs font-extrabold"
+                >
+                  新增上架
+                </button>
+              </div>
+            </div>
+          )}
         </section>
 
         <section className="space-y-4">
