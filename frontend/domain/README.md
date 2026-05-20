@@ -1,10 +1,17 @@
-# 應用邏輯層 — 資料模型與 Repository 介面
+# Domain — 型別定義
 
-本資料夾在**全端三層架構**中歸屬**應用邏輯層**（非獨立第四層），用於集中定義：
+本資料夾定義前端共用的 **TypeScript 型別**，鏡像後端 `backend/src/domain/entities.py` 的 Pydantic 模型。
 
-- `entities/` — 系統使用的資料結構（Listing、圖鑑商品、使用者設定等）
-- `repositories/` — 資料存取**介面**（由資料層實作）
+## 子目錄
 
-Service（`frontend/application/services/`）依賴此處的型別與介面，再交由資料層（`frontend/infrastructure/`）具體讀寫。
+| 目錄 | 說明 |
+|------|------|
+| `entities/` | `Listing`、`CatalogProduct`、`UserProfile` 等型別 |
+
+## 說明
+
+- 這些型別只是 TypeScript 介面，不包含任何業務邏輯或 API 呼叫
+- 後端 API 回傳 snake_case，前端 API client 在 `infrastructure/api/` 中負責轉換為 camelCase
+- Repository 介面已隨重構移除（業務邏輯全移後端）
 
 整體架構說明見 [`docs/ARCHITECTURE.md`](../docs/ARCHITECTURE.md)。

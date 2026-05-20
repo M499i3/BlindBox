@@ -1,113 +1,106 @@
-# Backend（API 與資料庫）
+# Backend — Python FastAPI
 
-## 資料庫版本管理（Alembic）
+BlindBox 後端，負責所有業務邏輯與資料存取，前端透過 HTTP JSON API 呼叫。
 
-本專案使用 [Alembic](https://alembic.sqlalchemy.org/) 管理 **PostgreSQL**（Supabase）schema 變更，屬於全端架構中的**資料層**。
+## 目錄結構
 
-### 目錄
+```
+backend/
+├── main.py                        # FastAPI 應用入口、CORS 設定
+├── requirements.txt               # Python 依賴
+├── .venv/                         # 虛擬環境（不納入版控）
+├── alembic.ini                    # Alembic 設定
+├── alembic/versions/              # Migration 版本
+├── scripts/
+│   ├── seed_catalog.py            # 圖鑑種子腳本
+│   └── catalog_seed_lib.py        # 種子共用邏輯
+└── src/
+    ├── api/
+    │   ├── dependencies.py        # get_current_user_id、get_db
+    │   └── routes/                # catalog、listings、cart、profile、marketplace
+    ├── application/               # 業務邏輯 Service
+    ├── domain/
+    │   └── entities.py            # Pydantic 模型（CatalogProduct、Listing …）
+    └── infrastructure/
+        └── db/
+            ├── config.py          # get_database_url()
+            └── repositories/      # SQL 查詢實作
+```
 
-| 路徑 | 說明 |
-|------|------|
-| `alembic.ini` | Alembic 設定 |
-| `alembic/versions/` | 每次 schema 變更一個 revision |
-| `migrations/sql/initial_schema.sql` | 初始完整 schema（參考用） |
-| `src/infrastructure/db/` | 連線設定、ORM `Base`、未來模型 |
-
-### 環境準備
+## 環境準備
 
 ```bash
 cd backend
 python3 -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-在**專案根目錄** `.env` 設定：
+或直接用專案根目錄指令：
+
+```bash
+npm run backend:install
+```
+
+## 啟動
+
+```bash
+npm run backend:dev
+# 等同：cd backend && uvicorn main:app --reload --reload-dir src --port 8000
+```
+
+啟動後 Swagger UI 在 `http://localhost:8000/docs`。
+
+## 環境變數（根目錄 `.env`）
 
 ```env
-# 從 Dashboard → Database → Connect → Session mode → 複製 URI（推薦）
-DATABASE_URL=postgresql://postgres.[ref]:[密碼]@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres
+# PostgreSQL 連線字串（Alembic + psycopg2 使用）
+DATABASE_URL=postgresql://postgres.[ref]:[密碼]@aws-0-xxx.pooler.supabase.com:5432/postgres
 ```
 
-或（需知道 region）：
+後端啟動時自動從根目錄 `.env` 讀取。
 
-```env
-SUPABASE_DB_PASSWORD=你的資料庫密碼
-SUPABASE_DB_REGION=ap-southeast-1
-```
+## 認證
 
-> **注意**
-> - `VITE_SUPABASE_ANON_KEY` 不能取代資料庫密碼。
-> - 勿手動拼 `db.xxx.supabase.co`；許多專案該主機無 DNS，會出現 `could not translate host name`。
-> - 專案若為 **Paused**，請先在 Dashboard 恢復後再 migrate。
+目前以 `X-User-Id` HTTP header 傳遞使用者 UUID（開發用）。  
+前端從 `VITE_DEV_USER_ID` 環境變數取得並帶入每個請求。  
+未來可替換為 JWT 驗證，只需修改 `src/api/dependencies.py` 的 `get_current_user_id`。
 
-先執行 `npm run db:check` 確認主機可解析，再 `alembic upgrade head`。
+## 資料庫 Migration（Alembic）
 
-### 表已經存在（DuplicateTable / relation already exists）
-
-代表資料庫裡**已有** schema（例如在 Supabase SQL Editor 跑過），但 Alembic 還沒記錄版本。
-
-在 `backend/` 目錄執行**其中一種**即可：
+在根目錄 `.env` 設定 `DATABASE_URL` 後：
 
 ```bash
-# 方式 A：再跑一次 upgrade（會偵測 brands 表已存在並略過建表，只寫入版本記錄）
-alembic upgrade head
+npm run db:migrate      # alembic upgrade head
+npm run db:current      # 查看目前版本
+npm run db:downgrade    # 退回上一版
 
-# 方式 B：手動標記為已套用，不執行任何 SQL
-alembic stamp head
-```
-
-確認：`alembic current` 應顯示 `0001_initial_schema (head)`。
-
-### 常用指令
-
-在 `backend/` 目錄、已啟用 venv 時執行：
-
-```bash
-# 查看目前版本
-alembic current
-
-# 套用所有未執行的 migration
-alembic upgrade head
-
-# 退回上一版
-alembic downgrade -1
-
-# 建立新 migration（修改 ORM 模型後）
-alembic revision --autogenerate -m "add_xxx_table"
+# 建立新 migration（修改 schema 後）
+cd backend
+alembic revision --autogenerate -m "add_xxx_column"
 alembic upgrade head
 ```
 
-專案根目錄亦可：
+若資料庫表已存在（在 Supabase SQL Editor 手動建立）但 Alembic 尚未記錄版本：
 
 ```bash
-npm run db:migrate
-npm run db:current
-npm run db:seed
+cd backend && alembic stamp head
 ```
 
-### 圖鑑種子（catalog）
+## 圖鑑種子
 
-從 `frontend/data/popmart-hk-showcase.json` 冪等匯入 brands、series、catalog_products：
+從 `frontend/data/popmart-hk-showcase.json` 匯入 `brands`、`series`、`catalog_products`（可重複執行，使用 upsert）：
 
 ```bash
-# 專案根目錄
-npm run db:seed:dry
-npm run db:seed
+npm run db:seed:dry   # 預覽，不寫入
+npm run db:seed       # 寫入 DB，並建立開發用使用者 Yu，輸出 VITE_DEV_USER_ID
 ```
 
-實作：`backend/scripts/seed_catalog.py`、`backend/scripts/catalog_seed_lib.py`。
+## CORS 設定
 
-### 初始 migration
+`main.py` 目前允許以下 origin：
 
-| Revision | 說明 |
-|----------|------|
-| `0001_initial_schema` | 建立 brands、listings、users、orders、chats 等完整表結構 |
+- `http://localhost:3001`
+- `http://localhost:3002`
 
-### 注意
-
-- **Service role key** 不能取代 `DATABASE_URL`；migration 需直接連 PostgreSQL。
-- 在 Supabase 執行前請確認使用正確專案與權限；`downgrade` 會刪除相關表，請勿在正式環境隨意執行。
-- 前端 `npm run check:supabase` 僅驗證 REST/Auth；資料庫 migration 請用 `alembic current`。
-
-整體架構見 [`docs/ARCHITECTURE.md`](../docs/ARCHITECTURE.md)。
+若前端跑在其他 port，在 `backend/main.py` 的 `allow_origins` 列表新增即可（需重啟後端）。
