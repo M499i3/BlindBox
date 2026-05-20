@@ -83,7 +83,20 @@ alembic upgrade head
 ```bash
 npm run db:migrate
 npm run db:current
+npm run db:seed
 ```
+
+### 圖鑑種子（catalog）
+
+從 `frontend/data/popmart-hk-showcase.json` 冪等匯入 brands、series、catalog_products：
+
+```bash
+# 專案根目錄
+npm run db:seed:dry
+npm run db:seed
+```
+
+實作：`backend/scripts/seed_catalog.py`、`backend/scripts/catalog_seed_lib.py`。
 
 ### 初始 migration
 

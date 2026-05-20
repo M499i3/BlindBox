@@ -23,6 +23,31 @@ npm run build
 npm run check:supabase
 ```
 
+### 前端 Supabase 資料層
+
+`.env` 設定 `VITE_SUPABASE_URL`、`VITE_SUPABASE_ANON_KEY` 後，可切換：
+
+```bash
+# .env
+VITE_DATA_SOURCE=supabase
+# 可選：指定開發用使用者 UUID
+# VITE_DEV_USER_ID=
+```
+
+首次使用請在 Supabase **SQL Editor** 執行 [`docs/supabase-dev-rls.sql`](docs/supabase-dev-rls.sql)（開發用匿名 RLS）。  
+`catalog_products` 若尚無資料，圖鑑會自動退回 `frontend/data/popmart-hk-showcase.json`。
+
+### 資料庫種子（圖鑑）
+
+在 migration 完成且 `.env` 已設定 `DATABASE_URL` 後，將 Pop Mart 圖鑑 JSON 匯入 `brands` / `series` / `catalog_products`（可重複執行）：
+
+```bash
+npm run db:seed:dry   # 僅統計，不寫入
+npm run db:seed       # 寫入 DB，並建立開發用使用者 Yu（email: dev@blindbox.local）
+```
+
+腳本會輸出 `VITE_DEV_USER_ID`，可貼到 `.env` 供 Supabase 前端模式使用。
+
 ### 資料庫 migration（Alembic）
 
 在 `.env` 設定 `DATABASE_URL`（Supabase PostgreSQL 連線字串）後：

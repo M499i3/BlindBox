@@ -1,4 +1,5 @@
 export interface ICartRepository {
+  initialize(): Promise<void>;
   getListingIds(): string[];
-  setListingIds(ids: string[]): void;
+  setListingIds(ids: string[]): Promise<void>;
 }

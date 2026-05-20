@@ -40,8 +40,8 @@ export default function AddListing() {
     reader.readAsDataURL(file);
   };
 
-  const submit = () => {
-    const listingId = createListing({
+  const submit = async () => {
+    const listingId = await createListing({
       title: title.trim() || itemName.trim() || '未命名貼文',
       itemName: itemName.trim() || title.trim() || '未命名商品',
       price: price.trim() ? `NT$ ${price.trim()}` : 'NT$ 0',

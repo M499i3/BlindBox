@@ -5,20 +5,28 @@ import type { LocalStorageStore } from '@/frontend/infrastructure/persistence/lo
 export class LocalListingRepository implements IListingRepository {
   constructor(private readonly store: LocalStorageStore) {}
 
+  async initialize(): Promise<void> {
+    /* localStorage 同步可用 */
+  }
+
   findUserListings(): Listing[] {
     return this.store.load().listings;
+  }
+
+  findActiveListings(): Listing[] {
+    return [];
   }
 
   findById(id: string): Listing | undefined {
     return this.findUserListings().find((l) => l.id === id);
   }
 
-  saveUserListings(listings: Listing[]): void {
+  async saveUserListings(listings: Listing[]): Promise<void> {
     const snap = this.store.load();
     this.store.save({ ...snap, listings });
   }
 
-  create(input: CreateListingInput, sellerName: string): Listing {
+  async create(input: CreateListingInput, sellerName: string): Promise<Listing> {
     const listing: Listing = {
       ...input,
       id: `l_${Date.now()}`,

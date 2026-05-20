@@ -14,14 +14,14 @@ export type { Listing, CreateListingInput };
 
 type AppStateValue = {
   avatarDataUrl: string | null;
-  setAvatarDataUrl: (v: string | null) => void;
+  setAvatarDataUrl: (v: string | null) => Promise<void>;
   listings: Listing[];
   posts: Listing[];
   getPostById: (id: string) => Listing | undefined;
-  createListing: (input: CreateListingInput) => string;
+  createListing: (input: CreateListingInput) => Promise<string>;
   cartIds: string[];
-  addToCart: (listingId: string) => void;
-  removeFromCart: (listingId: string) => void;
+  addToCart: (listingId: string) => Promise<void>;
+  removeFromCart: (listingId: string) => Promise<void>;
   isInCart: (listingId: string) => boolean;
 };
 
@@ -61,16 +61,16 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   }, [refresh]);
 
   const setAvatarDataUrl = useCallback(
-    (v: string | null) => {
-      profileService.setAvatar(v);
+    async (v: string | null) => {
+      await profileService.setAvatar(v);
       refresh();
     },
     [profileService, refresh]
   );
 
   const createListing = useCallback(
-    (input: CreateListingInput) => {
-      const listing = listingService.createListing(input);
+    async (input: CreateListingInput) => {
+      const listing = await listingService.createListing(input);
       refresh();
       return listing.id;
     },
@@ -78,16 +78,16 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   );
 
   const addToCart = useCallback(
-    (listingId: string) => {
-      cartService.addToCart(listingId);
+    async (listingId: string) => {
+      await cartService.addToCart(listingId);
       refresh();
     },
     [cartService, refresh]
   );
 
   const removeFromCart = useCallback(
-    (listingId: string) => {
-      cartService.removeFromCart(listingId);
+    async (listingId: string) => {
+      await cartService.removeFromCart(listingId);
       refresh();
     },
     [cartService, refresh]

@@ -1,6 +1,7 @@
 import type { CreateListingInput, Listing } from '@/frontend/domain/entities/listing';
 import type { IListingRepository } from '@/frontend/domain/repositories/IListingRepository';
 import type { CatalogService } from '@/frontend/application/services/CatalogService';
+import { getDataSourceMode } from '@/frontend/infrastructure/config/env';
 
 const DEFAULT_SELLER_NAME = 'Yu';
 
@@ -36,17 +37,28 @@ export class ListingService {
   }
 
   getAllPosts(): Listing[] {
-    return [...this.getUserListings(), ...this.getSeededListings()];
+    const user = this.getUserListings();
+    const active = this.listingRepo.findActiveListings();
+    const seeded =
+      getDataSourceMode() === 'local' ? this.getSeededListings() : [];
+    const byId = new Map<string, Listing>();
+    for (const post of [...active, ...seeded, ...user]) {
+      byId.set(post.id, post);
+    }
+    return [...byId.values()];
   }
 
   getPostById(id: string): Listing | undefined {
-    return this.getAllPosts().find((p) => p.id === id);
+    return (
+      this.listingRepo.findById(id) ??
+      this.getAllPosts().find((p) => p.id === id)
+    );
   }
 
-  createListing(
+  async createListing(
     input: CreateListingInput,
     sellerName: string = DEFAULT_SELLER_NAME
-  ): Listing {
+  ): Promise<Listing> {
     return this.listingRepo.create(input, sellerName);
   }
 }

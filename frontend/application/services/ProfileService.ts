@@ -11,13 +11,17 @@ export class ProfileService {
     return this.profileRepo.getProfile();
   }
 
-  setAvatar(dataUrl: string | null): void {
+  async setAvatar(dataUrl: string | null): Promise<void> {
     const profile = this.getProfile();
-    this.profileRepo.saveProfile({ ...profile, avatarDataUrl: dataUrl });
+    await this.profileRepo.saveProfile({ ...profile, avatarDataUrl: dataUrl });
   }
 
-  updateProfile(partial: Partial<UserProfile>): void {
+  async updateProfile(partial: Partial<UserProfile>): Promise<void> {
     const profile = this.getProfile();
-    this.profileRepo.saveProfile({ ...DEFAULT_USER_PROFILE, ...profile, ...partial });
+    await this.profileRepo.saveProfile({
+      ...DEFAULT_USER_PROFILE,
+      ...profile,
+      ...partial,
+    });
   }
 }

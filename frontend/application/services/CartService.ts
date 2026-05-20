@@ -16,14 +16,14 @@ export class CartService {
     return this.cartRepo.getListingIds().includes(listingId);
   }
 
-  addToCart(listingId: string): void {
+  async addToCart(listingId: string): Promise<void> {
     const ids = this.cartRepo.getListingIds();
     if (ids.includes(listingId)) return;
-    this.cartRepo.setListingIds([...ids, listingId]);
+    await this.cartRepo.setListingIds([...ids, listingId]);
   }
 
-  removeFromCart(listingId: string): void {
-    this.cartRepo.setListingIds(
+  async removeFromCart(listingId: string): Promise<void> {
+    await this.cartRepo.setListingIds(
       this.cartRepo.getListingIds().filter((id) => id !== listingId)
     );
   }

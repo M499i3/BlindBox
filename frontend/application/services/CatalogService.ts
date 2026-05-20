@@ -3,6 +3,7 @@ import type {
   CatalogProduct,
   CatalogShowcase,
 } from '@/frontend/domain/entities/catalog';
+import type { CatalogLoadMeta } from '@/frontend/domain/entities/catalogLoad';
 import type { ICatalogRepository } from '@/frontend/domain/repositories/ICatalogRepository';
 
 export class CatalogService {
@@ -10,6 +11,10 @@ export class CatalogService {
 
   getShowcase(): CatalogShowcase {
     return this.catalogRepo.getShowcase();
+  }
+
+  getLoadMeta(): CatalogLoadMeta {
+    return this.catalogRepo.getLoadMeta();
   }
 
   getProductById(id: string): CatalogProduct | undefined {
