@@ -1,4 +1,44 @@
-# React + Vite
+# BlindBox
+
+盲盒收藏與市集原型（React + Vite）。
+
+## 系統架構
+
+採**全端三層架構**：表現層 → 應用邏輯層 → 資料層。詳見 **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**。
+
+## 專案結構
+
+| 目錄 | 說明 |
+|------|------|
+| `frontend/` | 前端 React（Vite 入口：`frontend/main.tsx`） |
+| `backend/` | 後端 API 預留；**Alembic** 資料庫版本管理 |
+| `docs/` | 架構文件 |
+
+## 開發
+
+```bash
+npm install
+npm run dev          # http://localhost:3001
+npm run build
+npm run check:supabase
+```
+
+### 資料庫 migration（Alembic）
+
+在 `.env` 設定 `DATABASE_URL`（Supabase PostgreSQL 連線字串）後：
+
+```bash
+cd backend && python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+npm run db:migrate      # alembic upgrade head
+npm run db:current      # 查看目前版本
+```
+
+詳見 [backend/README.md](backend/README.md)。
+
+---
+
+# React + Vite（模板說明）
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
