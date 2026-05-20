@@ -19,6 +19,12 @@ export default function PurchaseHistory() {
     image: p.image,
   }));
 
+  const localOrders = JSON.parse(
+    localStorage.getItem('orders') || '[]'
+  );
+  
+  const allOrders = [...localOrders, ...orders];
+
   return (
     <div className="animate-in fade-in duration-500 bg-background min-h-screen pb-28">
       <TopBar
@@ -52,7 +58,7 @@ export default function PurchaseHistory() {
         </div>
 
         <div className="space-y-4">
-          {orders.map((order) => (
+          {allOrders.map((order) => (
             <motion.div
               key={order.id}
               initial={{ opacity: 0, y: 10 }}

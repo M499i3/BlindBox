@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import UserAvatar from '@/frontend/presentation/components/UserAvatar';
@@ -14,6 +14,8 @@ export default function ChatDetail() {
     [idx, products]
   );
   const names = ['Alex Chen', '潮流收藏家_Ken', 'Mina_Lab'];
+  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState<string[]>([]);
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-background">
@@ -114,6 +116,16 @@ export default function ChatDetail() {
               <span className="text-[10px] text-on-surface-variant ml-1">14:26</span>
             </div>
           </div>
+          {messages.map((msg, index) => (
+            <div
+              key={index}
+              className="flex flex-col gap-1 items-end max-w-[85%] self-end"
+          >
+            <div className="premium-gradient p-3 rounded-2xl rounded-br-sm text-white text-sm shadow-lg shadow-black/15">
+              {msg}
+            </div>
+          </div>
+        ))}
         </main>
       </div>
 
@@ -124,6 +136,14 @@ export default function ChatDetail() {
           </button>
           <div className="flex-1 relative group">
             <input
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && message.trim()) {
+                  setMessages([...messages, message]);
+                  setMessage('');
+                }
+              }}
               className="w-full bg-white border border-black/[0.08] rounded-2xl px-4 py-3 text-on-surface placeholder:text-on-surface-variant focus:ring-1 focus:ring-primary/40 transition-all"
               placeholder="輸入訊息..."
               type="text"
@@ -131,6 +151,12 @@ export default function ChatDetail() {
           </div>
           <button
             type="button"
+            onClick={() => {
+              if (!message.trim()) return;
+
+              setMessages([...messages, message]);
+              setMessage('');
+              }}
             className="w-10 h-10 flex items-center justify-center rounded-full premium-gradient text-white shadow-lg active:scale-90 transition-transform"
           >
             <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>

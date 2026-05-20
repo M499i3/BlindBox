@@ -41,13 +41,43 @@ export default function CartPage() {
           <section className="glass-card rounded-2xl p-4 space-y-3">
             <div className="flex justify-between text-sm">
               <span className="text-on-surface-variant">小計</span>
-              <span className="font-bold text-on-surface">NT$ {total.toLocaleString()}</span>
+              <span className="font-bold text-on-surface">
+               NT$ {total.toLocaleString()}
+              </span>
             </div>
-            <button type="button" className="w-full py-3 premium-gradient rounded-full text-white font-bold text-sm">
-              前往結帳（原型）
+
+            <button
+              type="button"
+              onClick={() => {
+                const existingOrders = JSON.parse(
+                  localStorage.getItem('orders') || '[]'
+                );
+              
+                const newOrders = cartItems.map((item) => ({
+                  id: item.id,
+                  title: item.title,
+                  total: item.price,
+                  image: item.image,
+                  seller: '測試賣家',
+                  date: new Date().toLocaleString(),
+                  status: '待付款',
+                }));
+              
+                localStorage.setItem(
+                  'orders',
+                  JSON.stringify([...newOrders, ...existingOrders])
+                );
+              
+                alert('購買成功！（原型）');
+              
+                navigate('/purchase-history');
+              }}
+              className="w-full py-3 premium-gradient rounded-full text-white font-bold text-sm"
+            >
+              前往結帳
             </button>
           </section>
-        )}
+      )}
       </main>
     </div>
   );
