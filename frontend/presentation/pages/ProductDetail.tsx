@@ -3,30 +3,27 @@ import { motion } from 'motion/react';
 import { useNavigate, useParams } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import UserAvatar from '@/frontend/presentation/components/UserAvatar';
-import {
-  deriveBrandLabel,
-  getProductById,
-  popmartShowcase,
-} from '@/frontend/lib/popmartShowcase';
+import { useCatalogProduct, useCatalogProducts, deriveBrandLabel } from '@/frontend/presentation/hooks/useCatalog';
 
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const product = id ? getProductById(id) : undefined;
+  const { product } = useCatalogProduct(id);
+  const { products: allProducts } = useCatalogProducts();
 
   const swapImages = useMemo(() => {
-    const pool = popmartShowcase.products.filter((p) => p.id !== id).slice(0, 4);
+    const pool = allProducts.filter((p) => p.id !== id).slice(0, 4);
     return pool.length >= 2
       ? [
           { a: pool[0], b: pool[1] },
           { a: pool[2] ?? pool[0], b: pool[3] ?? pool[1] },
         ]
       : [];
-  }, [id]);
+  }, [allProducts, id]);
 
   const listings = useMemo(
     () =>
-      popmartShowcase.products
+      allProducts
         .filter((p) => p.id !== id)
         .slice(0, 4)
         .map((p, i) => ({
@@ -37,7 +34,7 @@ export default function ProductDetail() {
           user: `賣家_${i + 1}`,
           img: p.image,
         })),
-    [id]
+    [allProducts, id]
   );
 
   if (!product) {
@@ -217,7 +214,7 @@ export default function ProductDetail() {
               <h3 className="font-bold text-on-surface">同系列拆盒團（示意）</h3>
               <p className="text-[10px] text-on-primary-container flex items-center gap-1 font-semibold">
                 <span className="material-symbols-outlined text-sm text-tertiary">info</span>
-                尚有名额可上車，實際以 App 內拆盒流程為準。
+                尚有名額可上車，實際以 App 內拆盒流程為準。
               </p>
               <button
                 type="button"

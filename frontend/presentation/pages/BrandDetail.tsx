@@ -2,10 +2,7 @@ import React, { useMemo } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate, useParams } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
-import {
-  deriveBrandLabel,
-  productsByBrandSlug,
-} from '@/frontend/lib/popmartShowcase';
+import { useCatalogProducts, deriveBrandLabel } from '@/frontend/presentation/hooks/useCatalog';
 
 function titleCase(slug: string) {
   return decodeURIComponent(slug)
@@ -16,8 +13,16 @@ function titleCase(slug: string) {
 export default function BrandDetail() {
   const { id: slug = '' } = useParams();
   const navigate = useNavigate();
+  const { products: allProducts } = useCatalogProducts();
 
-  const matched = useMemo(() => productsByBrandSlug(slug), [slug]);
+  const matched = useMemo(() => {
+    const rawSlug = decodeURIComponent(slug).toLowerCase();
+    return allProducts.filter((p) =>
+      deriveBrandLabel(p.title).toLowerCase() === rawSlug ||
+      p.title.toLowerCase().includes(rawSlug)
+    );
+  }, [allProducts, slug]);
+
   const displayName = titleCase(slug);
   const hero =
     matched[0]?.image ??

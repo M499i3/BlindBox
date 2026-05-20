@@ -1,15 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import UserAvatar from '@/frontend/presentation/components/UserAvatar';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
+import { updateProfile } from '@/frontend/infrastructure/api/profileApi';
 
 export default function ProfileEdit() {
   const navigate = useNavigate();
-  const { avatarDataUrl, setAvatarDataUrl } = useAppState();
-  const [displayName, setDisplayName] = useState('Yu');
-  const [bio, setBio] = useState('');
+  const { avatarDataUrl, displayName: currentName, setAvatarDataUrl } = useAppState();
+  const [localDisplayName, setLocalDisplayName] = useState(currentName || 'Yu');
+  const [localBio, setLocalBio] = useState('');
+
+  useEffect(() => {
+    if (currentName) setLocalDisplayName(currentName);
+  }, [currentName]);
 
   const onUpload = (file?: File | null) => {
     if (!file) return;
@@ -18,6 +23,11 @@ export default function ProfileEdit() {
       if (typeof reader.result === 'string') setAvatarDataUrl(reader.result);
     };
     reader.readAsDataURL(file);
+  };
+
+  const onSave = async () => {
+    await updateProfile({ displayName: localDisplayName, bio: localBio });
+    navigate(-1);
   };
 
   return (
@@ -58,8 +68,8 @@ export default function ProfileEdit() {
               顯示名稱
             </span>
             <input
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
+              value={localDisplayName}
+              onChange={(e) => setLocalDisplayName(e.target.value)}
               className="mt-2 w-full bg-white border border-black/[0.08] rounded-xl px-4 py-3 text-sm text-on-surface focus:ring-1 focus:ring-primary/40 outline-none"
             />
           </label>
@@ -68,8 +78,8 @@ export default function ProfileEdit() {
               自我介紹
             </span>
             <textarea
-              value={bio}
-              onChange={(e) => setBio(e.target.value)}
+              value={localBio}
+              onChange={(e) => setLocalBio(e.target.value)}
               rows={4}
               placeholder="簡短介紹你的收藏偏好、交易方式…"
               className="mt-2 w-full bg-white border border-black/[0.08] rounded-xl px-4 py-3 text-sm text-on-surface focus:ring-1 focus:ring-primary/40 outline-none resize-none"
@@ -80,7 +90,7 @@ export default function ProfileEdit() {
         <motion.button
           type="button"
           whileTap={{ scale: 0.98 }}
-          onClick={() => navigate(-1)}
+          onClick={onSave}
           className="w-full py-4 premium-gradient rounded-full text-white font-bold shadow-lg shadow-primary/25"
         >
           儲存

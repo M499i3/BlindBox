@@ -2,15 +2,16 @@ import React, { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import UserAvatar from '@/frontend/presentation/components/UserAvatar';
-import { popmartShowcase } from '@/frontend/lib/popmartShowcase';
+import { useCatalogProducts } from '@/frontend/presentation/hooks/useCatalog';
 
 export default function ChatDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const idx = id ? parseInt(id, 10) || 0 : 0;
+  const { products } = useCatalogProducts();
   const product = useMemo(
-    () => popmartShowcase.products[idx % Math.max(1, popmartShowcase.products.length)],
-    [idx]
+    () => products[idx % Math.max(1, products.length)],
+    [idx, products]
   );
   const names = ['Alex Chen', '潮流收藏家_Ken', 'Mina_Lab'];
 

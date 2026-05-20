@@ -18,7 +18,9 @@
     "db:seed": "sh -c 'PY=backend/.venv/bin/python; if [ -x \"$PY\" ]; then \"$PY\" backend/scripts/seed_catalog.py; else python3 backend/scripts/seed_catalog.py; fi'",
     "db:seed:dry": "python3 backend/scripts/seed_catalog.py --dry-run",
     "db:downgrade": "cd backend && alembic downgrade -1",
-    "db:revision": "cd backend && alembic revision --autogenerate"
+    "db:revision": "cd backend && alembic revision --autogenerate",
+    "backend:dev": "sh -c 'if [ -x backend/.venv/bin/uvicorn ]; then cd backend && .venv/bin/uvicorn main:app --reload --reload-dir src --port 8000; else cd backend && uvicorn main:app --reload --reload-dir src --port 8000; fi'",
+    "backend:install": "cd backend && pip install -r requirements.txt"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",

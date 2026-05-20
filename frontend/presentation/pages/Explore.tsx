@@ -3,11 +3,7 @@ import { motion } from 'motion/react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import { cn } from '@/frontend/shared/utils/cn';
-import {
-  buildBrandRow,
-  deriveBrandLabel,
-  popmartShowcase,
-} from '@/frontend/lib/popmartShowcase';
+import { useCatalogBrands, useCatalogProducts, buildBrandRow, deriveBrandLabel } from '@/frontend/presentation/hooks/useCatalog';
 
 export default function Explore() {
   const navigate = useNavigate();
@@ -25,11 +21,12 @@ export default function Explore() {
     if (sub === 'single') setSubTab('single');
   }, [searchParams]);
 
-  const { products } = popmartShowcase;
+  const { products } = useCatalogProducts();
+  const apiBrands = useCatalogBrands();
 
   const brands = useMemo(
-    () => buildBrandRow(products, 4),
-    [products]
+    () => apiBrands.length > 0 ? apiBrands : buildBrandRow(products, 4),
+    [apiBrands, products]
   );
 
   const collections = useMemo(
@@ -114,7 +111,7 @@ export default function Explore() {
                {['catalog', 'single', 'wishlist'].map((tab) => (
                 <button
                   key={tab}
-                  onClick={() => setSubTab(tab as any)}
+                  onClick={() => setSubTab(tab as 'catalog' | 'single' | 'wishlist')}
                   className={cn(
                     "px-6 py-1.5 text-xs font-semibold rounded-full border transition-all",
                     subTab === tab

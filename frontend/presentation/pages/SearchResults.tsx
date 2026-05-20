@@ -2,20 +2,19 @@ import React, { useMemo, useState } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
-import {
-  buildBrandRow,
-  deriveBrandLabel,
-  popmartShowcase,
-  searchProducts,
-} from '@/frontend/lib/popmartShowcase';
+import { useCatalogProducts, useCatalogBrands, deriveBrandLabel } from '@/frontend/presentation/hooks/useCatalog';
+
 export default function SearchResults() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const initialQ = searchParams.get('q') ?? '';
   const [draft, setDraft] = useState(initialQ);
 
-  const results = useMemo(() => searchProducts(initialQ), [initialQ]);
-  const brands = useMemo(() => buildBrandRow(popmartShowcase.products, 6), []);
+  const { products: results } = useCatalogProducts(initialQ ? { q: initialQ } : undefined);
+  const { products: allProducts } = useCatalogProducts();
+  const brands = useCatalogBrands();
+
+  const popularProducts = useMemo(() => allProducts.slice(0, 8), [allProducts]);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,7 +105,7 @@ export default function SearchResults() {
           <section className="space-y-3">
             <h2 className="text-sm font-bold text-on-surface">熱門（官網新品）</h2>
             <div className="grid grid-cols-2 gap-3">
-              {popmartShowcase.products.slice(0, 8).map((p) => (
+              {popularProducts.map((p) => (
                 <motion.button
                   key={p.id}
                   type="button"

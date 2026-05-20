@@ -2,10 +2,11 @@ import React from 'react';
 import { motion } from 'motion/react';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import UserAvatar from '@/frontend/presentation/components/UserAvatar';
-import { popmartShowcase } from '@/frontend/lib/popmartShowcase';
+import { useCatalogProducts } from '@/frontend/presentation/hooks/useCatalog';
 
 export default function SellingHistory() {
-  const rows = popmartShowcase.products.slice(10, 13).map((p, i) => ({
+  const { products } = useCatalogProducts();
+  const rows = products.slice(10, 13).map((p, i) => ({
     id: p.id,
     title: p.title,
     buyer: `買家_${i + 1}`,

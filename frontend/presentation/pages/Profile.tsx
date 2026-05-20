@@ -3,20 +3,22 @@ import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import UserAvatar from '@/frontend/presentation/components/UserAvatar';
-import { popmartShowcase } from '@/frontend/lib/popmartShowcase';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
 
 export default function Profile() {
   const navigate = useNavigate();
-  const { avatarDataUrl, listings } = useAppState();
-  const listingPreview = listings.length
-    ? listings.slice(0, 2).map((l) => ({ id: l.id, title: l.title, price: l.price, image: l.image, isUser: true }))
-    : popmartShowcase.products.slice(0, 2).map((p) => ({ id: p.id, title: p.title, price: p.price, image: p.image, isUser: false }));
+  const { avatarDataUrl, displayName, listings } = useAppState();
+  const listingPreview = listings.slice(0, 2).map((l) => ({
+    id: l.id,
+    title: l.title,
+    price: l.price,
+    image: l.image,
+  }));
 
   const stats = [
     { label: '收藏數', value: '42' },
     { label: '願望清單', value: '15' },
-    { label: '上架中', value: '08' },
+    { label: '上架中', value: String(listings.length).padStart(2, '0') },
     { label: '已完成', value: '128' },
   ];
 
@@ -88,7 +90,7 @@ export default function Profile() {
             </button>
           </div>
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-on-surface">Yu</h2>
+            <h2 className="text-2xl font-bold text-on-surface">{displayName || 'Yu'}</h2>
             <p className="text-xs font-semibold text-on-primary-container tracking-wider uppercase opacity-60">
               ID: 88204912
             </p>
@@ -116,49 +118,51 @@ export default function Profile() {
           ))}
         </section>
 
-        <section>
-          <div className="flex justify-between items-end mb-4">
-            <h3 className="text-lg font-bold text-on-surface">我的商品 Listing</h3>
-            <button
-              type="button"
-              onClick={() => navigate('/profile/listings')}
-              className="text-primary text-xs font-bold"
-            >
-              查看全部
-            </button>
-          </div>
-          <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
-            {listingPreview.map((p) => (
-              <motion.button
-                key={p.id}
+        {listingPreview.length > 0 && (
+          <section>
+            <div className="flex justify-between items-end mb-4">
+              <h3 className="text-lg font-bold text-on-surface">我的商品 Listing</h3>
+              <button
                 type="button"
-                whileTap={{ scale: 0.98 }}
-                onClick={() => navigate(p.isUser ? `/listing/${p.id}` : `/product/${p.id}`)}
-                className="flex-shrink-0 w-40 glass-card rounded-2xl overflow-hidden text-left"
+                onClick={() => navigate('/profile/listings')}
+                className="text-primary text-xs font-bold"
               >
-                <div className="aspect-square relative bg-neutral-100">
-                  <img
-                    className="w-full h-full object-cover"
-                    src={p.image}
-                    referrerPolicy="no-referrer"
-                    alt=""
-                  />
-                  <div className="absolute top-2 right-2 px-2 py-0.5 bg-black/60 backdrop-blur-md rounded text-[8px] font-bold text-white border border-white/10">
-                    上架中
+                查看全部
+              </button>
+            </div>
+            <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
+              {listingPreview.map((p) => (
+                <motion.button
+                  key={p.id}
+                  type="button"
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => navigate(`/listing/${p.id}`)}
+                  className="flex-shrink-0 w-40 glass-card rounded-2xl overflow-hidden text-left"
+                >
+                  <div className="aspect-square relative bg-neutral-100">
+                    <img
+                      className="w-full h-full object-cover"
+                      src={p.image}
+                      referrerPolicy="no-referrer"
+                      alt=""
+                    />
+                    <div className="absolute top-2 right-2 px-2 py-0.5 bg-black/60 backdrop-blur-md rounded text-[8px] font-bold text-white border border-white/10">
+                      上架中
+                    </div>
                   </div>
-                </div>
-                <div className="p-3">
-                  <h4 className="text-xs font-bold text-on-surface line-clamp-2 leading-snug">{p.title}</h4>
-                  <p className="text-sm font-bold text-primary mt-1">{p.price}</p>
-                </div>
-              </motion.button>
-            ))}
-          </div>
-        </section>
+                  <div className="p-3">
+                    <h4 className="text-xs font-bold text-on-surface line-clamp-2 leading-snug">{p.title}</h4>
+                    <p className="text-sm font-bold text-primary mt-1">{p.price}</p>
+                  </div>
+                </motion.button>
+              ))}
+            </div>
+          </section>
+        )}
 
         <section className="space-y-4">
           <div className="glass-card rounded-3xl overflow-hidden">
-            {menuItems.slice(0, 3).map((item, idx) => (
+            {menuItems.slice(0, 3).map((item) => (
               <motion.button
                 key={item.label}
                 type="button"

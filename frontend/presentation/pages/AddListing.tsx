@@ -2,14 +2,14 @@ import React, { useMemo, useState } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
-import { getDefaultListingImage, useAppState } from '@/frontend/presentation/providers/AppStateProvider';
-import { popmartShowcase } from '@/frontend/lib/popmartShowcase';
+import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
+import { useCatalogProducts } from '@/frontend/presentation/hooks/useCatalog';
 
 export default function AddListing() {
   const navigate = useNavigate();
   const { createListing } = useAppState();
-  const products = popmartShowcase.products.slice(0, 30);
-  const [image, setImage] = useState<string>(getDefaultListingImage());
+  const { products } = useCatalogProducts();
+  const [image, setImage] = useState<string>('');
   const [title, setTitle] = useState('');
   const [itemName, setItemName] = useState('');
   const [price, setPrice] = useState('');
@@ -23,13 +23,15 @@ export default function AddListing() {
   const [shipping, setShipping] = useState('7-11 店到店');
   const [query, setQuery] = useState('');
 
+  const productPool = useMemo(() => products.slice(0, 30), [products]);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return products.slice(0, 8);
-    return products
+    if (!q) return productPool.slice(0, 8);
+    return productPool
       .filter((p) => p.title.toLowerCase().includes(q))
       .slice(0, 8);
-  }, [products, query]);
+  }, [productPool, query]);
 
   const onUploadImage = (file?: File | null) => {
     if (!file) return;
@@ -272,13 +274,14 @@ export default function AddListing() {
 
         <div className="grid grid-cols-2 gap-4 pt-6">
           <button type="button" className="py-4 bg-surface-container-high text-on-surface font-black text-xs uppercase tracking-widest rounded-full border border-white/10 hover:bg-surface-bright transition-colors active:scale-95">儲存草稿</button>
-          <button
+          <motion.button
             type="button"
+            whileTap={{ scale: 0.97 }}
             onClick={submit}
             className="py-4 premium-gradient text-white font-black text-xs uppercase tracking-widest rounded-full shadow-[0_0_20px_rgba(192,38,211,0.3)] active:scale-95"
           >
             發布 listing
-          </button>
+          </motion.button>
         </div>
       </main>
     </div>

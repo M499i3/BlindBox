@@ -3,11 +3,12 @@ import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import UserAvatar from '@/frontend/presentation/components/UserAvatar';
-import { popmartShowcase } from '@/frontend/lib/popmartShowcase';
+import { useCatalogProducts } from '@/frontend/presentation/hooks/useCatalog';
 
 export default function PurchaseHistory() {
   const navigate = useNavigate();
-  const orders = popmartShowcase.products.slice(4, 7).map((p, i) => ({
+  const { products } = useCatalogProducts();
+  const orders = products.slice(4, 7).map((p, i) => ({
     id: p.id,
     title: p.title,
     seller: `賣家_${i + 1}`,

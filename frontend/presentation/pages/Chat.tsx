@@ -4,11 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import UserAvatar from '@/frontend/presentation/components/UserAvatar';
 import { cn } from '@/frontend/shared/utils/cn';
-import { popmartShowcase } from '@/frontend/lib/popmartShowcase';
+import { useCatalogProducts } from '@/frontend/presentation/hooks/useCatalog';
 
 export default function Chat() {
   const navigate = useNavigate();
-  const products = popmartShowcase.products;
+  const { products } = useCatalogProducts();
 
   const notifications = [
     { title: '系統通知', icon: 'settings', color: 'text-primary', unread: true, to: '/notifications?type=system' },
