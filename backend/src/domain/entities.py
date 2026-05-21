@@ -45,6 +45,7 @@ class Listing(BaseModel):
     image: str
     created_at: str
     seller_name: str
+    seller_id: str
 
 
 class CreateListingInput(BaseModel):
@@ -63,6 +64,7 @@ class CreateListingInput(BaseModel):
 
 
 class UserProfile(BaseModel):
+    id: str
     display_name: str
     avatar_url: Optional[str] = None
     bio: str = ""

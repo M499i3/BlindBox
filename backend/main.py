@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+
 # Ensure `src/` is on the path so imports work regardless of cwd
 _SRC = Path(__file__).resolve().parent / "src"
 if str(_SRC) not in sys.path:
@@ -12,7 +13,7 @@ if str(_SRC) not in sys.path:
 
 load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 
-from api.routes import catalog, cart, listings, marketplace, profile  # noqa: E402
+from api.routes import catalog, cart, listings, marketplace, profile, orders
 
 app = FastAPI(title="BlindBox API", version="0.1.0")
 
@@ -34,6 +35,8 @@ app.include_router(listings.router, prefix="/api/listings", tags=["listings"])
 app.include_router(cart.router, prefix="/api/cart", tags=["cart"])
 app.include_router(profile.router, prefix="/api/profile", tags=["profile"])
 app.include_router(marketplace.router, prefix="/api/marketplace", tags=["marketplace"])
+app.include_router( orders.router, prefix="/api/orders", tags=["orders"])
+
 
 
 @app.get("/api/health")

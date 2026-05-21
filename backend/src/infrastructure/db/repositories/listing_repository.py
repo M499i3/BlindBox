@@ -146,6 +146,7 @@ def _row_to_listing(row: dict) -> Listing:
         image=row.get("image_url") or "",
         created_at=str(row.get("created_at") or ""),
         seller_name=row.get("seller_name") or "Unknown",
+        seller_id=str(row.get("seller_id") or ""),
     )
 
 

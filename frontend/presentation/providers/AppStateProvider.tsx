@@ -20,6 +20,7 @@ export type { Listing, CreateListingInput };
 type AppStateValue = {
   avatarDataUrl: string | null;
   displayName: string;
+  userId: string;
   setAvatarDataUrl: (v: string | null) => Promise<void>;
   listings: Listing[];
   posts: Listing[];
@@ -41,6 +42,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const [cartItems, setCartItems] = useState<Listing[]>([]);
   const [avatarDataUrl, setAvatarDataUrlState] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState('');
+  const [userId, setUserId] = useState('');
 
   useEffect(() => {
     getListings().then(setPosts).catch(console.error);
@@ -57,8 +59,10 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     getProfile()
       .then((p) => {
+        
         setAvatarDataUrlState(p.avatarDataUrl);
         setDisplayName(p.displayName);
+        setUserId(p.id);
       })
       .catch(console.error);
   }, []);
@@ -109,6 +113,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     () => ({
       avatarDataUrl,
       displayName,
+      userId,
       setAvatarDataUrl,
       listings,
       posts,
@@ -124,6 +129,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     [
       avatarDataUrl,
       displayName,
+      userId,
       setAvatarDataUrl,
       listings,
       posts,
