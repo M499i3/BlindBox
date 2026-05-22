@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
-const OUT_DIR = path.join(ROOT, 'src', 'data');
+const OUT_DIR = path.join(ROOT, 'frontend', 'data');
 const META_FILE = path.join(OUT_DIR, 'popmart-hk-scrape.json');
 const SHOWCASE_FILE = path.join(OUT_DIR, 'popmart-hk-showcase.json');
 

@@ -9,6 +9,16 @@ lerna-debug.log*
 
 node_modules
 dist
+.env
+.env.local
+.claude/
+
+# Python / Alembic
+backend/.venv/
+**/__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
 dist-ssr
 *.local
 

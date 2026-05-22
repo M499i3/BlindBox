@@ -13,6 +13,9 @@ export default defineConfig(({mode}) => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
+        '@/frontend': path.resolve(__dirname, 'frontend'),
+        // 舊路徑相容（@deprecated）
+        '@/src': path.resolve(__dirname, 'frontend'),
       },
     },
     server: {
