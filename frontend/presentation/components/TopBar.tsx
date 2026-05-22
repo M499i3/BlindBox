@@ -1,5 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import AppLogo from '@/frontend/presentation/components/AppLogo';
+import { TOPBAR_HEIGHT } from '@/frontend/presentation/constants/topbar';
 
 interface TopBarProps {
   title?: string;
@@ -9,38 +11,48 @@ interface TopBarProps {
 
 export default function TopBar({ title, showBack, rightElement }: TopBarProps) {
   const navigate = useNavigate();
+  const isHomeLogo = !title && !showBack;
 
   return (
-    <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[470px] z-50 bg-background/80 backdrop-blur-xl border-b border-outline-variant flex justify-between items-center px-5 py-3 h-16">
-      <div className="flex items-center gap-4">
+    <header
+      className="fixed top-0 left-0 right-0 z-50 w-full min-w-0 overflow-x-hidden overflow-y-visible bg-white border-b-[2.5px] border-outline flex justify-between items-end px-4 py-0"
+      style={{ height: TOPBAR_HEIGHT }}
+    >
+      <div
+        className={
+          isHomeLogo
+            ? 'flex min-w-0 self-stretch overflow-visible'
+            : 'flex items-center gap-3 min-w-0'
+        }
+      >
         {showBack && (
-          <button 
+          <button
+            type="button"
             onClick={() => navigate(-1)}
-            className="text-on-background active:scale-95 duration-200 cursor-pointer opacity-95 hover:opacity-100"
+            className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-outline bg-white shadow-[2px_2px_0_#111] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none active:bg-accent-sky transition-all shrink-0"
+            aria-label="??"
           >
-            <span className="material-symbols-outlined">arrow_back</span>
+            <span className="material-symbols-outlined text-on-background">arrow_back</span>
           </button>
         )}
         {title ? (
-          <h1 className="font-sans text-2xl font-extrabold tracking-tight text-[#0047ab]">{title}</h1>
+          <h1 className="font-sans text-xl font-bold tracking-tight text-on-background uppercase truncate">
+            {title}
+          </h1>
         ) : (
-          <div className="text-2xl font-extrabold tracking-tight text-[#0047ab]">
-            Blindy
-          </div>
+          <AppLogo />
         )}
       </div>
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3 shrink-0">
         {rightElement || (
-          <>
-            <button
-              type="button"
-              onClick={() => navigate('/search')}
-              className="hover:opacity-90 transition-opacity active:scale-95 duration-200 text-on-background"
-              aria-label="搜尋"
-            >
-              <span className="material-symbols-outlined">search</span>
-            </button>
-          </>
+          <button
+            type="button"
+            onClick={() => navigate('/search')}
+            className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-outline bg-white shadow-[2px_2px_0_#111] hover:bg-accent-amber active:bg-accent-coral active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
+            aria-label="??"
+          >
+            <span className="material-symbols-outlined text-on-background">search</span>
+          </button>
         )}
       </div>
     </header>

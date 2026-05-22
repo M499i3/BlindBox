@@ -20,7 +20,7 @@ export default function SellingHistory() {
     <div className="animate-in fade-in duration-500 pb-28">
       <TopBar title="出售紀錄" showBack />
 
-      <main className="pt-20 px-5 space-y-4 max-w-md mx-auto">
+      <main className="pt-topbar px-5 space-y-4 max-w-md mx-auto">
         {rows.map((order) => (
           <motion.div
             key={order.id}

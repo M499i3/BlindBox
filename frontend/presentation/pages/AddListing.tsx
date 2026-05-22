@@ -61,7 +61,7 @@ export default function AddListing() {
   };
 
   return (
-    <div className="animate-in fade-in duration-500 bg-background min-h-screen pb-32">
+    <div className="animate-in fade-in duration-500 min-h-screen pb-32">
       <TopBar showBack title="新增上架商品" 
         rightElement={
           <button className="text-slate-400"><span className="material-symbols-outlined">notifications</span></button>

@@ -73,7 +73,7 @@ export default function ProductDetail() {
 
   if (!product) {
     return (
-      <div className="animate-in fade-in duration-500 bg-background min-h-screen pt-24 px-6 text-center">
+      <div className="animate-in fade-in duration-500 min-h-screen pt-24 px-6 text-center">
         <p className="text-on-surface-variant text-sm mb-6">找不到此商品（可能已下架或 ID 不存在）。</p>
         <button
           type="button"
@@ -93,7 +93,7 @@ export default function ProductDetail() {
     'https://global-static.popmart.com/globalAdmin/1776844373939____pc____.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp';
 
   return (
-    <div className="animate-in fade-in duration-500 bg-background min-h-screen">
+    <div className="w-full min-w-0 max-w-full overflow-x-hidden animate-in fade-in duration-500 min-h-full">
       <TopBar
         showBack
         title={
@@ -104,7 +104,7 @@ export default function ProductDetail() {
         rightElement={fromCatalog ? catalogRightElement : undefined}
       />
 
-      <main className="pt-20 px-container-margin space-y-8 max-w-md mx-auto pb-24">
+      <main className="pt-topbar px-container-margin space-y-8 w-full min-w-0 max-w-full mx-auto pb-24">
         <section className="space-y-2">
           <nav className="flex flex-wrap items-center text-[10px] font-bold text-on-surface-variant gap-x-1 uppercase tracking-wider">
             <button type="button" onClick={() => navigate(fromCatalog ? '/explore' : '/search')} className="hover:text-on-surface">

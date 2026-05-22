@@ -16,7 +16,7 @@ export default function ChatDetail() {
   const names = ['Alex Chen', '潮流收藏家_Ken', 'Mina_Lab'];
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-background">
+    <div className="flex h-full min-h-0 w-full min-w-0 max-w-full flex-col overflow-hidden">
       <TopBar
         showBack
         title={names[idx % names.length]}
@@ -27,8 +27,7 @@ export default function ChatDetail() {
         }
       />
 
-      <div className="pt-16 pb-24 overflow-y-auto flex-1 px-container-margin">
-        <section className="py-stack-md sticky top-0 z-40">
+      <section className="shrink-0 px-container-margin pt-topbar pb-stack-md">
           <div className="glass-card rounded-xl p-3 flex items-center justify-between shadow-lg">
             <div className="flex items-center gap-3 overflow-hidden">
               <div className="w-12 h-12 rounded-lg overflow-hidden bg-neutral-100 flex-shrink-0 border border-black/[0.08]">
@@ -49,9 +48,9 @@ export default function ChatDetail() {
               查看商品
             </button>
           </div>
-        </section>
+      </section>
 
-        <main className="flex flex-col gap-6 mt-4">
+      <main className="app-scroll min-h-0 flex-1 overflow-y-auto no-scrollbar px-container-margin pb-4 flex flex-col gap-6">
           <div className="text-center">
             <span className="text-[10px] text-on-surface-variant bg-white/80 px-3 py-1 rounded-full uppercase tracking-widest font-bold border border-black/[0.06]">
               Monday 14:20
@@ -114,11 +113,10 @@ export default function ChatDetail() {
               <span className="text-[10px] text-on-surface-variant ml-1">14:26</span>
             </div>
           </div>
-        </main>
-      </div>
+      </main>
 
-      <footer className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[470px] z-50 bg-[#f6f6f6]/95 backdrop-blur-md border-t border-black/[0.08] px-4 pb-8 pt-4">
-        <div className="max-w-screen-md mx-auto flex items-center gap-3 text-sm">
+      <footer className="shrink-0 z-50 w-full min-w-0 border-t border-black/[0.08] bg-white/95 px-4 pb-8 pt-4 backdrop-blur-md">
+        <div className="mx-auto flex w-full min-w-0 max-w-full items-center gap-3 text-sm">
           <button type="button" className="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-black/[0.08] text-on-surface-variant active:scale-90 transition-transform">
             <span className="material-symbols-outlined">add</span>
           </button>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Layout from '@/frontend/presentation/components/Layout';
+import ScrollLayout from '@/frontend/presentation/components/ScrollLayout';
 import Marketplace from '@/frontend/presentation/pages/Marketplace';
 import Explore from '@/frontend/presentation/pages/Explore';
 import Chat from '@/frontend/presentation/pages/Chat';
@@ -22,7 +23,8 @@ import CartPage from '@/frontend/presentation/pages/CartPage';
 
 export default function AppRouter() {
   return (
-    <Routes>
+    <div className="h-full min-h-0 w-full min-w-0">
+      <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<Marketplace />} />
         <Route path="/explore" element={<Explore />} />
@@ -38,12 +40,15 @@ export default function AppRouter() {
         <Route path="/cart" element={<CartPage />} />
       </Route>
 
-      <Route path="/product/:id" element={<ProductDetail />} />
-      <Route path="/listing/:id" element={<ListingDetail />} />
-      <Route path="/brand/:id" element={<BrandDetail />} />
-      <Route path="/series/:id" element={<SeriesDetail />} />
-      <Route path="/subseries" element={<SubseriesDetail />} />
-      <Route path="/chat/:id" element={<ChatDetail />} />
-    </Routes>
+      <Route element={<ScrollLayout />}>
+        <Route path="/product/:id" element={<ProductDetail />} />
+        <Route path="/listing/:id" element={<ListingDetail />} />
+        <Route path="/brand/:id" element={<BrandDetail />} />
+        <Route path="/series/:id" element={<SeriesDetail />} />
+        <Route path="/subseries" element={<SubseriesDetail />} />
+        <Route path="/chat/:id" element={<ChatDetail />} />
+      </Route>
+      </Routes>
+    </div>
   );
 }

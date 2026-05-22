@@ -15,7 +15,7 @@ export default function NotificationsHub() {
   return (
     <div className="animate-in fade-in duration-500 pb-28">
       <TopBar title="通知中心" showBack />
-      <main className="pt-20 px-5 space-y-4 max-w-md mx-auto">
+      <main className="pt-topbar px-5 space-y-4 max-w-md mx-auto">
         {blocks.map((b) => (
           <section
             key={b.id}

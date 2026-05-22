@@ -25,7 +25,7 @@ export default function MyListings() {
         }
       />
 
-      <main className="pt-20 px-5 grid grid-cols-2 gap-3 max-w-md mx-auto">
+      <main className="pt-topbar px-5 grid grid-cols-2 gap-3 max-w-md mx-auto">
         {items.length === 0 && (
           <p className="col-span-2 text-sm text-on-surface-variant text-center py-20">
             你還沒有上架貼文，先去新增一篇吧。

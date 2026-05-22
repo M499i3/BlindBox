@@ -96,10 +96,10 @@ export default function Chat() {
   );
 
   return (
-    <div className="animate-in fade-in duration-500 pb-28">
+    <div className="w-full min-w-0 max-w-full overflow-x-hidden animate-in fade-in duration-500 pb-28">
       <TopBar title="消息" rightElement={<></>} />
 
-      <main className="pt-20 px-5 space-y-10 max-w-md mx-auto">
+      <main className="pt-topbar px-5 space-y-10 w-full min-w-0 max-w-full mx-auto">
 
         <section>
           <div className="flex justify-between items-end mb-4">

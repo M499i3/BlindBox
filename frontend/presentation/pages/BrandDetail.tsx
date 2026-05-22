@@ -57,10 +57,10 @@ export default function BrandDetail() {
   }, [matched]);
 
   return (
-    <div className="animate-in fade-in duration-500 min-h-screen bg-background pb-32">
+    <div className="w-full min-w-0 max-w-full overflow-x-hidden animate-in fade-in duration-500 min-h-full pb-32">
       <TopBar showBack title={displayName} rightElement={<></>} />
 
-      <main className="pt-20 px-5 space-y-10 max-w-screen-md mx-auto">
+      <main className="pt-topbar px-5 space-y-10 w-full min-w-0 max-w-full mx-auto">
         <section>
           <div className="relative w-full aspect-[21/9] rounded-2xl overflow-hidden mb-6">
             <img className="w-full h-full object-cover" src={hero} referrerPolicy="no-referrer" alt="" />

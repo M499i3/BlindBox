@@ -249,10 +249,10 @@ export default function Explore() {
   );
 
   return (
-    <div className="animate-in fade-in duration-500">
+    <div className="w-full min-w-0 max-w-full overflow-x-hidden animate-in fade-in duration-500">
       <TopBar title="探索" rightElement={<></>} />
 
-      <div className="pt-20 px-container-margin max-w-screen-md mx-auto">
+      <div className="pt-topbar px-container-margin w-full min-w-0 max-w-full mx-auto">
         <header className="mb-3">
           <div className="grid grid-cols-2 p-1 bg-white rounded-xl relative border border-black/[0.08] shadow-sm">
             <button 
@@ -260,7 +260,7 @@ export default function Explore() {
               className={cn(
                 "relative z-10 py-2.5 text-sm font-medium rounded-lg transition-all",
                 activeTab === 'gallery'
-                  ? "text-on-surface bg-[#f0f0f0] shadow-sm"
+                  ? "text-on-surface bg-white shadow-sm"
                   : "text-on-surface-variant hover:text-on-surface"
               )}
             >
@@ -271,7 +271,7 @@ export default function Explore() {
               className={cn(
                 "relative z-10 py-2.5 text-sm font-medium rounded-lg transition-all",
                 activeTab === 'collection'
-                  ? "text-on-surface bg-[#f0f0f0] shadow-sm"
+                  ? "text-on-surface bg-white shadow-sm"
                   : "text-on-surface-variant hover:text-on-surface"
               )}
             >

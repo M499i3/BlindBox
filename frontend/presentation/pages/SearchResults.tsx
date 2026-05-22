@@ -284,7 +284,7 @@ export default function SearchResults() {
     <div className="animate-in fade-in duration-500 pb-28">
       <TopBar title="搜尋" showBack />
 
-      <main className="pt-20 px-container-margin space-y-8 max-w-md mx-auto">
+      <main className="pt-topbar px-container-margin space-y-8 max-w-md mx-auto">
         <form onSubmit={submit} className="ui-search">
           <span className="material-symbols-outlined ui-search-icon">search</span>
           <input
