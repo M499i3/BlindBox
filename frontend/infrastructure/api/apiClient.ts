@@ -1,18 +1,47 @@
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000';
-const DEV_USER_ID = import.meta.env.VITE_DEV_USER_ID ?? '';
+import { clearAuth, getAccessToken } from '../auth/authStorage';
 
-export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000';
+
+export type ApiFetchOptions = RequestInit & {
+  /** 登入請求不帶 Bearer */
+  skipAuth?: boolean;
+};
+
+export async function apiFetch<T>(path: string, init?: ApiFetchOptions): Promise<T> {
+  const { skipAuth, ...rest } = init ?? {};
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(rest.headers as Record<string, string> | undefined),
+  };
+  if (!skipAuth) {
+    const token = getAccessToken();
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+  }
+
   const res = await fetch(`${API_URL}${path}`, {
-    ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      'X-User-Id': DEV_USER_ID,
-      ...init?.headers,
-    },
+    ...rest,
+    headers,
   });
+
+  if (res.status === 401 && !skipAuth) {
+    clearAuth();
+    if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/login')) {
+      window.location.assign('/login');
+    }
+  }
+
   if (!res.ok) {
     const text = await res.text().catch(() => res.statusText);
     throw new Error(`API ${path} → ${res.status}: ${text}`);
   }
-  return res.json() as Promise<T>;
+  if (res.status === 204) {
+    return undefined as T;
+  }
+  const text = await res.text();
+  if (!text) {
+    return undefined as T;
+  }
+  return JSON.parse(text) as T;
 }

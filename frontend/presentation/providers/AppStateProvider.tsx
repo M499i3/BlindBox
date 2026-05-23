@@ -14,6 +14,7 @@ import {
 } from '@/frontend/infrastructure/api/cartApi';
 import { createListing as apiCreateListing, getListings, getMyListings } from '@/frontend/infrastructure/api/listingsApi';
 import { getProfile, updateProfile } from '@/frontend/infrastructure/api/profileApi';
+import { useAuth } from '@/frontend/presentation/providers/AuthProvider';
 
 export type { Listing, CreateListingInput };
 
@@ -36,32 +37,39 @@ type AppStateValue = {
 const AppStateContext = createContext<AppStateValue | null>(null);
 
 export function AppStateProvider({ children }: { children: React.ReactNode }) {
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const [posts, setPosts] = useState<Listing[]>([]);
   const [listings, setListings] = useState<Listing[]>([]);
   const [cartItems, setCartItems] = useState<Listing[]>([]);
   const [avatarDataUrl, setAvatarDataUrlState] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState('');
 
-  useEffect(() => {
-    getListings().then(setPosts).catch(console.error);
+  const loadUserData = useCallback(async () => {
+    const [postsData, mine, cart, profile] = await Promise.all([
+      getListings(),
+      getMyListings(),
+      getCart(),
+      getProfile(),
+    ]);
+    setPosts(postsData);
+    setListings(mine);
+    setCartItems(cart);
+    setAvatarDataUrlState(profile.avatarDataUrl);
+    setDisplayName(profile.displayName);
   }, []);
 
   useEffect(() => {
-    getMyListings().then(setListings).catch(console.error);
-  }, []);
-
-  useEffect(() => {
-    getCart().then(setCartItems).catch(console.error);
-  }, []);
-
-  useEffect(() => {
-    getProfile()
-      .then((p) => {
-        setAvatarDataUrlState(p.avatarDataUrl);
-        setDisplayName(p.displayName);
-      })
-      .catch(console.error);
-  }, []);
+    if (authLoading) return;
+    if (!isAuthenticated) {
+      setPosts([]);
+      setListings([]);
+      setCartItems([]);
+      setAvatarDataUrlState(null);
+      setDisplayName(user?.displayName ?? '');
+      return;
+    }
+    loadUserData().catch(console.error);
+  }, [isAuthenticated, authLoading, user?.id, loadUserData, user?.displayName]);
 
   const refreshCart = useCallback(async () => {
     const items = await getCart();
