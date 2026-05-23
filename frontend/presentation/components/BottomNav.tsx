@@ -5,8 +5,9 @@ import HomeIcon from '@/frontend/presentation/components/HomeIcon';
 import ExploreIcon from '@/frontend/presentation/components/ExploreIcon';
 import MailIcon from '@/frontend/presentation/components/MailIcon';
 import PersonIcon from '@/frontend/presentation/components/PersonIcon';
+import MarketplaceIcon from '@/frontend/presentation/components/MarketplaceIcon';
 
-type NavImageKey = 'home' | 'explore' | 'mail' | 'profile';
+type NavImageKey = 'home' | 'explore' | 'shop' | 'mail' | 'profile';
 
 const NAV_IMAGE: Record<
   NavImageKey,
@@ -14,6 +15,7 @@ const NAV_IMAGE: Record<
 > = {
   home: HomeIcon,
   explore: ExploreIcon,
+  shop: MarketplaceIcon,
   mail: MailIcon,
   profile: PersonIcon,
 };
@@ -26,8 +28,9 @@ const links: {
 }[] = [
   { to: '/', label: '首頁', navImage: 'home', accentClass: 'nav-accent-0' },
   { to: '/explore', label: '探索', navImage: 'explore', accentClass: 'nav-accent-1' },
-  { to: '/chat', label: '消息', navImage: 'mail', accentClass: 'nav-accent-2' },
-  { to: '/profile', label: '我的', navImage: 'profile', accentClass: 'nav-accent-3' },
+  { to: '/shop', label: '商城', navImage: 'shop', accentClass: 'nav-accent-2' },
+  { to: '/chat', label: '消息', navImage: 'mail', accentClass: 'nav-accent-3' },
+  { to: '/profile', label: '我的', navImage: 'profile', accentClass: 'nav-accent-4' },
 ];
 
 export default function BottomNav() {
@@ -40,7 +43,7 @@ export default function BottomNav() {
         className="pointer-events-none absolute left-1/2 top-14 h-20 w-[300%] max-w-none -translate-x-1/2 origin-bottom scale-[3.4] object-contain object-bottom mix-blend-multiply"
         decoding="async"
       />
-      <div className="relative z-10 flex justify-around items-center px-4 pb-1 pt-4.5">
+      <div className="relative z-10 flex justify-around items-center px-2 pb-1 pt-4.5">
       {links.map(({ to, label, navImage, accentClass }) => {
         const ImageIcon = NAV_IMAGE[navImage];
 
@@ -50,7 +53,7 @@ export default function BottomNav() {
             to={to}
             className={({ isActive }) =>
               cn(
-                'flex flex-col items-center justify-center gap-1.5 w-11 px-1 py-0.5 transition-all duration-200 outline-none border-0 ring-0 shadow-none focus:outline-none focus-visible:outline-none',
+                'flex flex-col items-center justify-center gap-1 w-10 min-w-0 px-0.5 py-0.5 transition-all duration-200 outline-none border-0 ring-0 shadow-none focus:outline-none focus-visible:outline-none',
                 accentClass,
                 isActive && 'is-active'
               )

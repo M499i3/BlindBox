@@ -365,24 +365,18 @@ export default function Marketplace() {
             onClick={() => setFilterOpen(false)}
             aria-label="關閉篩選"
           />
-          <div className="absolute bottom-0 left-1/2 w-full max-w-[470px] -translate-x-1/2 p-4 pb-8">
-            <div className="max-h-[70vh] overflow-y-auto rounded-3xl border-[2.5px] border-outline bg-white p-5 shadow-[4px_4px_0_#111] no-scrollbar">
-              <div className="mb-4 flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-wider text-secondary">篩選</p>
-                  <h2 className="mt-0.5 text-lg font-extrabold text-on-background">品牌、IP、系列</h2>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setFilterOpen(false)}
-                  className="text-on-surface-variant"
-                  aria-label="關閉"
-                >
-                  <span className="material-symbols-outlined">close</span>
-                </button>
-              </div>
+          <div className="absolute left-1/2 top-[17%] w-full max-w-[470px] -translate-x-1/2 px-4">
+            <div className="relative max-h-[62vh] overflow-y-auto rounded-3xl border-[2.5px] border-outline bg-white px-4 pb-4 pt-3 shadow-[4px_4px_0_#111] no-scrollbar">
+              <button
+                type="button"
+                onClick={() => setFilterOpen(false)}
+                className="absolute right-2.5 top-2.5 text-on-surface-variant"
+                aria-label="關閉篩選"
+              >
+                <span className="material-symbols-outlined text-[22px]">close</span>
+              </button>
 
-              <div className="space-y-4">
+              <div className="space-y-4 pr-8">
                 <div>
                   <p className="mb-2 text-[9px] font-black uppercase tracking-wider text-secondary">BRAND</p>
                   <div className="flex flex-wrap gap-2">

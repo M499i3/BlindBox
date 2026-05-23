@@ -237,6 +237,10 @@
   }
   .nav-accent-3.is-active,
   .nav-accent-3:active {
+    color: var(--color-accent-sky);
+  }
+  .nav-accent-4.is-active,
+  .nav-accent-4:active {
     color: var(--color-accent-amber);
   }
 
@@ -250,6 +254,9 @@
     background: var(--color-accent-sky);
   }
   .nav-accent-3.is-active .nav-pill {
+    background: var(--color-accent-sky);
+  }
+  .nav-accent-4.is-active .nav-pill {
     background: var(--color-accent-amber);
   }
 }

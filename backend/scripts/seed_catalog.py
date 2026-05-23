@@ -30,7 +30,7 @@ from catalog_seed_lib import (  # noqa: E402
 )
 
 DEFAULT_JSON = REPO_ROOT / "frontend" / "data" / "popmart-hk-showcase.json"
-DEV_USER_EMAIL = "dev@blindbox.local"
+DEV_USER_EMAIL = "user1@test.com"
 DEV_USER_NAME = "Yu"
 
 
@@ -135,16 +135,19 @@ def refresh_series_counts(cur) -> int:
 
 
 def seed_dev_user(cur) -> str:
+    from auth_util import hash_password
+
     cur.execute(
         """
-        INSERT INTO users (display_name, email)
-        VALUES (%s, %s)
+        INSERT INTO users (display_name, email, password_hash)
+        VALUES (%s, %s, %s)
         ON CONFLICT (email) DO UPDATE SET
             display_name = EXCLUDED.display_name,
+            password_hash = EXCLUDED.password_hash,
             updated_at = now()
         RETURNING id
         """,
-        (DEV_USER_NAME, DEV_USER_EMAIL),
+        (DEV_USER_NAME, DEV_USER_EMAIL, hash_password()),
     )
     row = cur.fetchone()
     assert row

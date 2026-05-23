@@ -4,13 +4,16 @@ import App from './App.tsx';
 import './index.css';
 import { AppServicesProvider } from '@/frontend/presentation/providers/AppServicesProvider';
 import { AppStateProvider } from '@/frontend/presentation/providers/AppStateProvider';
+import { AuthProvider } from '@/frontend/presentation/providers/AuthProvider';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <AppServicesProvider>
-      <AppStateProvider>
-        <App />
-      </AppStateProvider>
-    </AppServicesProvider>
+    <AuthProvider>
+      <AppServicesProvider>
+        <AppStateProvider>
+          <App />
+        </AppStateProvider>
+      </AppServicesProvider>
+    </AuthProvider>
   </StrictMode>
 );

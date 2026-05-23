@@ -18,6 +18,7 @@ import {
   getMyListings,
 } from '@/frontend/infrastructure/api/listingsApi';
 import { getProfile, updateProfile } from '@/frontend/infrastructure/api/profileApi';
+import { useAuth } from '@/frontend/presentation/providers/AuthProvider';
 import { isMockDataEnabled, popmartShowcase } from '@/frontend/lib/popmartShowcase';
 
 export type { Listing, CreateListingInput };
@@ -54,12 +55,12 @@ function buildSeededPosts(): Listing[] {
     title: p.title,
     itemName: p.title,
     price: p.price || 'HK$ 0.00',
-    description: '來自官方圖鑑資料的示意貼文（可直接查看詳情）。',
+    description: '???????????????????????',
     brand: 'Pop Mart',
     series: 'Official',
-    condition: idx % 2 === 0 ? '全新未拆' : '已拆盒',
-    tradeMode: idx % 3 === 0 ? '我想換' : '我要賣',
-    shipping: '7-11 店到店',
+    condition: idx % 2 === 0 ? '????' : '???',
+    tradeMode: idx % 3 === 0 ? '???' : idx % 3 === 1 ? '???' : '???',
+    shipping: '7-11 ???',
     allowSwap: true,
     allowBargain: idx % 2 === 0,
     image: p.image,
@@ -70,10 +71,11 @@ function buildSeededPosts(): Listing[] {
 }
 
 export function AppStateProvider({ children }: { children: React.ReactNode }) {
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const mock = isMockDataEnabled();
 
   const [avatarDataUrl, setAvatarDataUrlState] = useState<string | null>(null);
-  const [displayName, setDisplayName] = useState(mock ? 'Yu' : '');
+  const [displayName, setDisplayName] = useState('');
   const [listings, setListings] = useState<Listing[]>([]);
   const [posts, setPosts] = useState<Listing[]>([]);
   const [cartItems, setCartItems] = useState<Listing[]>([]);
@@ -83,6 +85,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
 
   const seededPosts = useMemo(() => (mock ? buildSeededPosts() : []), [mock]);
 
+  // Restore ownedIds / wishIds (and mock-only listings/cartIds) from localStorage
   useEffect(() => {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return;
@@ -95,25 +98,26 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         ownedIds?: string[];
         wishIds?: string[];
       };
-      setAvatarDataUrlState(parsed.avatarDataUrl ?? null);
-      if (parsed.displayName) setDisplayName(parsed.displayName);
+      setOwnedIds(parsed.ownedIds ?? []);
+      setWishIds(parsed.wishIds ?? []);
       if (mock) {
+        setAvatarDataUrlState(parsed.avatarDataUrl ?? null);
+        if (parsed.displayName) setDisplayName(parsed.displayName);
         setListings(parsed.listings ?? []);
         setCartIds(parsed.cartIds ?? []);
       }
-      setOwnedIds(parsed.ownedIds ?? []);
-      setWishIds(parsed.wishIds ?? []);
     } catch {
       // ignore malformed local data
     }
   }, [mock]);
 
+  // Persist state to localStorage
   useEffect(() => {
     localStorage.setItem(
       STORAGE_KEY,
       JSON.stringify({
-        avatarDataUrl,
-        displayName,
+        avatarDataUrl: mock ? avatarDataUrl : undefined,
+        displayName: mock ? displayName : undefined,
         listings: mock ? listings : undefined,
         cartIds: mock ? cartIds : undefined,
         ownedIds,
@@ -122,18 +126,44 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     );
   }, [avatarDataUrl, displayName, listings, cartIds, ownedIds, wishIds, mock]);
 
+  const loadUserProfile = useCallback(async () => {
+    const profile = await getProfile();
+    setAvatarDataUrlState(profile.avatarDataUrl);
+    setDisplayName(profile.displayName);
+  }, []);
+
+  // Load marketplace data when authenticated (non-mock mode)
+  const loadUserData = useCallback(async () => {
+    const [postsData, mine, cart, profile] = await Promise.all([
+      getListings(),
+      getMyListings(),
+      getCart(),
+      getProfile(),
+    ]);
+    setPosts(postsData);
+    setListings(mine);
+    setCartItems(cart);
+    setAvatarDataUrlState(profile.avatarDataUrl);
+    setDisplayName(profile.displayName);
+  }, []);
+
   useEffect(() => {
-    if (mock) return;
-    getListings().then(setPosts).catch(console.error);
-    getMyListings().then(setListings).catch(console.error);
-    getCart().then(setCartItems).catch(console.error);
-    getProfile()
-      .then((p) => {
-        setAvatarDataUrlState(p.avatarDataUrl);
-        setDisplayName(p.displayName);
-      })
-      .catch(console.error);
-  }, [mock]);
+    if (authLoading) return;
+    if (!isAuthenticated) {
+      setPosts([]);
+      setListings([]);
+      setCartItems([]);
+      setAvatarDataUrlState(null);
+      setDisplayName(mock ? 'Yu' : '');
+      return;
+    }
+    if (user?.displayName) setDisplayName(user.displayName);
+    if (mock) {
+      loadUserProfile().catch(console.error);
+    } else {
+      loadUserData().catch(console.error);
+    }
+  }, [isAuthenticated, authLoading, user?.id, user?.displayName, loadUserProfile, loadUserData, mock]);
 
   const allPosts = useMemo(
     () => (mock ? [...listings, ...seededPosts] : posts),
@@ -235,7 +265,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       avatarDataUrl,
       displayName,
       setAvatarDataUrl,
-      listings: mock ? listings : listings,
+      listings,
       posts: allPosts,
       getPostById,
       createListing,

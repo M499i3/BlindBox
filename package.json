@@ -16,6 +16,8 @@
     "db:migrate": "cd backend && alembic upgrade head",
     "db:stamp": "cd backend && alembic stamp head",
     "db:seed": "sh -c 'PY=backend/.venv/bin/python; if [ -x \"$PY\" ]; then \"$PY\" backend/scripts/seed_catalog.py; else python3 backend/scripts/seed_catalog.py; fi'",
+    "db:seed:demo": "sh -c 'PY=backend/.venv/bin/python; if [ -x \"$PY\" ]; then \"$PY\" backend/scripts/seed_dev_demo.py; else python3 backend/scripts/seed_dev_demo.py; fi'",
+    "db:seed:all": "npm run db:seed && npm run db:seed:demo",
     "db:seed:dry": "python3 backend/scripts/seed_catalog.py --dry-run",
     "db:downgrade": "cd backend && alembic downgrade -1",
     "db:revision": "cd backend && alembic revision --autogenerate",

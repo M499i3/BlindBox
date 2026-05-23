@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import UserAvatar from '@/frontend/presentation/components/UserAvatar';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
+import { useAuth } from '@/frontend/presentation/providers/AuthProvider';
 
 export default function Profile() {
   const navigate = useNavigate();
   const { avatarDataUrl, displayName, listings } = useAppState();
+  const { logout, user } = useAuth();
   const listingPreview = listings.slice(0, 2).map((l) => ({
     id: l.id,
     title: l.title,
@@ -87,7 +89,7 @@ export default function Profile() {
             </button>
           </div>
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-on-surface">{displayName || 'Yu'}</h2>
+            <h2 className="text-2xl font-bold text-on-surface">{displayName || user?.displayName || '使用者'}</h2>
             <p className="text-xs font-semibold text-on-primary-container tracking-wider uppercase opacity-60">
               ID: 88204912
             </p>
@@ -137,7 +139,14 @@ export default function Profile() {
                   className="flex-shrink-0 w-40 glass-card rounded-2xl overflow-hidden text-left"
                 >
                   <div className="aspect-square relative bg-neutral-100">
-                    <img className="w-full h-full object-cover" src={p.image} referrerPolicy="no-referrer" alt="" />
+                    {p.image ? (
+                      <img
+                        className="w-full h-full object-cover"
+                        src={p.image}
+                        referrerPolicy="no-referrer"
+                        alt=""
+                      />
+                    ) : null}
                     <div className="absolute top-2 right-2 px-2 py-0.5 bg-black/60 backdrop-blur-md rounded text-[8px] font-bold text-white border border-white/10">
                       上架中
                     </div>
@@ -224,7 +233,7 @@ export default function Profile() {
           </div>
         </section>
 
-        <section className="pb-8">
+        <section className="pb-8 space-y-3">
           <button
             type="button"
             onClick={() => navigate('/add-listing')}
@@ -234,6 +243,19 @@ export default function Profile() {
               add_circle
             </span>
             新增上架商品
+          </button>
+          {user && (
+            <p className="text-center text-[10px] text-on-surface-variant">{user.email}</p>
+          )}
+          <button
+            type="button"
+            onClick={() => {
+              logout();
+              navigate('/login', { replace: true });
+            }}
+            className="w-full py-3 rounded-full text-sm font-bold bg-white border border-black/[0.12] text-on-surface-variant"
+          >
+            登出
           </button>
         </section>
       </main>

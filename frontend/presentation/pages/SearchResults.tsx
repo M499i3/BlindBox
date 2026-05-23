@@ -541,7 +541,7 @@ export default function SearchResults() {
           <section className="space-y-3">
             <h2 className="text-sm font-bold text-on-surface">熱門（官網新品）</h2>
             <div className="grid grid-cols-2 gap-3">
-              {popularProducts.map((p) => (
+              {popmartShowcase.products.slice(0, 8).map((p) => (
                 <motion.button
                   key={p.id}
                   type="button"
