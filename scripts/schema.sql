@@ -68,6 +68,7 @@ CREATE TABLE users (
     display_id        BIGINT NOT NULL UNIQUE DEFAULT floor(random() * 90000000 + 10000000)::BIGINT,
     display_name      TEXT NOT NULL,
     email             TEXT UNIQUE,
+    password_hash     TEXT NOT NULL,
     phone             TEXT UNIQUE,
     bio               TEXT,
     avatar_url        TEXT,                     -- 儲存 URL，不存 base64
@@ -325,6 +326,9 @@ CREATE TYPE chat_status_enum AS ENUM (
 CREATE TABLE chats (
     id                      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     listing_id              UUID REFERENCES listings(id) ON DELETE SET NULL,
+    buyer_id                UUID REFERENCES users(id) ON DELETE SET NULL,
+    seller_id               UUID REFERENCES users(id) ON DELETE SET NULL,
+    order_id                UUID REFERENCES orders(id) ON DELETE SET NULL,
     status                  chat_status_enum NOT NULL DEFAULT 'active',
     -- 反正規化，供收件匣列表避免子查詢
     last_message_preview    TEXT,
@@ -335,6 +339,9 @@ CREATE TABLE chats (
 
 CREATE INDEX idx_chats_listing ON chats(listing_id) WHERE listing_id IS NOT NULL;
 CREATE INDEX idx_chats_last_message ON chats(last_message_at DESC NULLS LAST);
+CREATE UNIQUE INDEX idx_chats_listing_pair
+    ON chats (listing_id, buyer_id, seller_id)
+    WHERE listing_id IS NOT NULL AND buyer_id IS NOT NULL AND seller_id IS NOT NULL;
 
 CREATE TABLE chat_participants (
     chat_id      UUID NOT NULL REFERENCES chats(id) ON DELETE CASCADE,
