@@ -47,9 +47,6 @@ export default function Profile() {
         title="個人檔案"
         rightElement={
           <>
-            <button type="button" onClick={() => navigate('/search')} className="text-black" aria-label="搜尋">
-              <span className="material-symbols-outlined">search</span>
-            </button>
             <button
               type="button"
               onClick={() => navigate('/profile/edit')}
@@ -70,7 +67,7 @@ export default function Profile() {
         }
       />
 
-      <main className="pt-20 px-5 space-y-8 max-w-md mx-auto">
+      <main className="pt-topbar px-5 space-y-8 max-w-md mx-auto">
         <section className="flex flex-col items-center">
           <div className="relative mb-4">
             <div className="rounded-full p-1 bg-gradient-to-tr from-primary to-tertiary-fixed shadow-[0_0_20px_rgba(255,26,26,0.15)]">
@@ -92,7 +89,7 @@ export default function Profile() {
             </button>
           </div>
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-on-surface">{displayName || 'Yu'}</h2>
+            <h2 className="text-2xl font-bold text-on-surface">{displayName || user?.displayName || '使用者'}</h2>
             <p className="text-xs font-semibold text-on-primary-container tracking-wider uppercase opacity-60">
               ID: 88204912
             </p>
@@ -120,18 +117,18 @@ export default function Profile() {
           ))}
         </section>
 
-        {listingPreview.length > 0 && (
-          <section>
-            <div className="flex justify-between items-end mb-4">
-              <h3 className="text-lg font-bold text-on-surface">我的商品 Listing</h3>
-              <button
-                type="button"
-                onClick={() => navigate('/profile/listings')}
-                className="text-primary text-xs font-bold"
-              >
-                查看全部
-              </button>
-            </div>
+        <section>
+          <div className="flex justify-between items-end mb-4">
+            <h3 className="text-lg font-bold text-on-surface">我的商品 Listing</h3>
+            <button
+              type="button"
+              onClick={() => navigate('/profile/listings')}
+              className="text-primary text-xs font-bold"
+            >
+              查看全部
+            </button>
+          </div>
+          {listingPreview.length > 0 ? (
             <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
               {listingPreview.map((p) => (
                 <motion.button
@@ -161,8 +158,21 @@ export default function Profile() {
                 </motion.button>
               ))}
             </div>
-          </section>
-        )}
+          ) : (
+            <div className="glass-card rounded-2xl p-5 text-sm text-on-surface-variant">
+              還沒有上架貼文，先去新增一篇吧。
+              <div className="mt-4">
+                <button
+                  type="button"
+                  onClick={() => navigate('/add-listing')}
+                  className="premium-gradient text-white px-5 py-2.5 rounded-full text-xs font-extrabold"
+                >
+                  新增上架
+                </button>
+              </div>
+            </div>
+          )}
+        </section>
 
         <section className="space-y-4">
           <div className="glass-card rounded-3xl overflow-hidden">

@@ -29,7 +29,7 @@ export default function ListingDetail() {
   return (
     <div className="animate-in fade-in duration-500 pb-28">
       <TopBar showBack title="貼文詳情" />
-      <main className="pt-20 px-5 max-w-md mx-auto space-y-6">
+      <main className="pt-topbar px-5 max-w-md mx-auto space-y-6">
         <section className="glass-card rounded-2xl overflow-hidden">
           <div className="aspect-square bg-neutral-100">
             <img src={listing.image} alt="" className="w-full h-full object-cover" />

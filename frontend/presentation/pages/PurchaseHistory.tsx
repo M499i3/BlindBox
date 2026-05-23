@@ -41,7 +41,7 @@ export default function PurchaseHistory() {
   }, []);
 
   return (
-    <div className="animate-in fade-in duration-500 bg-background min-h-screen pb-28">
+    <div className="animate-in fade-in duration-500 min-h-screen pb-28">
       <TopBar
         showBack
         title="購買紀錄"
@@ -57,7 +57,7 @@ export default function PurchaseHistory() {
         }
       />
 
-      <main className="pt-20 pb-32 px-5 max-w-2xl mx-auto">
+      <main className="pt-topbar pb-32 px-5 max-w-2xl mx-auto">
         <div className="flex gap-4 mb-8 overflow-x-auto no-scrollbar pb-2">
           {['全部', '待付款', '已寄出', '已完成'].map((tab, idx) => (
             <button
