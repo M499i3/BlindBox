@@ -1,14 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import UserAvatar from '@/frontend/presentation/components/UserAvatar';
+import { createChat } from '@/frontend/infrastructure/api/chatsApi';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
 
 export default function ListingDetail() {
   const navigate = useNavigate();
   const { id = '' } = useParams();
-  const { getPostById, addToCart, removeFromCart, isInCart, avatarDataUrl } = useAppState();
+  const { getPostById, addToCart, removeFromCart, isInCart, avatarDataUrl, listings } = useAppState();
   const listing = getPostById(id);
+  const [contacting, setContacting] = useState(false);
+  const isOwnListing = listings.some((l) => l.id === id);
 
   if (!listing) {
     return (
@@ -26,7 +29,7 @@ export default function ListingDetail() {
   return (
     <div className="animate-in fade-in duration-500 pb-28">
       <TopBar showBack title="貼文詳情" />
-      <main className="pt-20 px-5 max-w-md mx-auto space-y-6">
+      <main className="pt-topbar px-5 max-w-md mx-auto space-y-6">
         <section className="glass-card rounded-2xl overflow-hidden">
           <div className="aspect-square bg-neutral-100">
             <img src={listing.image} alt="" className="w-full h-full object-cover" />
@@ -65,13 +68,35 @@ export default function ListingDetail() {
           </div>
         </section>
 
-        <button
-          type="button"
-          onClick={() => (inCart ? removeFromCart(listing.id) : addToCart(listing.id))}
-          className={`w-full py-4 rounded-full text-sm font-bold ${inCart ? 'bg-white border border-black/[0.12] text-on-surface' : 'premium-gradient text-white'}`}
-        >
-          {inCart ? '已加入購物車（點我移除）' : '加入購物車'}
-        </button>
+        <div className="flex flex-col gap-3">
+          {!isOwnListing && (
+            <button
+              type="button"
+              disabled={contacting}
+              onClick={async () => {
+                setContacting(true);
+                try {
+                  const chat = await createChat(listing.id);
+                  navigate(`/chat/${chat.id}`);
+                } catch (e) {
+                  console.error(e);
+                } finally {
+                  setContacting(false);
+                }
+              }}
+              className="w-full py-4 rounded-full text-sm font-bold bg-white border border-black/[0.12] text-on-surface disabled:opacity-50"
+            >
+              {contacting ? '開啟中…' : '聯絡賣家'}
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => (inCart ? removeFromCart(listing.id) : addToCart(listing.id))}
+            className={`w-full py-4 rounded-full text-sm font-bold ${inCart ? 'bg-white border border-black/[0.12] text-on-surface' : 'premium-gradient text-white'}`}
+          >
+            {inCart ? '已加入購物車（點我移除）' : '加入購物車'}
+          </button>
+        </div>
       </main>
     </div>
   );

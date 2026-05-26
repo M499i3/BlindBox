@@ -1,92 +1,126 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import UserAvatar from '@/frontend/presentation/components/UserAvatar';
 import { cn } from '@/frontend/shared/utils/cn';
-import { useCatalogProducts } from '@/frontend/presentation/hooks/useCatalog';
+import { getChats, type ChatInboxItem } from '@/frontend/infrastructure/api/chatsApi';
+import {
+  getNotifications,
+  notificationColor,
+  notificationIcon,
+  type NotificationItem,
+} from '@/frontend/infrastructure/api/notificationsApi';
+
+function formatNotifTime(isoStr: string): string {
+  const now = Date.now();
+  const ms = new Date(isoStr).getTime();
+  const diff = now - ms;
+  const min = Math.floor(diff / 60000);
+  if (min < 1) return '剛剛';
+  if (min < 60) return `${min}分鐘前`;
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return `${hr}小時前`;
+  const d = Math.floor(hr / 24);
+  if (d === 1) return '昨天';
+  return new Date(isoStr).toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric' });
+}
 
 export default function Chat() {
   const navigate = useNavigate();
-  const { products } = useCatalogProducts();
-
-  const notifications = [
-    { title: '系統通知', icon: 'settings', color: 'text-primary', unread: true, to: '/notifications?type=system' },
-    { title: '活動快訊', icon: 'campaign', color: 'text-primary', unread: true, to: '/notifications?type=news' },
-    { title: '交易動態', icon: 'swap_horiz', color: 'text-slate-400', unread: false, to: '/notifications?type=trade' },
-    { title: '客服消息', icon: 'support_agent', color: 'text-slate-400', unread: false, to: '/notifications' },
-  ];
-
-  const chats = useMemo(
-    () => [
-      {
-        id: '1',
-        name: '潮流收藏家_Ken',
-        time: '14:20',
-        message: '這款 SKULLPANDA 我找很久了，請問可以議價嗎？',
-        status: '交換中',
-        statusColor: 'bg-primary',
-        product: products[1]?.image ?? products[0]?.image,
-        online: true,
-      },
-      {
-        id: '2',
-        name: 'Mina_Lab',
-        time: '昨天',
-        message: '好的，那我現在下單，再麻煩您安排寄送。',
-        status: '待付款',
-        statusColor: 'bg-amber-500',
-        product: products[2]?.image ?? products[0]?.image,
-        unread: 2,
-      },
-      {
-        id: '3',
-        name: 'BoxBreaker_99',
-        time: '週三',
-        message: '這系列還有其他的嗎？',
-        product: products[3]?.image ?? products[0]?.image,
-      },
-    ],
-    [products]
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [chats, setChats] = useState<ChatInboxItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [activeNotifId, setActiveNotifId] = useState<string | null>(null);
+  const activeNotif = useMemo(
+    () => notifications.find((n) => n.id === activeNotifId) ?? null,
+    [activeNotifId, notifications]
   );
 
-  return (
-    <div className="animate-in fade-in duration-500 pb-28">
-      <TopBar title="聊聊" />
+  useEffect(() => {
+    Promise.all([getNotifications(), getChats()])
+      .then(([n, c]) => {
+        setNotifications(n);
+        setChats(c);
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
 
-      <main className="pt-20 px-5 space-y-10">
+  return (
+    <div className="w-full min-w-0 max-w-full overflow-x-hidden animate-in fade-in duration-500 pb-28">
+      <TopBar title="消息" rightElement={<></>} />
+
+      <main className="pt-topbar px-5 space-y-10 w-full min-w-0 max-w-full mx-auto">
+
         <section>
           <div className="flex justify-between items-end mb-4">
             <h2 className="text-xl font-bold text-on-surface">通知</h2>
-            <button type="button" className="text-xs font-semibold text-on-primary-container">
-              全部標為已讀
+            <button
+              type="button"
+              onClick={() => navigate('/notifications')}
+              className="text-xs font-semibold text-on-primary-container"
+            >
+              查看全部
             </button>
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            {notifications.map((notif, idx) => (
-              <motion.button
-                key={idx}
-                type="button"
-                whileTap={{ scale: 0.95 }}
-                onClick={() => navigate(notif.to)}
-                className="w-full h-[132px] glass-card rounded-2xl p-4 flex flex-col items-center justify-center text-center relative group"
-              >
-                {notif.unread && (
-                  <div className="absolute top-2 right-2 w-2.5 h-2.5 bg-primary rounded-full shadow-[0_0_12px_rgba(255,26,26,0.45)]" />
-                )}
-                <div className="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center mb-3 text-slate-400 group-hover:text-primary transition-colors">
-                  <span className={cn('material-symbols-outlined', notif.color)} style={{ fontVariationSettings: "'FILL' 1" }}>
-                    {notif.icon}
-                  </span>
+          {loading ? (
+            <p className="text-sm text-on-surface-variant">載入中…</p>
+          ) : notifications.length === 0 ? (
+            <p className="text-sm text-on-surface-variant">暫無通知</p>
+          ) : (
+            <div className="space-y-3">
+              {notifications.map((notif) => (
+                <div key={notif.id} className="relative">
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-4">
+                    <span className="text-xs font-bold text-on-surface-variant">刪除</span>
+                  </div>
+                  <motion.button
+                    type="button"
+                    drag="x"
+                    dragConstraints={{ left: -96, right: 0 }}
+                    dragElastic={0.12}
+                    whileTap={{ scale: 0.99 }}
+                    onDragEnd={(_, info) => {
+                      if (info.offset.x < -72) {
+                        setNotifications((prev) => prev.filter((n) => n.id !== notif.id));
+                      }
+                    }}
+                    onClick={() => setActiveNotifId(notif.id)}
+                    className="relative w-full glass-card rounded-2xl p-4 flex items-center gap-4 text-left"
+                  >
+                    {!notif.isRead && (
+                      <div className="absolute top-3 right-3 w-2.5 h-2.5 bg-primary rounded-full shadow-[0_0_12px_rgba(255,26,26,0.45)]" />
+                    )}
+                    <div className="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center text-slate-400 flex-shrink-0">
+                      <span
+                        className={cn('material-symbols-outlined', notificationColor(notif.type, !notif.isRead))}
+                        style={{ fontVariationSettings: "'FILL' 1" }}
+                      >
+                        {notificationIcon(notif.type)}
+                      </span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <h3 className="font-bold text-sm truncate text-on-surface">{notif.title}</h3>
+                        <span className="text-[10px] text-on-primary-container whitespace-nowrap">
+                          {formatNotifTime(notif.createdAt)}
+                        </span>
+                      </div>
+                      <p className="text-xs text-on-surface-variant line-clamp-1 mt-1">{notif.body}</p>
+                    </div>
+                  </motion.button>
                 </div>
-                <span className="text-xs font-semibold text-on-surface">{notif.title}</span>
-              </motion.button>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </section>
 
         <section className="space-y-4">
           <h2 className="text-xl font-bold text-on-surface">聊天室</h2>
+          {!loading && chats.length === 0 && (
+            <p className="text-sm text-on-surface-variant">尚無聊天紀錄</p>
+          )}
           {chats.map((chat) => (
             <motion.button
               key={chat.id}
@@ -98,36 +132,81 @@ export default function Chat() {
               <div className="relative">
                 <UserAvatar size="lg" />
                 {chat.online && (
-                  <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full" />
-                )}
-                {chat.unread != null && (
-                  <div className="absolute top-0 right-0 w-5 h-5 bg-primary rounded-full flex items-center justify-center border-2 border-white">
-                    <span className="text-[10px] font-bold text-white">{chat.unread}</span>
-                  </div>
+                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full" />
                 )}
               </div>
-              <div className="flex-grow min-w-0">
+              <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-center mb-1">
-                  <h3 className="font-bold text-sm truncate text-on-surface">{chat.name}</h3>
-                  <span className="text-[10px] text-on-primary-container">{chat.time}</span>
+                  <h3 className="font-bold text-on-surface text-sm truncate">{chat.counterpartyName}</h3>
+                  <span className="text-[10px] text-on-surface-variant font-bold">{chat.timeLabel}</span>
                 </div>
-                <p className="text-xs text-on-surface-variant truncate">{chat.message}</p>
-                {chat.status && (
-                  <div className="mt-2 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20">
-                    <span className={cn('w-1.5 h-1.5 rounded-full bg-primary', chat.statusColor === 'bg-primary' && 'animate-pulse')} />
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-primary">{chat.status}</span>
-                  </div>
+                <p className="text-xs text-on-surface-variant line-clamp-1 mb-1">{chat.lastMessage}</p>
+                {chat.statusLabel && (
+                  <span className="inline-block text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                    {chat.statusLabel}
+                  </span>
                 )}
               </div>
-              {chat.product && (
-                <div className="flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden border border-black/[0.08] bg-neutral-100">
-                  <img className="w-full h-full object-cover" src={chat.product} referrerPolicy="no-referrer" alt="" />
+              {chat.listingImage && (
+                <div className="w-12 h-12 rounded-lg overflow-hidden bg-neutral-100 flex-shrink-0">
+                  <img src={chat.listingImage} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                 </div>
+              )}
+              {chat.unreadCount > 0 && (
+                <span className="w-5 h-5 rounded-full bg-primary text-white text-[10px] font-bold flex items-center justify-center">
+                  {chat.unreadCount}
+                </span>
               )}
             </motion.button>
           ))}
         </section>
       </main>
+
+      {activeNotif && (
+        <div className="fixed inset-0 z-[60]">
+          <button
+            type="button"
+            className="absolute inset-0 bg-black/40"
+            onClick={() => setActiveNotifId(null)}
+            aria-label="關閉"
+          />
+          <div className="absolute left-1/2 -translate-x-1/2 bottom-0 w-full max-w-[470px] p-4 pb-8">
+            <div className="glass-card rounded-3xl p-5">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-[10px] font-black text-secondary tracking-wider uppercase">
+                    通知
+                  </p>
+                  <h3 className="text-lg font-extrabold text-on-surface mt-1">{activeNotif.title}</h3>
+                  <p className="text-xs text-on-surface-variant mt-1">
+                    {formatNotifTime(activeNotif.createdAt)}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveNotifId(null)}
+                  className="text-on-surface-variant"
+                  aria-label="關閉"
+                >
+                  <span className="material-symbols-outlined">close</span>
+                </button>
+              </div>
+              <p className="text-sm text-on-surface-variant leading-relaxed mt-4 whitespace-pre-line">
+                {activeNotif.body}
+              </p>
+              <div className="mt-6">
+                <button
+                  type="button"
+                  onClick={() => setActiveNotifId(null)}
+                  className="w-full premium-gradient text-white py-3 rounded-full text-sm font-extrabold active:scale-[0.99] transition-transform"
+                >
+                  知道了
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -13,7 +13,18 @@ if str(_SRC) not in sys.path:
 
 load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 
-from api.routes import catalog, cart, listings, marketplace, profile, orders
+from api.routes import (
+    auth,
+    catalog,
+    cart,
+    chats,
+    listings,
+    marketplace,
+    notifications,
+    orders,
+    profile,
+)
+
 
 app = FastAPI(title="BlindBox API", version="0.1.0")
 
@@ -30,12 +41,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(catalog.router, prefix="/api/catalog", tags=["catalog"])
 app.include_router(listings.router, prefix="/api/listings", tags=["listings"])
 app.include_router(cart.router, prefix="/api/cart", tags=["cart"])
 app.include_router(profile.router, prefix="/api/profile", tags=["profile"])
 app.include_router(marketplace.router, prefix="/api/marketplace", tags=["marketplace"])
-app.include_router( orders.router, prefix="/api/orders", tags=["orders"])
+app.include_router(orders.router, prefix="/api/orders", tags=["orders"])
+app.include_router(chats.router, prefix="/api/chats", tags=["chats"])
+app.include_router(notifications.router, prefix="/api/notifications", tags=["notifications"])
 
 
 

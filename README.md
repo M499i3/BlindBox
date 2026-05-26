@@ -7,94 +7,126 @@
 採**全端三層架構**：表現層 → 應用邏輯層 → 資料層，前後端各自對應，以 HTTP JSON API 溝通。詳見 **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**。
 
 ```
-前端（純 UI）  ──HTTP──►  FastAPI 後端  ──psycopg2──►  PostgreSQL（Supabase）
+前端（純 UI）  ──HTTP + JWT──►  FastAPI 後端  ──psycopg2──►  PostgreSQL（Supabase）
 ```
 
 ## 專案結構
 
 | 目錄 | 說明 |
 |------|------|
-| `frontend/` | React + Vite 前端（純 UI，不直連 DB） |
-| `backend/` | Python FastAPI 後端（業務邏輯 + 資料存取） |
+| `frontend/` | React + Vite 前端（不直連 DB） |
+| `backend/` | Python FastAPI 後端；詳見 [backend/README.md](backend/README.md) |
 | `docs/` | 架構文件 |
-| `scripts/` | 爬蟲工具 |
+| `scripts/` | 爬蟲、`schema.sql` |
 
 ## 快速啟動
 
-### 1. 環境設定（`.env`）
+### 1. 環境設定
+
+複製 `.env.example` 為 `.env`，至少設定：
 
 ```env
-# 前端連後端
 VITE_API_URL=http://localhost:8000
-
-# 開發用使用者 UUID（X-User-Id header）
-VITE_DEV_USER_ID=<執行 npm run db:seed 取得>
-
-# 後端連 PostgreSQL
 DATABASE_URL=postgresql://postgres.[ref]:[密碼]@aws-0-xxx.pooler.supabase.com:5432/postgres
+JWT_SECRET_KEY=change-me-in-production
+JWT_EXPIRE_DAYS=7
 ```
+
+認證改為 **JWT**：在 `http://localhost:3001/login` 登入，token 存於瀏覽器 `localStorage`，刷新頁面仍保持登入。**不必**再設定 `VITE_DEV_USER_ID`。
 
 ### 2. 資料庫初始化
 
 ```bash
-# 在 Supabase SQL Editor 執行 scripts/schema.sql
-# 然後匯入圖鑑種子資料
-npm run db:seed
+npm run db:migrate      # Alembic → head（含 chats.buyer_id / seller_id 等）
+npm run db:seed:all     # 圖鑑 + 3 位測試使用者與 demo 資料
 ```
+
+亦可先在 Supabase SQL Editor 執行 [`scripts/schema.sql`](scripts/schema.sql)，再 `npm run db:stamp` 與 seed。
+
+**Demo 假資料**（`seed_dev_demo`）包含：`[demo]` 上架、購物車、訂單、2 間聊天室與訊息、通知、評價等；圖鑑來自 `frontend/data/popmart-hk-showcase.json`。
 
 ### 3. 啟動後端
 
 ```bash
-npm run backend:install   # 首次安裝 Python 依賴
-npm run backend:dev       # uvicorn --reload，port 8000
+npm run backend:install   # 首次：Python 依賴（含 PyJWT、bcrypt）
+npm run backend:dev       # http://localhost:8000 ，Swagger /docs
 ```
 
 ### 4. 啟動前端
 
 ```bash
 npm install
-npm run dev               # Vite，port 3001
+npm run dev               # http://localhost:3001
 ```
 
-瀏覽器開啟 `http://localhost:3001`，後端 Swagger UI 在 `http://localhost:8000/docs`。
+開啟 `http://localhost:3001/login`，用下方測試帳號登入後使用市集、聊天等功能。
 
 ## 常用指令
 
 ```bash
-npm run dev               # 前端開發
-npm run backend:dev       # 後端開發
+npm run dev               # 前端開發（port 3001）
+npm run backend:dev       # 後端開發（port 8000）
 npm run backend:install   # 安裝後端 Python 依賴
 npm run build             # 前端 production build
 npm run lint              # TypeScript 型別檢查
 
-npm run db:migrate        # Alembic upgrade head
+npm run db:migrate        # alembic upgrade head
 npm run db:current        # 查看 migration 版本
-npm run db:seed           # 匯入圖鑑 + 建立開發用使用者
-npm run db:seed:dry       # 預覽種子，不寫入
+npm run db:seed           # 圖鑑 + user1@test.com
+npm run db:seed:demo      # 3 使用者 + 上架/訂單/聊天/通知 demo（需先 db:seed）
+npm run db:seed:all       # 上述兩者連跑
+npm run db:seed:dry       # 預覽圖鑑種子，不寫入
 ```
 
-## 後端 API 端點
+## 測試帳號（密碼皆 `password`）
 
-| 端點 | 說明 |
-|------|------|
-| `GET /api/catalog/products` | 圖鑑商品列表（支援 `?q=` 搜尋、`?brand=` 篩選） |
-| `GET /api/catalog/products/{id}` | 單一商品 |
-| `GET /api/catalog/brands` | 品牌列表 |
-| `GET /api/listings` | 全部上架貼文 |
-| `GET /api/listings/mine` | 我的上架（需 X-User-Id） |
-| `GET /api/listings/{id}` | 單一貼文 |
-| `POST /api/listings` | 新增上架 |
-| `GET /api/cart` | 購物車 |
-| `POST /api/cart/items/{id}` | 加入購物車 |
-| `DELETE /api/cart/items/{id}` | 移除購物車 |
-| `GET /api/profile/me` | 個人資料 |
-| `PUT /api/profile/me` | 更新個人資料 |
-| `GET /api/marketplace/trending-tags` | 熱門標籤 |
-| `GET /api/marketplace/rankings` | 排行榜 |
+| Email | 顯示名稱 | 建議用途 |
+|-------|----------|----------|
+| `user1@test.com` | Yu | 賣家、上架、與 user2 聊天 |
+| `user2@test.com` | Mina_Lab | 買家、購物車、多筆訂單 |
+| `user3@test.com` | 潮流收藏家_Ken | 次要交易、第二聊天室 |
 
-## 尚未接後端（前端假資料）
+切換帳號：個人檔案 → **登出**，再以另一組 email 登入。
 
-- 聊天室（Chat / ChatDetail）
-- 通知中心（NotificationsHub）
-- 購買／出售記錄（PurchaseHistory / SellingHistory）
-- 交換提案、拆盒團、評價系統
+## 認證
+
+| 方法 | 路徑 | 說明 |
+|------|------|------|
+| `POST` | `/api/auth/login` | Body: `{ "email", "password" }` → `access_token` + `user` |
+| `GET` | `/api/auth/me` | 需 `Authorization: Bearer <token>` |
+
+其餘需登入的 API 皆帶 Bearer token（前端 `apiClient` 自動附加）。Swagger 手動測試可改用 `X-User-Id` header（僅開發用）。
+
+## 後端 API 摘要
+
+完整說明見 [backend/README.md](backend/README.md)。
+
+| 區塊 | 端點 | 說明 |
+|------|------|------|
+| 圖鑑 | `GET /api/catalog/products`、`/brands`、`/products/{id}` | 圖鑑列表與搜尋 |
+| 上架 | `GET/POST /api/listings`、`GET /mine`、`GET /{id}` | 市集貼文 |
+| 購物車 | `GET /api/cart`、`POST/DELETE .../items/{id}` | 需登入 |
+| 個人 | `GET/PUT /api/profile/me` | 需登入 |
+| 市集 | `GET /api/marketplace/trending-tags`、`/rankings` | 熱門標籤、排行榜 |
+| 訂單 | `GET /api/orders/mine?role=buyer\|seller` | 購買/出售紀錄 |
+| 訂單 | `POST /api/orders`、`PATCH /api/orders/{id}/status` | 下單；狀態變更會同步聊天室 |
+| 通知 | `GET /api/notifications` | 通知列表 |
+| 聊天 | `GET/POST /api/chats` | 收件匣、依 `listing_id` 開啟或取得聊天室 |
+| 聊天 | `GET /api/chats/{id}`、`GET/POST .../messages`、`POST .../read` | 詳情、發訊息、已讀 |
+
+同一商品 + 買賣雙方僅一間聊天室（DB 唯一索引 `listing_id, buyer_id, seller_id`）。
+
+## 前端功能與資料來源
+
+| 已接後端 API | 仍為 UI 假資料／未接 API |
+|--------------|-------------------------|
+| 登入、市集貼文、購物車、我的上架、個人檔案 | 探索頁「收藏冊／願望清單／圖鑑進度」（由圖鑑列表 slice 展示） |
+| 聊天、聯絡賣家、發訊息、聊天室下單 | 圖鑑商品詳情頁「其他賣家」列表（非真實 listings） |
+| 購買/出售紀錄、通知 | 個人檔案部分統計數字（如收藏 42、已完成 128） |
+
+## 尚未實作
+
+- 交換提案（`swap_proposals`）、拆盒團
+- 聊天圖片訊息、上傳
+- 註冊、Refresh token、正式環境密鑰輪替
+- 收藏冊／願望清單後端 API（`user_collections` 表已存在）

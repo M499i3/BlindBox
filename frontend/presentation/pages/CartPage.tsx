@@ -18,7 +18,7 @@ export default function CartPage() {
   return (
     <div className="animate-in fade-in duration-500 pb-28">
       <TopBar showBack title="購物車" />
-      <main className="pt-20 px-5 max-w-md mx-auto space-y-4">
+      <main className="pt-topbar px-5 max-w-md mx-auto space-y-4">
         {cartItems.length === 0 && (
           <p className="text-sm text-on-surface-variant text-center py-20">購物車目前是空的。</p>
         )}
@@ -76,35 +76,61 @@ export default function CartPage() {
                 }
 
                 try {
+                  
                   for (const item of cartItems) {
                     let sellerId = item.seller_id || item.sellerId || item.seller?.id;
 
-                    if (!sellerId) {
-                    const res = await fetch(`http://localhost:8000/api/listings/${item.id}`);
-                    const listing = await res.json();
-                    sellerId = listing.seller_id;
+                    const isFakeId =
+                      item.id.startsWith('l_') ||
+                      item.id.startsWith('pm_');
+
+                      if (isFakeId) {
+                        const oldOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+                      
+                        const newOrder = {
+                          id: item.id,
+                          title: item.title,
+                          seller: '測試賣家',
+                          date: new Date().toLocaleString(),
+                          status: '待付款',
+                          statusColor: 'text-primary',
+                          total: item.price,
+                          image: item.image,
+                        };
+                      
+                        localStorage.setItem('orders', JSON.stringify([newOrder, ...oldOrders]));
+                      
+                        removeFromCart(item.id);
+                        continue;
+                      }
+
+                    if (!sellerId && !isFakeId) {
+                      const res = await fetch(`http://localhost:8000/api/listings/${item.id}`);
+                      const listing = await res.json();
+                      sellerId = listing.seller_id;
                     }
 
                     if (!sellerId) {
-                    alert('找不到賣家 seller_id，不能結帳');
-                    return;
+                      sellerId = userId;
                     }
 
-                    const orderRes = await fetch('http://localhost:8000/api/orders/', {
-                      method: 'POST',
-                      headers: {
-                      'Content-Type': 'application/json',
-                      },
-                      body: JSON.stringify({
-                        listing_id: item.id,
-                        buyer_id: userId,
-                        seller_id: sellerId,
-                        status: 'pending_payment',
-                        amount: Number(item.price.replace(/[^\d.]/g, '')),
-                        currency: 'TWD',
-                        shipping_method: shippingMethod,
-                      }),
-                    });
+                    const token = localStorage.getItem('blindbox_access_token');
+                    const orderRes = await fetch('http://localhost:8000/api/orders', {
+                    method: 'POST',
+                    headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                    listing_id: item.id,
+                    buyer_id: userId,
+                    seller_id: sellerId,
+                    status: 'pending_payment',
+                    amount: Number(item.price.replace(/[^\d.]/g, '')),
+                    currency: 'TWD',
+                    shipping_method: shippingMethod,
+                    }),
+                  });
 
 if (!orderRes.ok) {
   const text = await orderRes.text();

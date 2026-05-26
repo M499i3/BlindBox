@@ -1,45 +1,74 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Grid3X3, Home, MessageCircle, UserRound } from 'lucide-react';
 import { cn } from '@/frontend/shared/utils/cn';
+import HomeIcon from '@/frontend/presentation/components/HomeIcon';
+import ExploreIcon from '@/frontend/presentation/components/ExploreIcon';
+import MailIcon from '@/frontend/presentation/components/MailIcon';
+import PersonIcon from '@/frontend/presentation/components/PersonIcon';
+import MarketplaceIcon from '@/frontend/presentation/components/MarketplaceIcon';
+
+type NavImageKey = 'home' | 'explore' | 'shop' | 'mail' | 'profile';
+
+const NAV_IMAGE: Record<
+  NavImageKey,
+  React.ComponentType<{ className?: string; size?: number }>
+> = {
+  home: HomeIcon,
+  explore: ExploreIcon,
+  shop: MarketplaceIcon,
+  mail: MailIcon,
+  profile: PersonIcon,
+};
 
 const links: {
   to: string;
   label: string;
-  Icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+  navImage: NavImageKey;
+  accentClass: string;
 }[] = [
-  { to: '/', label: '首頁', Icon: Home },
-  { to: '/explore', label: '圖鑑', Icon: Grid3X3 },
-  { to: '/chat', label: '聊聊', Icon: MessageCircle },
-  { to: '/profile', label: '我的', Icon: UserRound },
+  { to: '/', label: '首頁', navImage: 'home', accentClass: 'nav-accent-0' },
+  { to: '/explore', label: '探索', navImage: 'explore', accentClass: 'nav-accent-1' },
+  { to: '/shop', label: '商城', navImage: 'shop', accentClass: 'nav-accent-2' },
+  { to: '/chat', label: '消息', navImage: 'mail', accentClass: 'nav-accent-3' },
+  { to: '/profile', label: '我的', navImage: 'profile', accentClass: 'nav-accent-4' },
 ];
 
 export default function BottomNav() {
   return (
-    <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[470px] z-50 bg-[#f6f6f6]/95 backdrop-blur-md border-t border-black/[0.08] flex justify-around items-center px-4 pb-7 pt-3 shadow-[0_-4px_24px_rgba(0,0,0,0.06)]">
-      {links.map(({ to, label, Icon }) => (
-        <NavLink
-          key={to}
-          to={to}
-          className={({ isActive }) =>
-            cn(
-              'flex flex-col items-center justify-center gap-1 transition-all duration-200 active:scale-95 min-w-[56px]',
-              isActive ? 'text-black' : 'text-[#7b7b7b] hover:text-black'
-            )
-          }
-        >
-          {({ isActive }) => (
-            <>
-              <Icon
-                className="size-[22px] shrink-0"
-                strokeWidth={isActive ? 2.5 : 2}
-                aria-hidden
-              />
-              <span className="text-[11px] font-semibold leading-none">{label}</span>
-            </>
-          )}
-        </NavLink>
-      ))}
+    <nav className="sticky bottom-0 z-50 w-full min-w-0 shrink-0 overflow-visible bg-white">
+      <img
+        src="/nav-banner-line-only.svg?v=1"
+        alt=""
+        aria-hidden
+        className="pointer-events-none absolute left-1/2 top-14 h-20 w-[300%] max-w-none -translate-x-1/2 origin-bottom scale-[3.4] object-contain object-bottom mix-blend-multiply"
+        decoding="async"
+      />
+      <div className="relative z-10 flex justify-around items-center px-2 pb-1 pt-4.5">
+      {links.map(({ to, label, navImage, accentClass }) => {
+        const ImageIcon = NAV_IMAGE[navImage];
+
+        return (
+          <NavLink
+            key={to}
+            to={to}
+            className={({ isActive }) =>
+              cn(
+                'flex flex-col items-center justify-center gap-1 w-10 min-w-0 px-0.5 py-0.5 transition-all duration-200 outline-none border-0 ring-0 shadow-none focus:outline-none focus-visible:outline-none',
+                accentClass,
+                isActive && 'is-active'
+              )
+            }
+          >
+            <span className="nav-image-icon flex items-center justify-center w-9 h-9 shrink-0 mx-auto overflow-hidden border-0 active:scale-95 transition-transform duration-200">
+              <ImageIcon size={40} className="mx-auto scale-[1.12] border-0" />
+            </span>
+            <span className="nav-label block w-full text-center text-xs font-bold leading-none tracking-normal text-on-background">
+              {label}
+            </span>
+          </NavLink>
+        );
+      })}
+      </div>
     </nav>
   );
 }
