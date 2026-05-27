@@ -1,4 +1,5 @@
 from __future__ import annotations
+from psycopg2.extras import RealDictCursor
 
 import psycopg2.extensions
 
@@ -8,18 +9,19 @@ from domain.entities import UpdateProfileInput, UserProfile
 def get_profile(
     conn: psycopg2.extensions.connection, user_id: str
 ) -> UserProfile | None:
-    with conn.cursor() as cur:
+    with conn.cursor(cursor_factory=RealDictCursor) as cur:
         cur.execute(
-            "SELECT display_name, avatar_url, bio FROM users WHERE id = %s",
+            "SELECT id, display_name, avatar_url, bio FROM users WHERE id = %s",
             (user_id,),
         )
         row = cur.fetchone()
     if not row:
         return None
     return UserProfile(
-        display_name=row["display_name"] or "",
-        avatar_url=row.get("avatar_url"),
-        bio=row.get("bio") or "",
+    id=row["id"],
+    display_name=row["display_name"] or "",
+    avatar_url=row.get("avatar_url"),
+    bio=row.get("bio") or "",
     )
 
 
@@ -53,5 +55,11 @@ def update_profile(
 
     profile = get_profile(conn, user_id)
     if profile is None:
-        return UserProfile(display_name="")
+        return UserProfile(
+            id=user_id,
+            display_name="",
+            avatar_url=None,
+            bio="",
+        )
+
     return profile

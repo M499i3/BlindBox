@@ -28,6 +28,7 @@ const STORAGE_KEY = 'blindbox_app_state_v1';
 type AppStateValue = {
   avatarDataUrl: string | null;
   displayName: string;
+  userId: string;
   setAvatarDataUrl: (v: string | null) => void | Promise<void>;
   listings: Listing[];
   posts: Listing[];
@@ -76,6 +77,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
 
   const [avatarDataUrl, setAvatarDataUrlState] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState('');
+  const [userId, setUserId] = useState('');
+
   const [listings, setListings] = useState<Listing[]>([]);
   const [posts, setPosts] = useState<Listing[]>([]);
   const [cartItems, setCartItems] = useState<Listing[]>([]);
@@ -130,6 +133,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     const profile = await getProfile();
     setAvatarDataUrlState(profile.avatarDataUrl);
     setDisplayName(profile.displayName);
+    setUserId(profile.id);
   }, []);
 
   // Load marketplace data when authenticated (non-mock mode)
@@ -145,6 +149,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     setCartItems(cart);
     setAvatarDataUrlState(profile.avatarDataUrl);
     setDisplayName(profile.displayName);
+    setUserId(profile.id);
   }, []);
 
   useEffect(() => {
@@ -155,6 +160,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       setCartItems([]);
       setAvatarDataUrlState(null);
       setDisplayName(mock ? 'Yu' : '');
+      setUserId('');
       return;
     }
     if (user?.displayName) setDisplayName(user.displayName);
@@ -264,6 +270,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     () => ({
       avatarDataUrl,
       displayName,
+      userId,
       setAvatarDataUrl,
       listings,
       posts: allPosts,
@@ -285,6 +292,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     [
       avatarDataUrl,
       displayName,
+      userId,
       setAvatarDataUrl,
       listings,
       allPosts,

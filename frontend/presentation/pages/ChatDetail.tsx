@@ -66,6 +66,7 @@ export default function ChatDetail() {
     }
   };
 
+
   return (
     <div className="flex h-full min-h-0 w-full min-w-0 max-w-full flex-col overflow-hidden">
       <TopBar
@@ -151,16 +152,20 @@ export default function ChatDetail() {
         )}
       </main>
 
+
+
+      
       <footer className="shrink-0 z-50 w-full min-w-0 border-t border-black/[0.08] bg-white/95 px-4 pb-8 pt-4 backdrop-blur-md">
-        <div className="mx-auto flex w-full min-w-0 max-w-full items-center gap-3 text-sm">
-          <button
-            type="button"
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-black/[0.08] text-on-surface-variant active:scale-90 transition-transform"
-          >
-            <span className="material-symbols-outlined">add</span>
-          </button>
+  <div className="mx-auto flex w-full min-w-0 max-w-full items-center gap-3 text-sm">
+    <button
+      type="button"
+      className="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-black/[0.08] text-on-surface-variant active:scale-90 transition-transform"
+    >
+      <span className="material-symbols-outlined">add</span>
+    </button>
           <div className="flex-1 relative group">
             <input
+              
               className="w-full bg-white border border-black/[0.08] rounded-2xl px-4 py-3 text-on-surface placeholder:text-on-surface-variant focus:ring-1 focus:ring-primary/40 transition-all"
               placeholder="輸入訊息..."
               type="text"
@@ -176,9 +181,11 @@ export default function ChatDetail() {
           </div>
           <button
             type="button"
+
             disabled={sending || !draft.trim()}
             onClick={handleSend}
             className="w-10 h-10 flex items-center justify-center rounded-full premium-gradient text-white shadow-lg active:scale-90 transition-transform disabled:opacity-50"
+
           >
             <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
               send
