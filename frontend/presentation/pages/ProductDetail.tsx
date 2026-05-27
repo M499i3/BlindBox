@@ -5,6 +5,7 @@ import TopBar from '@/frontend/presentation/components/TopBar';
 import UserAvatar from '@/frontend/presentation/components/UserAvatar';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
 import { useCatalogProduct, deriveBrandLabel } from '@/frontend/presentation/hooks/useCatalog';
+import PriceTrendChart from '@/frontend/presentation/components/PriceTrendChart';
 
 function deriveSeriesName(title: string) {
   const cleaned = title
@@ -104,7 +105,7 @@ export default function ProductDetail() {
         rightElement={fromCatalog ? catalogRightElement : undefined}
       />
 
-      <main className="pt-topbar px-container-margin space-y-8 w-full min-w-0 max-w-full mx-auto pb-24">
+      <main className="pt-topbar-content px-container-margin space-y-8 w-full min-w-0 max-w-full mx-auto pb-24">
         <section className="space-y-2">
           <nav className="flex flex-wrap items-center text-[10px] font-bold text-on-surface-variant gap-x-1 uppercase tracking-wider">
             <button type="button" onClick={() => navigate(fromCatalog ? '/explore' : '/search')} className="hover:text-on-surface">
@@ -147,6 +148,7 @@ export default function ProductDetail() {
                 <p className="text-sm text-on-surface-variant leading-relaxed">
                   這裡是圖鑑模式的介紹頁（示意）。你可以先收藏/加願望清單，再回到商城查看成交/貼文。
                 </p>
+                <PriceTrendChart seed={product.id} currentPriceText={product.price} />
                 <div className="flex gap-2 flex-wrap">
                   <button
                     type="button"
@@ -159,42 +161,6 @@ export default function ProductDetail() {
               </div>
             </section>
           </>
-        )}
-
-        {!fromCatalog && (
-        <section className="elevated-card rounded-2xl p-5">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-[10px] font-black text-secondary tracking-wider uppercase">價格趨勢</p>
-              <p className="text-xs text-on-surface-variant mt-1">最近 30 天（示意）</p>
-            </div>
-            <div className="text-right">
-              <p className="text-[11px] text-on-surface-variant font-semibold">目前</p>
-              <p className="text-lg font-extrabold text-on-surface">{product.price}</p>
-            </div>
-          </div>
-
-          <div className="mt-4 bg-background rounded-2xl border border-outline-variant p-4">
-            <svg width="100%" height="54" viewBox="0 0 320 54" aria-hidden>
-              <path
-                d="M6 38 C 32 18, 54 46, 80 30 S 128 28, 154 18 S 202 22, 228 14 S 276 10, 314 8"
-                fill="none"
-                stroke="#0047ab"
-                strokeWidth="4"
-                strokeLinecap="round"
-              />
-              <path
-                d="M6 38 C 32 18, 54 46, 80 30 S 128 28, 154 18 S 202 22, 228 14 S 276 10, 314 8 L314 54 L6 54 Z"
-                fill="rgba(0,71,171,0.12)"
-              />
-            </svg>
-            <div className="mt-3 flex items-center justify-between text-[11px] text-on-surface-variant font-semibold">
-              <span>低</span>
-              <span className="text-secondary font-black">波動</span>
-              <span>高</span>
-            </div>
-          </div>
-        </section>
         )}
 
         {!fromCatalog && (

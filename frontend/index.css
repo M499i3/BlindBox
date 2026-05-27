@@ -57,7 +57,7 @@
 
 @utility glass-card {
   background: var(--color-surface);
-  border: var(--doodle-border) solid var(--color-outline);
+  border: none;
   border-radius: 16px;
   box-shadow: var(--doodle-shadow);
 }
@@ -114,6 +114,11 @@
   padding-top: var(--spacing-topbar);
 }
 
+/* TopBar 下方統一留白（以首頁搜尋列為基準） */
+@utility pt-topbar-content {
+  padding-top: calc(var(--spacing-topbar) + var(--spacing-stack-lg));
+}
+
 @utility no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -156,6 +161,11 @@
   .premium-gradient:hover {
     background: var(--color-accent-amber);
     color: var(--color-on-background);
+  }
+
+  /* Guardrail: some pages still add `text-white` on premium-gradient buttons */
+  .premium-gradient.text-white {
+    color: var(--color-on-background) !important;
   }
 
   .premium-gradient:active {
@@ -227,10 +237,6 @@
   .nav-accent-0:active {
     color: var(--color-accent-amber);
   }
-  .nav-accent-1.is-active,
-  .nav-accent-1:active {
-    color: var(--color-accent-coral);
-  }
   .nav-accent-2.is-active,
   .nav-accent-2:active {
     color: var(--color-accent-sky);
@@ -246,9 +252,6 @@
 
   .nav-accent-0.is-active .nav-pill {
     background: var(--color-accent-amber);
-  }
-  .nav-accent-1.is-active .nav-pill {
-    background: var(--color-accent-coral);
   }
   .nav-accent-2.is-active .nav-pill {
     background: var(--color-accent-sky);

@@ -36,7 +36,7 @@ export default function SellingHistory() {
     <div className="animate-in fade-in duration-500 pb-28">
       <TopBar title="出售紀錄" showBack />
 
-      <main className="pt-topbar px-5 space-y-4 max-w-md mx-auto">
+      <main className="pt-topbar-content px-5 space-y-4 w-full min-w-0 max-w-full">
         {loading && <p className="text-center text-sm text-on-surface-variant py-8">載入中…</p>}
         {!loading && rows.length === 0 && (
           <p className="text-center text-sm text-on-surface-variant py-8">尚無出售紀錄</p>

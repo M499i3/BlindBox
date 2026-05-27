@@ -1,7 +1,12 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import AppLogo from '@/frontend/presentation/components/AppLogo';
-import { TOPBAR_HEIGHT } from '@/frontend/presentation/constants/topbar';
+import CartIcon from '@/frontend/presentation/components/CartIcon';
+import { TOPBAR_HEIGHT, TOPBAR_RIGHT_ICON_SIZE } from '@/frontend/presentation/constants/topbar';
+import { NAV_TAB_ICONS, resolveNavTabKey } from '@/frontend/presentation/constants/navTabIcons';
+import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
+
+const TOPBAR_TITLE_ICON_SIZE = 36;
 
 interface TopBarProps {
   title?: string;
@@ -11,11 +16,18 @@ interface TopBarProps {
 
 export default function TopBar({ title, showBack, rightElement }: TopBarProps) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const backTarget = (location.state as { from?: string } | null)?.from;
+  const { cartIds } = useAppState();
   const isHomeLogo = !title && !showBack;
+  const navTabKey = title ? resolveNavTabKey(location.pathname, title) : null;
+  const TitleNavIcon = navTabKey ? NAV_TAB_ICONS[navTabKey] : null;
 
   return (
     <header
-      className="fixed top-0 left-0 right-0 z-50 w-full min-w-0 overflow-x-hidden overflow-y-visible bg-white border-b-[2.5px] border-outline flex justify-between items-end px-4 py-0"
+      className={`fixed top-0 left-0 right-0 z-50 w-full min-w-0 overflow-x-hidden overflow-y-visible bg-white border-b-[2.5px] border-outline flex justify-between ${
+        isHomeLogo ? 'items-end' : 'items-center'
+      } px-4 py-0`}
       style={{ height: TOPBAR_HEIGHT }}
     >
       <div
@@ -28,30 +40,43 @@ export default function TopBar({ title, showBack, rightElement }: TopBarProps) {
         {showBack && (
           <button
             type="button"
-            onClick={() => navigate(-1)}
+            onClick={() => (backTarget ? navigate(backTarget) : navigate(-1))}
             className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-outline bg-white shadow-[2px_2px_0_#111] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none active:bg-accent-sky transition-all shrink-0"
-            aria-label="??"
+            aria-label="返回"
           >
             <span className="material-symbols-outlined text-on-background">arrow_back</span>
           </button>
         )}
+
         {title ? (
-          <h1 className="font-sans text-xl font-bold tracking-tight text-on-background uppercase truncate">
-            {title}
-          </h1>
+          <div className="flex min-w-0 items-center gap-2">
+            {TitleNavIcon ? (
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden">
+                <TitleNavIcon size={TOPBAR_TITLE_ICON_SIZE} className="scale-[1.08]" />
+              </span>
+            ) : null}
+            <h1 className="truncate font-sans text-xl font-bold uppercase tracking-tight text-on-background">
+              {title}
+            </h1>
+          </div>
         ) : (
           <AppLogo />
         )}
       </div>
       <div className="flex items-center gap-3 shrink-0">
-        {rightElement || (
+        {rightElement ?? (
           <button
             type="button"
-            onClick={() => navigate('/search')}
-            className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-outline bg-white shadow-[2px_2px_0_#111] hover:bg-accent-amber active:bg-accent-coral active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
-            aria-label="??"
+            onClick={() => navigate('/cart')}
+            className="relative shrink-0 border-0 bg-transparent p-0 cursor-pointer transition-transform active:scale-95 hover:opacity-85"
+            aria-label="購物車"
           >
-            <span className="material-symbols-outlined text-on-background">search</span>
+            <CartIcon size={TOPBAR_RIGHT_ICON_SIZE} />
+            {cartIds.length > 0 && (
+              <span className="absolute top-0 right-0 min-w-5 h-5 px-1 rounded-full bg-secondary text-on-secondary border-2 border-outline text-[10px] font-bold flex items-center justify-center translate-x-1/4 -translate-y-1/4">
+                {cartIds.length}
+              </span>
+            )}
           </button>
         )}
       </div>

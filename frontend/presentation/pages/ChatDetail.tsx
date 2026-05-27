@@ -79,7 +79,7 @@ export default function ChatDetail() {
         }
       />
 
-      <section className="shrink-0 px-container-margin pt-topbar pb-stack-md">
+      <section className="shrink-0 px-container-margin pt-topbar-content pb-stack-md">
         <div className="glass-card rounded-xl p-3 flex items-center justify-between shadow-lg">
           <div className="flex items-center gap-3 overflow-hidden min-w-0 flex-1">
             <div className="w-12 h-12 rounded-lg overflow-hidden bg-neutral-100 flex-shrink-0 border border-black/[0.08]">

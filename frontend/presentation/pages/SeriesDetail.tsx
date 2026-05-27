@@ -41,7 +41,7 @@ export default function SeriesDetail() {
     <div className="w-full min-w-0 max-w-full overflow-x-hidden animate-in fade-in duration-500 min-h-full pb-32">
       <TopBar title={ip || 'IP'} showBack rightElement={<></>} />
 
-      <main className="pt-topbar px-5 space-y-10 w-full min-w-0 max-w-full mx-auto">
+      <main className="pt-topbar-content px-5 space-y-10 w-full min-w-0 max-w-full mx-auto">
         <section>
           <div className="relative w-full aspect-[21/9] rounded-2xl overflow-hidden mb-6">
             <img className="w-full h-full object-cover" src={hero} referrerPolicy="no-referrer" alt="" />

@@ -1,34 +1,17 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { cn } from '@/frontend/shared/utils/cn';
-import HomeIcon from '@/frontend/presentation/components/HomeIcon';
-import ExploreIcon from '@/frontend/presentation/components/ExploreIcon';
-import MailIcon from '@/frontend/presentation/components/MailIcon';
-import PersonIcon from '@/frontend/presentation/components/PersonIcon';
-import MarketplaceIcon from '@/frontend/presentation/components/MarketplaceIcon';
-
-type NavImageKey = 'home' | 'explore' | 'shop' | 'mail' | 'profile';
-
-const NAV_IMAGE: Record<
-  NavImageKey,
-  React.ComponentType<{ className?: string; size?: number }>
-> = {
-  home: HomeIcon,
-  explore: ExploreIcon,
-  shop: MarketplaceIcon,
-  mail: MailIcon,
-  profile: PersonIcon,
-};
+import { NAV_TAB_ICONS, type NavTabKey } from '@/frontend/presentation/constants/navTabIcons';
 
 const links: {
   to: string;
   label: string;
-  navImage: NavImageKey;
+  navImage: NavTabKey;
   accentClass: string;
 }[] = [
   { to: '/', label: '首頁', navImage: 'home', accentClass: 'nav-accent-0' },
-  { to: '/explore', label: '探索', navImage: 'explore', accentClass: 'nav-accent-1' },
   { to: '/shop', label: '商城', navImage: 'shop', accentClass: 'nav-accent-2' },
+  { to: '/explore', label: '圖鑑', navImage: 'explore', accentClass: 'nav-tab-plain' },
   { to: '/chat', label: '消息', navImage: 'mail', accentClass: 'nav-accent-3' },
   { to: '/profile', label: '我的', navImage: 'profile', accentClass: 'nav-accent-4' },
 ];
@@ -45,7 +28,8 @@ export default function BottomNav() {
       />
       <div className="relative z-10 flex justify-around items-center px-2 pb-1 pt-4.5">
       {links.map(({ to, label, navImage, accentClass }) => {
-        const ImageIcon = NAV_IMAGE[navImage];
+        const ImageIcon = NAV_TAB_ICONS[navImage];
+        const plainTab = accentClass === 'nav-tab-plain';
 
         return (
           <NavLink
@@ -55,11 +39,16 @@ export default function BottomNav() {
               cn(
                 'flex flex-col items-center justify-center gap-1 w-10 min-w-0 px-0.5 py-0.5 transition-all duration-200 outline-none border-0 ring-0 shadow-none focus:outline-none focus-visible:outline-none',
                 accentClass,
-                isActive && 'is-active'
+                isActive && !plainTab && 'is-active'
               )
             }
           >
-            <span className="nav-image-icon flex items-center justify-center w-9 h-9 shrink-0 mx-auto overflow-hidden border-0 active:scale-95 transition-transform duration-200">
+            <span
+              className={cn(
+                'nav-image-icon flex items-center justify-center w-9 h-9 shrink-0 mx-auto overflow-hidden border-0 transition-transform duration-200',
+                !plainTab && 'active:scale-95'
+              )}
+            >
               <ImageIcon size={40} className="mx-auto scale-[1.12] border-0" />
             </span>
             <span className="nav-label block w-full text-center text-xs font-bold leading-none tracking-normal text-on-background">

@@ -67,7 +67,7 @@ export default function Profile() {
         }
       />
 
-      <main className="pt-topbar px-5 space-y-8 max-w-md mx-auto">
+      <main className="pt-topbar-content px-5 space-y-8 w-full min-w-0 max-w-full">
         <section className="flex flex-col items-center">
           <div className="relative mb-4">
             <div className="rounded-full p-1 bg-gradient-to-tr from-primary to-tertiary-fixed shadow-[0_0_20px_rgba(255,26,26,0.15)]">

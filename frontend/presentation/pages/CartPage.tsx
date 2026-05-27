@@ -18,7 +18,7 @@ export default function CartPage() {
   return (
     <div className="animate-in fade-in duration-500 pb-28">
       <TopBar showBack title="購物車" />
-      <main className="pt-topbar px-5 max-w-md mx-auto space-y-4">
+      <main className="pt-topbar-content px-5 space-y-4 w-full min-w-0 max-w-full">
         {cartItems.length === 0 && (
           <p className="text-sm text-on-surface-variant text-center py-20">購物車目前是空的。</p>
         )}

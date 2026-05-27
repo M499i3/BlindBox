@@ -34,7 +34,7 @@ export default function ProfileEdit() {
     <div className="animate-in fade-in duration-500 pb-28">
       <TopBar title="編輯個人檔案" showBack />
 
-      <main className="pt-topbar px-5 space-y-6 max-w-md mx-auto">
+      <main className="pt-topbar-content px-5 space-y-6 w-full min-w-0 max-w-full">
         <section className="glass-card rounded-2xl p-5 space-y-4">
           <div className="flex items-center gap-4">
             {avatarDataUrl ? (

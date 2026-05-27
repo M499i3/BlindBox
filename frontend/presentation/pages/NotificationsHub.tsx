@@ -34,7 +34,7 @@ export default function NotificationsHub() {
   return (
     <div className="animate-in fade-in duration-500 pb-28">
       <TopBar title="通知中心" showBack />
-      <main className="pt-topbar px-5 space-y-6 max-w-md mx-auto">
+      <main className="pt-topbar-content px-5 space-y-6 w-full min-w-0 max-w-full">
         {loading && <p className="text-sm text-on-surface-variant">載入中…</p>}
         {!loading &&
           visibleBlocks.map((b) => {
