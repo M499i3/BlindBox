@@ -66,7 +66,7 @@ const allOrders = Array.from(orderMap.values());
               key={tab}
               type="button"
               className={`px-6 py-2 rounded-full font-bold text-xs whitespace-nowrap active:scale-95 transition-all ${
-                idx === 0 ? 'premium-gradient text-white shadow-lg' : 'glass-card text-on-surface-variant'
+                idx === 0 ? 'doodle-press premium-gradient text-white' : 'glass-card text-on-surface-variant'
               }`}
             >
               {tab}
@@ -80,7 +80,7 @@ const allOrders = Array.from(orderMap.values());
               key={order.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="glass-card rounded-2xl p-4 flex flex-col gap-4 shadow-sm"
+              className="glass-card rounded-2xl p-4 flex flex-col gap-4"
             >
               <div className="flex justify-between items-start gap-2">
                 <div className="flex gap-4 min-w-0">
@@ -110,7 +110,7 @@ const allOrders = Array.from(orderMap.values());
                 <button
                   type="button"
                   onClick={() => navigate(`/product/${order.id}`)}
-                  className="px-6 py-2 rounded-full premium-gradient text-white text-xs font-bold active:scale-95 transition-all shadow-lg shadow-primary/25"
+                  className="doodle-press px-6 py-2 rounded-full premium-gradient text-white text-xs font-bold transition-all"
                 >
                   查看詳情
                 </button>

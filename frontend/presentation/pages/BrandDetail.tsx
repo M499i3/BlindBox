@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate, useParams } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
-import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
+import { useProductCollection } from '@/frontend/presentation/hooks/useProductCollection';
 import {
   deriveBrandLabel,
   isMockDataEnabled,
@@ -20,7 +20,12 @@ function titleCase(slug: string) {
 export default function BrandDetail() {
   const { id: slug = '' } = useParams();
   const navigate = useNavigate();
-  const { toggleOwned, isOwned } = useAppState();
+  const {
+    toggleWishForProductIds,
+    toggleOwnedForProductIds,
+    isAllWished,
+    isAllOwned,
+  } = useProductCollection();
   const { products: apiProducts } = useCatalogProducts();
 
   const displayName = titleCase(slug);
@@ -46,12 +51,14 @@ export default function BrandDetail() {
     'https://global-static.popmart.com/globalAdmin/1776844373939____pc____.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp';
 
   const ipSeries = useMemo(() => {
-    const map = new Map<string, { ip: string; image: string; count: number }>();
+    const map = new Map<string, { ip: string; image: string; count: number; productIds: string[] }>();
     for (const p of matched) {
       const ip = deriveBrandLabel(p.title);
       if (!ip || ip === 'Pop Mart') continue;
-      if (!map.has(ip)) map.set(ip, { ip, image: p.image, count: 0 });
-      map.get(ip)!.count += 1;
+      if (!map.has(ip)) map.set(ip, { ip, image: p.image, count: 0, productIds: [] });
+      const row = map.get(ip)!;
+      row.count += 1;
+      row.productIds.push(p.id);
     }
     return Array.from(map.values()).slice(0, 30);
   }, [matched]);
@@ -105,22 +112,40 @@ export default function BrandDetail() {
               >
                 <div className="relative aspect-square bg-neutral-100">
                   <img className="w-full h-full object-cover" src={item.image} referrerPolicy="no-referrer" alt="" />
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleOwned(`series:${item.ip}`);
-                    }}
-                    className="absolute top-2 right-2 w-9 h-9 rounded-full bg-black/45 backdrop-blur-md flex items-center justify-center border border-white/15 active:scale-90 transition-transform"
-                    aria-label="加入收藏冊"
-                  >
-                    <span
-                      className="material-symbols-outlined text-white text-[20px]"
-                      style={{ fontVariationSettings: isOwned(`series:${item.ip}`) ? "'FILL' 1" : "'FILL' 0" }}
+                  <div className="absolute top-2 right-2 flex flex-col gap-2">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleWishForProductIds(item.productIds);
+                      }}
+                      className="w-9 h-9 rounded-full bg-black/45 backdrop-blur-md flex items-center justify-center border border-white/15 active:scale-90 transition-transform"
+                      aria-label={isAllWished(item.productIds) ? '從想要移除' : '加入想要'}
                     >
-                      check_circle
-                    </span>
-                  </button>
+                      <span
+                        className="material-symbols-outlined text-white text-[20px]"
+                        style={{ fontVariationSettings: isAllWished(item.productIds) ? "'FILL' 1" : "'FILL' 0" }}
+                      >
+                        favorite
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleOwnedForProductIds(item.productIds);
+                      }}
+                      className="w-9 h-9 rounded-full bg-black/45 backdrop-blur-md flex items-center justify-center border border-white/15 active:scale-90 transition-transform"
+                      aria-label={isAllOwned(item.productIds) ? '從收藏冊移除' : '加入收藏冊'}
+                    >
+                      <span
+                        className="material-symbols-outlined text-white text-[20px]"
+                        style={{ fontVariationSettings: isAllOwned(item.productIds) ? "'FILL' 1" : "'FILL' 0" }}
+                      >
+                        check_circle
+                      </span>
+                    </button>
+                  </div>
                 </div>
                 <div className="p-4">
                   <p className="text-sm font-bold text-on-surface">{item.ip}</p>

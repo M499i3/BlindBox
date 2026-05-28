@@ -39,7 +39,7 @@ export default function ListingDetail() {
     <div className="animate-in fade-in duration-500 pb-28">
       <TopBar showBack title="貼文詳情" />
       <main className="pt-topbar-content px-5 space-y-6 w-full min-w-0 max-w-full">
-        <section className="glass-card rounded-2xl overflow-hidden">
+        <section className="rounded-2xl border-2 border-outline bg-white shadow-none overflow-hidden">
           <div className="aspect-square bg-neutral-100">
             <img src={listing.image} alt="" className="w-full h-full object-cover" />
           </div>
@@ -53,7 +53,7 @@ export default function ListingDetail() {
           </div>
         </section>
 
-        <section className="glass-card rounded-2xl p-5 space-y-3">
+        <section className="rounded-2xl border-2 border-outline bg-white shadow-none p-5 space-y-3">
           <h2 className="text-sm font-bold text-on-surface uppercase tracking-wider">貼文資訊</h2>
           <p className="text-sm text-on-surface"><span className="text-on-surface-variant">品牌：</span>{listing.brand}</p>
           <p className="text-sm text-on-surface"><span className="text-on-surface-variant">系列：</span>{listing.series}</p>
@@ -65,7 +65,7 @@ export default function ListingDetail() {
           <p className="text-sm text-on-surface"><span className="text-on-surface-variant">商品描述：</span>{listing.description}</p>
         </section>
 
-        <section className="glass-card rounded-2xl p-5">
+        <section className="rounded-2xl border-2 border-outline bg-white shadow-none p-5">
           <h2 className="text-sm font-bold text-on-surface uppercase tracking-wider mb-3">賣家資訊</h2>
           <div className="flex items-center gap-3">
             {avatarDataUrl && !listing.isSeeded ? (
@@ -81,26 +81,25 @@ export default function ListingDetail() {
         </section>
 
         <div className="flex flex-col gap-3">
-          {!isOwnListing && (
-            <button
-              type="button"
-              disabled={contacting}
-              onClick={async () => {
-                setContacting(true);
-                try {
-                  const chat = await createChat(listing.id);
-                  navigate(`/chat/${chat.id}`);
-                } catch (e) {
-                  console.error(e);
-                } finally {
-                  setContacting(false);
-                }
-              }}
-              className="w-full py-4 rounded-full text-sm font-bold bg-white border border-black/[0.12] text-on-surface disabled:opacity-50"
-            >
-              {contacting ? '開啟中…' : '聯絡賣家'}
-            </button>
-          )}
+          <button
+            type="button"
+            disabled={contacting || isOwnListing}
+            onClick={async () => {
+              if (isOwnListing) return;
+              setContacting(true);
+              try {
+                const chat = await createChat(listing.id);
+                navigate(`/chat/${chat.id}`);
+              } catch (e) {
+                console.error(e);
+              } finally {
+                setContacting(false);
+              }
+            }}
+            className="w-full py-4 rounded-full border-2 border-outline bg-white text-sm font-bold text-on-surface shadow-[4px_4px_0_#111] transition-transform active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-50"
+          >
+            {isOwnListing ? '這是你的貼文' : contacting ? '開啟中…' : '聯絡賣家'}
+          </button>
           <button
             type="button"
             onClick={() => (inCart ? removeFromCart(listing.id) : addToCart(listing.id))}

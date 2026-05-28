@@ -57,7 +57,7 @@ export default function NotificationsHub() {
                   )}
                 </div>
                 {blockItems.length === 0 ? (
-                  <div className="glass-card rounded-2xl p-5">
+                  <div className="glass-card shadow-[4px_4px_0_#111] rounded-2xl p-5">
                     <p className="text-sm text-on-surface-variant">目前沒有{b.label}</p>
                   </div>
                 ) : (
@@ -65,7 +65,7 @@ export default function NotificationsHub() {
                     {blockItems.map((n) => (
                       <div
                         key={n.id}
-                        className={`glass-card rounded-2xl p-5 ${!n.isRead ? 'ring-2 ring-primary/20' : ''}`}
+                        className={`glass-card shadow-[4px_4px_0_#111] rounded-2xl p-5 ${!n.isRead ? 'ring-2 ring-primary/20' : ''}`}
                       >
                         <div className="flex justify-between items-start gap-2 mb-2">
                           <h3 className="text-sm font-bold text-on-surface">{n.title}</h3>

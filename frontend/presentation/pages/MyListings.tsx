@@ -2,11 +2,18 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
+import { useProductCollection } from '@/frontend/presentation/hooks/useProductCollection';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
 
 export default function MyListings() {
   const navigate = useNavigate();
   const { listings } = useAppState();
+  const {
+    toggleWishFromListing,
+    toggleOwnedFromListing,
+    isListingWished,
+    isListingOwned,
+  } = useProductCollection();
   const items = listings;
 
   return (
@@ -46,6 +53,40 @@ export default function MyListings() {
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
               />
+              <div className="absolute top-2 left-2 flex flex-col gap-2">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleWishFromListing(p);
+                  }}
+                  className="w-9 h-9 rounded-full bg-black/45 backdrop-blur-md flex items-center justify-center border border-white/15 active:scale-90 transition-transform"
+                  aria-label={isListingWished(p) ? '從想要移除' : '加入想要'}
+                >
+                  <span
+                    className="material-symbols-outlined text-white text-[20px]"
+                    style={{ fontVariationSettings: isListingWished(p) ? "'FILL' 1" : "'FILL' 0" }}
+                  >
+                    favorite
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleOwnedFromListing(p);
+                  }}
+                  className="w-9 h-9 rounded-full bg-black/45 backdrop-blur-md flex items-center justify-center border border-white/15 active:scale-90 transition-transform"
+                  aria-label={isListingOwned(p) ? '從收藏冊移除' : '加入收藏冊'}
+                >
+                  <span
+                    className="material-symbols-outlined text-white text-[20px]"
+                    style={{ fontVariationSettings: isListingOwned(p) ? "'FILL' 1" : "'FILL' 0" }}
+                  >
+                    check_circle
+                  </span>
+                </button>
+              </div>
               <span className="absolute top-2 right-2 text-[8px] font-bold bg-black/55 text-white px-2 py-0.5 rounded">
                 上架中
               </span>

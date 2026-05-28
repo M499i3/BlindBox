@@ -80,7 +80,7 @@ export default function ChatDetail() {
       />
 
       <section className="shrink-0 px-container-margin pt-topbar-content pb-stack-md">
-        <div className="glass-card rounded-xl p-3 flex items-center justify-between shadow-lg">
+        <div className="rounded-xl border-2 border-outline bg-white shadow-none p-3 flex items-center justify-between">
           <div className="flex items-center gap-3 overflow-hidden min-w-0 flex-1">
             <div className="w-12 h-12 rounded-lg overflow-hidden bg-neutral-100 flex-shrink-0 border border-black/[0.08]">
               {ctx?.listingImage && (
@@ -108,7 +108,7 @@ export default function ChatDetail() {
             <button
               type="button"
               onClick={() => ctx?.listingId && navigate(`/listing/${ctx.listingId}`)}
-              className="premium-gradient text-white px-4 py-2 rounded-full text-[10px] font-bold shadow-lg shadow-primary/25 active:scale-95 transition-transform whitespace-nowrap"
+              className="doodle-press premium-gradient text-white px-4 py-2 rounded-full text-[10px] font-bold transition-transform whitespace-nowrap"
             >
               查看商品
             </button>
@@ -130,7 +130,7 @@ export default function ChatDetail() {
             </div>
           ) : msg.isMine ? (
             <div key={msg.id} className="flex flex-col gap-1 items-end max-w-[85%] self-end">
-              <div className="premium-gradient p-3 rounded-2xl rounded-br-sm text-white text-sm shadow-lg shadow-black/15">
+              <div className="premium-gradient p-3 rounded-2xl rounded-br-sm text-white text-sm">
                 {msg.content}
               </div>
               <span className="text-[10px] text-on-surface-variant mr-1 text-right flex items-center gap-1">
@@ -142,7 +142,7 @@ export default function ChatDetail() {
             <div key={msg.id} className="flex items-end gap-2 max-w-[85%] self-start">
               <UserAvatar size="sm" className="flex-shrink-0 border border-black/[0.08]" />
               <div className="flex flex-col gap-1">
-                <div className="bg-white border border-black/[0.08] p-3 rounded-2xl rounded-bl-sm text-on-surface text-sm shadow-sm">
+                <div className="bg-white border border-black/[0.08] p-3 rounded-2xl rounded-bl-sm text-on-surface text-sm">
                   {msg.content}
                 </div>
                 <span className="text-[10px] text-on-surface-variant ml-1">{msg.timeLabel}</span>
@@ -159,7 +159,7 @@ export default function ChatDetail() {
   <div className="mx-auto flex w-full min-w-0 max-w-full items-center gap-3 text-sm">
     <button
       type="button"
-      className="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-black/[0.08] text-on-surface-variant active:scale-90 transition-transform"
+      className="doodle-press w-10 h-10 flex items-center justify-center rounded-full bg-white border-2 border-outline text-on-surface-variant shadow-[2px_2px_0_#111] transition-transform"
     >
       <span className="material-symbols-outlined">add</span>
     </button>
@@ -184,7 +184,7 @@ export default function ChatDetail() {
 
             disabled={sending || !draft.trim()}
             onClick={handleSend}
-            className="w-10 h-10 flex items-center justify-center rounded-full premium-gradient text-white shadow-lg active:scale-90 transition-transform disabled:opacity-50"
+            className="doodle-press w-10 h-10 flex items-center justify-center rounded-full premium-gradient text-white shadow-[2px_2px_0_#111] transition-transform disabled:opacity-50"
 
           >
             <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>

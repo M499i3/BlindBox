@@ -2,22 +2,19 @@ import React, { useMemo } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate, useParams } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
-import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
+import { deriveSeriesName } from '@/frontend/shared/utils/catalogHierarchy';
+import { useProductCollection } from '@/frontend/presentation/hooks/useProductCollection';
 import { deriveBrandLabel, useCatalogProducts } from '@/frontend/presentation/hooks/useCatalog';
-
-function deriveSeriesName(title: string) {
-  const cleaned = title
-    .replace(/^泡泡萌粒\s*/g, '')
-    .replace(/(手辦|公仔|手办|盲盒|模型|挂件|掛件|周邊|周边)$/g, '')
-    .trim();
-  const m = cleaned.match(/([A-Za-z0-9\u4e00-\u9fff ×xX·\-\(\)（）]{2,32}?系列)/);
-  return m?.[1]?.trim();
-}
 
 export default function SeriesDetail() {
   const { id: ipSlug = '' } = useParams();
   const navigate = useNavigate();
-  const { toggleOwned, isOwned, toggleWish, isWished } = useAppState();
+  const {
+    toggleWishForProductIds,
+    toggleOwnedForProductIds,
+    isAllWished,
+    isAllOwned,
+  } = useProductCollection();
 
   const ip = decodeURIComponent(ipSlug);
   const { products: catalogProducts } = useCatalogProducts();
@@ -27,12 +24,14 @@ export default function SeriesDetail() {
     'https://global-static.popmart.com/globalAdmin/1776844373939____pc____.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp';
 
   const subseries = useMemo(() => {
-    const map = new Map<string, { name: string; image: string; count: number }>();
+    const map = new Map<string, { name: string; image: string; count: number; productIds: string[] }>();
     for (const p of products) {
       const s = deriveSeriesName(p.title);
       if (!s) continue;
-      if (!map.has(s)) map.set(s, { name: s, image: p.image, count: 0 });
-      map.get(s)!.count += 1;
+      if (!map.has(s)) map.set(s, { name: s, image: p.image, count: 0, productIds: [] });
+      const row = map.get(s)!;
+      row.count += 1;
+      row.productIds.push(p.id);
     }
     return Array.from(map.values()).slice(0, 40);
   }, [products]);
@@ -92,14 +91,14 @@ export default function SeriesDetail() {
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      toggleOwned(`subseries:${ip}:${s.name}`);
+                      toggleOwnedForProductIds(s.productIds);
                     }}
                     className="w-9 h-9 rounded-full bg-black/45 backdrop-blur-md flex items-center justify-center border border-white/15 active:scale-90 transition-transform"
                     aria-label="加入收藏冊"
                   >
                     <span
                       className="material-symbols-outlined text-white text-[20px]"
-                      style={{ fontVariationSettings: isOwned(`subseries:${ip}:${s.name}`) ? "'FILL' 1" : "'FILL' 0" }}
+                      style={{ fontVariationSettings: isAllOwned(s.productIds) ? "'FILL' 1" : "'FILL' 0" }}
                     >
                       check_circle
                     </span>
@@ -108,14 +107,14 @@ export default function SeriesDetail() {
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      toggleWish(`series:${ip}:${s.name}`);
+                      toggleWishForProductIds(s.productIds);
                     }}
                     className="w-9 h-9 rounded-full bg-black/45 backdrop-blur-md flex items-center justify-center border border-white/15 active:scale-90 transition-transform"
-                    aria-label="加入願望清單"
+                    aria-label="加入想要"
                   >
                     <span
                       className="material-symbols-outlined text-white text-[20px]"
-                      style={{ fontVariationSettings: isWished(`series:${ip}:${s.name}`) ? "'FILL' 1" : "'FILL' 0" }}
+                      style={{ fontVariationSettings: isAllWished(s.productIds) ? "'FILL' 1" : "'FILL' 0" }}
                     >
                       favorite
                     </span>

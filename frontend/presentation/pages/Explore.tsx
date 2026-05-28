@@ -202,7 +202,7 @@ export default function Explore() {
 
           <div className="space-y-3">
             {selectedIp && seriesOptions.length === 0 && (
-              <div className="glass-card rounded-2xl p-5">
+              <div className="glass-card shadow-[4px_4px_0_#111] rounded-2xl p-5">
                 <p className="text-sm text-on-surface-variant">此 IP 暫無可辨識的系列。</p>
               </div>
             )}
@@ -212,7 +212,7 @@ export default function Explore() {
                 key={s.name}
                 type="button"
                 onClick={() => navigate(`/subseries?ip=${encodeURIComponent(selectedIp)}&name=${encodeURIComponent(s.name)}`)}
-                className="w-full glass-card rounded-2xl overflow-hidden flex items-center gap-4 p-4 text-left"
+                className="w-full glass-card shadow-[4px_4px_0_#111] rounded-2xl overflow-hidden flex items-center gap-4 p-4 text-left"
               >
                 <div className="w-16 h-16 rounded-2xl overflow-hidden bg-neutral-100 shrink-0 border border-black/[0.08]">
                   {s.image ? (

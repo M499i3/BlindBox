@@ -19,9 +19,11 @@ import {
 } from '@/frontend/infrastructure/api/listingsApi';
 import { getProfile, updateProfile } from '@/frontend/infrastructure/api/profileApi';
 import { useAuth } from '@/frontend/presentation/providers/AuthProvider';
+import { createDefaultWishAlertSettings, type WishAlertSettings } from '@/frontend/domain/entities/wishAlert';
+import { getLowestMarketPriceForTitle } from '@/frontend/shared/utils/marketPrice';
 import { isMockDataEnabled, popmartShowcase } from '@/frontend/lib/popmartShowcase';
-
 export type { Listing, CreateListingInput };
+export type { WishAlertSettings };
 
 const STORAGE_KEY = 'blindbox_app_state_v1';
 
@@ -46,6 +48,22 @@ type AppStateValue = {
   wishIds: string[];
   toggleWish: (id: string) => void;
   isWished: (id: string) => boolean;
+  /** 批次覆寫（用於舊資料遷移至圖鑑 product id） */
+  replaceOwnedIds: (ids: string[]) => void;
+  replaceWishIds: (ids: string[]) => void;
+  wishAlerts: Record<string, WishAlertSettings>;
+  getWishAlert: (productId: string) => WishAlertSettings | undefined;
+  setWishAlert: (productId: string, settings: WishAlertSettings) => void;
+  confirmWishWithSettings: (productId: string, settings: WishAlertSettings) => void;
+  addWishWithDefaultSettings: (productId: string, title: string) => void;
+  wantModalOpen: boolean;
+  wantModalProductId: string | null;
+  wantModalListing: Pick<Listing, 'id' | 'title' | 'itemName' | 'image'> | null;
+  openWantModal: (options?: {
+    productId?: string | null;
+    listing?: Pick<Listing, 'id' | 'title' | 'itemName' | 'image'> | null;
+  }) => void;
+  closeWantModal: () => void;
 };
 
 const AppStateContext = createContext<AppStateValue | null>(null);
@@ -85,6 +103,13 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const [cartIds, setCartIds] = useState<string[]>([]);
   const [ownedIds, setOwnedIds] = useState<string[]>([]);
   const [wishIds, setWishIds] = useState<string[]>([]);
+  const [wishAlerts, setWishAlerts] = useState<Record<string, WishAlertSettings>>({});
+  const [wantModalOpen, setWantModalOpen] = useState(false);
+  const [wantModalProductId, setWantModalProductId] = useState<string | null>(null);
+  const [wantModalListing, setWantModalListing] = useState<Pick<
+    Listing,
+    'id' | 'title' | 'itemName' | 'image'
+  > | null>(null);
 
   const seededPosts = useMemo(() => (mock ? buildSeededPosts() : []), [mock]);
 
@@ -100,9 +125,11 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         cartIds?: string[];
         ownedIds?: string[];
         wishIds?: string[];
+        wishAlerts?: Record<string, WishAlertSettings>;
       };
       setOwnedIds(parsed.ownedIds ?? []);
       setWishIds(parsed.wishIds ?? []);
+      setWishAlerts(parsed.wishAlerts ?? {});
       if (mock) {
         setAvatarDataUrlState(parsed.avatarDataUrl ?? null);
         if (parsed.displayName) setDisplayName(parsed.displayName);
@@ -125,9 +152,10 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         cartIds: mock ? cartIds : undefined,
         ownedIds,
         wishIds,
+        wishAlerts,
       })
     );
-  }, [avatarDataUrl, displayName, listings, cartIds, ownedIds, wishIds, mock]);
+  }, [avatarDataUrl, displayName, listings, cartIds, ownedIds, wishIds, wishAlerts, mock]);
 
   const loadUserProfile = useCallback(async () => {
     const profile = await getProfile();
@@ -261,6 +289,60 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
 
   const isWished = useCallback((id: string) => wishIds.includes(id), [wishIds]);
 
+  const replaceOwnedIds = useCallback((ids: string[]) => {
+    setOwnedIds(ids);
+  }, []);
+
+  const replaceWishIds = useCallback((ids: string[]) => {
+    setWishIds(ids);
+  }, []);
+
+  const getWishAlert = useCallback(
+    (productId: string) => wishAlerts[productId],
+    [wishAlerts]
+  );
+
+  const setWishAlert = useCallback((productId: string, settings: WishAlertSettings) => {
+    setWishAlerts((prev) => ({ ...prev, [productId]: settings }));
+  }, []);
+
+  const confirmWishWithSettings = useCallback((productId: string, settings: WishAlertSettings) => {
+    setWishIds((prev) => (prev.includes(productId) ? prev : [...prev, productId]));
+    setWishAlerts((prev) => ({ ...prev, [productId]: settings }));
+    setWantModalOpen(false);
+    setWantModalProductId(null);
+    setWantModalListing(null);
+  }, []);
+
+  const addWishWithDefaultSettings = useCallback(
+    (productId: string, title: string) => {
+      if (!productId || wishIds.includes(productId)) return;
+      const lowest = getLowestMarketPriceForTitle(title, allPosts);
+      const settings = createDefaultWishAlertSettings(lowest);
+      setWishIds((prev) => [...prev, productId]);
+      setWishAlerts((prev) => ({ ...prev, [productId]: settings }));
+    },
+    [wishIds, allPosts]
+  );
+
+  const openWantModal = useCallback(
+    (options?: {
+      productId?: string | null;
+      listing?: Pick<Listing, 'id' | 'title' | 'itemName' | 'image'> | null;
+    }) => {
+      setWantModalProductId(options?.productId ?? null);
+      setWantModalListing(options?.listing ?? null);
+      setWantModalOpen(true);
+    },
+    []
+  );
+
+  const closeWantModal = useCallback(() => {
+    setWantModalOpen(false);
+    setWantModalProductId(null);
+    setWantModalListing(null);
+  }, []);
+
   const getPostById = useCallback(
     (id: string) => allPosts.find((p) => p.id === id),
     [allPosts]
@@ -288,6 +370,17 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       wishIds,
       toggleWish,
       isWished,
+      replaceOwnedIds,
+      replaceWishIds,
+      wishAlerts,
+      getWishAlert,
+      setWishAlert,
+      confirmWishWithSettings,
+      addWishWithDefaultSettings,
+      wantModalOpen,
+      wantModalProductId,
+      openWantModal,
+      closeWantModal,
     }),
     [
       avatarDataUrl,
@@ -311,6 +404,18 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       wishIds,
       toggleWish,
       isWished,
+      replaceOwnedIds,
+      replaceWishIds,
+      wishAlerts,
+      getWishAlert,
+      setWishAlert,
+      confirmWishWithSettings,
+      addWishWithDefaultSettings,
+      wantModalOpen,
+      wantModalProductId,
+      wantModalListing,
+      openWantModal,
+      closeWantModal,
     ]
   );
 

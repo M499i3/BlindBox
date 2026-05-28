@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
+import { useProductCollection } from '@/frontend/presentation/hooks/useProductCollection';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
 import { deriveBrandLabel, useCatalogProducts } from '@/frontend/presentation/hooks/useCatalog';
 
@@ -17,7 +18,8 @@ function deriveSeriesName(title: string) {
 export default function SubseriesDetail() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
-  const { toggleOwned, isOwned, toggleWish, isWished } = useAppState();
+  const { toggleOwned, isOwned } = useAppState();
+  const { requestWishProduct, isWished } = useProductCollection();
 
   const ip = params.get('ip') ?? '';
   const name = params.get('name') ?? '';
@@ -50,14 +52,14 @@ export default function SubseriesDetail() {
           <div className="space-y-4">
             <h2 className="text-3xl font-bold text-on-surface">{name || '系列'}</h2>
             <p className="text-on-surface-variant leading-relaxed text-sm">
-              {ip ? `IP：${ip}。` : ''} 依層級瀏覽：品牌 → IP → 系列 → 商品。
+              {ip ? `IP：${ip}。` : ''} 依層級瀏覽：品牌 → IP → 系列 → 盲盒。
             </p>
 
             <div className="flex gap-10 mt-2">
               <div className="flex flex-col">
                 <span className="text-2xl font-bold text-primary">{products.length}</span>
                 <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mt-1">
-                  商品
+                  盲盒
                 </span>
               </div>
               <div className="flex flex-col">
@@ -72,7 +74,7 @@ export default function SubseriesDetail() {
 
         <section>
           <div className="flex justify-between items-end mb-6">
-            <h3 className="text-xl font-bold text-secondary">商品</h3>
+            <h3 className="text-xl font-bold text-secondary">盲盒</h3>
           </div>
 
         <div className="grid grid-cols-2 gap-grid-gutter">
@@ -92,6 +94,22 @@ export default function SubseriesDetail() {
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
+                      requestWishProduct(p.id);
+                    }}
+                    className="w-9 h-9 rounded-full bg-black/45 backdrop-blur-md flex items-center justify-center border border-white/15 active:scale-90 transition-transform"
+                    aria-label="加入想要"
+                  >
+                    <span
+                      className="material-symbols-outlined text-white text-[20px]"
+                      style={{ fontVariationSettings: isWished(p.id) ? "'FILL' 1" : "'FILL' 0" }}
+                    >
+                      favorite
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
                       toggleOwned(p.id);
                     }}
                     className="w-9 h-9 rounded-full bg-black/45 backdrop-blur-md flex items-center justify-center border border-white/15 active:scale-90 transition-transform"
@@ -102,22 +120,6 @@ export default function SubseriesDetail() {
                       style={{ fontVariationSettings: isOwned(p.id) ? "'FILL' 1" : "'FILL' 0" }}
                     >
                       check_circle
-                    </span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleWish(p.id);
-                    }}
-                    className="w-9 h-9 rounded-full bg-black/45 backdrop-blur-md flex items-center justify-center border border-white/15 active:scale-90 transition-transform"
-                    aria-label="加入願望清單"
-                  >
-                    <span
-                      className="material-symbols-outlined text-white text-[20px]"
-                      style={{ fontVariationSettings: isWished(p.id) ? "'FILL' 1" : "'FILL' 0" }}
-                    >
-                      favorite
                     </span>
                   </button>
                 </div>

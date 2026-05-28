@@ -23,7 +23,7 @@ export default function CartPage() {
           <p className="text-sm text-on-surface-variant text-center py-20">購物車目前是空的。</p>
         )}
         {cartItems.map((item) => (
-          <div key={item.id} className="glass-card rounded-2xl p-3 flex gap-3">
+          <div key={item.id} className="rounded-2xl border-2 border-outline bg-white shadow-none p-3 flex gap-3">
             <img src={item.image} alt="" className="w-20 h-20 rounded-xl object-cover bg-neutral-100" />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold text-on-surface line-clamp-2">{item.title}</p>
@@ -41,7 +41,7 @@ export default function CartPage() {
         ))}
 
         {cartItems.length > 0 && (
-          <section className="glass-card rounded-2xl p-4 space-y-3">
+          <section className="rounded-2xl border-2 border-outline bg-white shadow-none p-4 space-y-3">
             <div className="flex justify-between text-sm">
               <span className="text-on-surface-variant">小計</span>
               <span className="font-bold text-on-surface">
@@ -149,7 +149,7 @@ if (!orderRes.ok) {
                   alert('結帳失敗，請稍後再試');
                 }
               }}
-              className="w-full py-3 premium-gradient rounded-full text-white font-bold text-sm"
+              className="w-full py-3 rounded-full border-2 border-outline bg-primary text-on-primary font-bold text-sm shadow-none"
             >
               前往結帳
             </button>

@@ -52,7 +52,7 @@
 
   --radius-3xl: 1.25rem;
   --doodle-border: 2.5px;
-  --doodle-shadow: 4px 4px 0 #111111;
+  --doodle-shadow: 6px 6px 0 #111111;
 }
 
 @utility glass-card {
@@ -66,7 +66,7 @@
   background: var(--color-surface-container);
   border: var(--doodle-border) solid var(--color-outline);
   border-radius: 16px;
-  box-shadow: 5px 5px 0 var(--color-outline);
+  box-shadow: 7px 7px 0 var(--color-outline);
 }
 
 @utility premium-gradient {
@@ -88,7 +88,7 @@
   color: var(--color-on-background);
   border: var(--doodle-border) solid var(--color-outline);
   border-radius: 9999px;
-  box-shadow: 3px 3px 0 var(--color-outline);
+  box-shadow: 4px 4px 0 var(--color-outline);
   font-weight: 700;
   transition:
     transform 140ms ease,
@@ -100,7 +100,7 @@
   background: #ffffff;
   border: 2px solid var(--color-outline);
   border-radius: 9999px;
-  box-shadow: 2px 2px 0 var(--color-outline);
+  box-shadow: 3px 3px 0 var(--color-outline);
   font-weight: 600;
   transition: background-color 140ms ease, transform 140ms ease;
 }

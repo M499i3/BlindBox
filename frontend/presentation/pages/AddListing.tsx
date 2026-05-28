@@ -181,7 +181,7 @@ export default function AddListing() {
                 key={c}
                 type="button"
                 onClick={() => setCondition(c)}
-                className={`flex-1 py-3 text-xs font-bold rounded-xl transition-colors ${condition === c ? 'premium-gradient text-white shadow-lg' : 'text-slate-500 hover:text-black'}`}
+                className={`flex-1 py-3 text-xs font-bold rounded-xl transition-colors ${condition === c ? 'doodle-press premium-gradient text-white' : 'text-slate-500 hover:text-black'}`}
               >
                 {c}
               </button>
@@ -278,7 +278,7 @@ export default function AddListing() {
             type="button"
             whileTap={{ scale: 0.97 }}
             onClick={submit}
-            className="py-4 premium-gradient text-white font-black text-xs uppercase tracking-widest rounded-full shadow-[0_0_20px_rgba(192,38,211,0.3)] active:scale-95"
+            className="doodle-press py-4 premium-gradient text-white font-black text-xs uppercase tracking-widest rounded-full active:scale-95"
           >
             發布 listing
           </motion.button>

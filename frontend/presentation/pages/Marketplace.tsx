@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import CartIcon from '@/frontend/presentation/components/CartIcon';
 import { cn } from '@/frontend/shared/utils/cn';
+import { useProductCollection } from '@/frontend/presentation/hooks/useProductCollection';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
 import { useCatalogProducts } from '@/frontend/presentation/hooks/useCatalog';
 import { getRankings } from '@/frontend/infrastructure/api/marketplaceApi';
@@ -13,7 +14,13 @@ import { TOPBAR_RIGHT_ICON_SIZE } from '@/frontend/presentation/constants/topbar
 
 export default function Marketplace() {
   const navigate = useNavigate();
-  const { cartIds, listings, posts, addToCart, isInCart, toggleOwned, isOwned, toggleWish, isWished } = useAppState();
+  const { cartIds, listings, posts, addToCart, isInCart } = useAppState();
+  const {
+    toggleWishFromListing,
+    toggleOwnedFromListing,
+    isListingWished,
+    isListingOwned,
+  } = useProductCollection();
   const { products } = useCatalogProducts();
 
   const [rankings, setRankings] = useState<MarketplaceRankingItem[]>([]);
@@ -97,7 +104,7 @@ export default function Marketplace() {
 
         {/* Hero Banner */}
         <section className="mb-section-gap">
-          <div className="flex h-[200px] flex-col overflow-hidden rounded-2xl border-[2.5px] border-outline bg-white shadow-[4px_4px_0_#111]">
+          <div className="flex h-[200px] flex-col overflow-hidden rounded-2xl border-[2.5px] border-outline bg-white shadow-[6px_6px_0_#111]">
             <div className="relative min-h-0 flex-1 overflow-hidden">
               <img
                 className="absolute left-1/2 -top-24 h-full w-full max-w-none -translate-x-1/2 -translate-y-2 origin-top scale-180 object-contain"
@@ -165,8 +172,37 @@ export default function Marketplace() {
                   <div className="relative aspect-square">
                     <img className="w-full h-full object-cover" src={item.image} referrerPolicy="no-referrer" alt={item.title} />
                     <div className="absolute top-2 right-2 flex flex-col gap-2">
-                      <button className="w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white">
-                        <span className="material-symbols-outlined text-[20px]">favorite</span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleWishFromListing(item);
+                        }}
+                        className="w-9 h-9 rounded-full bg-black/45 backdrop-blur-md flex items-center justify-center border border-white/15 active:scale-90 transition-transform"
+                        aria-label={isListingWished(item) ? '從想要移除' : '加入想要'}
+                      >
+                        <span
+                          className="material-symbols-outlined text-white text-[20px]"
+                          style={{ fontVariationSettings: isListingWished(item) ? "'FILL' 1" : "'FILL' 0" }}
+                        >
+                          favorite
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleOwnedFromListing(item);
+                        }}
+                        className="w-9 h-9 rounded-full bg-black/45 backdrop-blur-md flex items-center justify-center border border-white/15 active:scale-90 transition-transform"
+                        aria-label={isListingOwned(item) ? '從收藏冊移除' : '加入收藏冊'}
+                      >
+                        <span
+                          className="material-symbols-outlined text-white text-[20px]"
+                          style={{ fontVariationSettings: isListingOwned(item) ? "'FILL' 1" : "'FILL' 0" }}
+                        >
+                          check_circle
+                        </span>
                       </button>
                     </div>
                   </div>
@@ -196,7 +232,7 @@ export default function Marketplace() {
                         }}
                         disabled={isInCart(item.id) || !item.price}
                         className={cn(
-                          'shrink-0 h-11 min-w-11 px-3 rounded-full border-2 border-outline shadow-[2px_2px_0_#111] font-extrabold text-xs transition-transform active:translate-x-0.5 active:translate-y-0.5 active:shadow-none',
+                          'shrink-0 h-11 min-w-11 px-3 rounded-full border-2 border-outline shadow-[3px_3px_0_#111] font-extrabold text-xs transition-transform active:translate-x-0.5 active:translate-y-0.5 active:shadow-none',
                           isInCart(item.id)
                             ? 'bg-secondary text-on-secondary opacity-90'
                             : !item.price
@@ -230,8 +266,37 @@ export default function Marketplace() {
                   <div className="relative aspect-square">
                     <img className="w-full h-full object-cover" src={item.image} referrerPolicy="no-referrer" alt={item.title} />
                     <div className="absolute top-2 right-2 flex flex-col gap-2">
-                      <button className="w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white">
-                        <span className="material-symbols-outlined text-[20px]">favorite</span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleWishFromListing(item);
+                        }}
+                        className="w-9 h-9 rounded-full bg-black/45 backdrop-blur-md flex items-center justify-center border border-white/15 active:scale-90 transition-transform"
+                        aria-label={isListingWished(item) ? '從想要移除' : '加入想要'}
+                      >
+                        <span
+                          className="material-symbols-outlined text-white text-[20px]"
+                          style={{ fontVariationSettings: isListingWished(item) ? "'FILL' 1" : "'FILL' 0" }}
+                        >
+                          favorite
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleOwnedFromListing(item);
+                        }}
+                        className="w-9 h-9 rounded-full bg-black/45 backdrop-blur-md flex items-center justify-center border border-white/15 active:scale-90 transition-transform"
+                        aria-label={isListingOwned(item) ? '從收藏冊移除' : '加入收藏冊'}
+                      >
+                        <span
+                          className="material-symbols-outlined text-white text-[20px]"
+                          style={{ fontVariationSettings: isListingOwned(item) ? "'FILL' 1" : "'FILL' 0" }}
+                        >
+                          check_circle
+                        </span>
                       </button>
                     </div>
                   </div>
@@ -257,7 +322,7 @@ export default function Marketplace() {
                         }}
                         disabled={isInCart(item.id) || !item.price}
                         className={cn(
-                          'shrink-0 h-11 min-w-11 px-3 rounded-full border-2 border-outline shadow-[2px_2px_0_#111] font-extrabold text-xs transition-transform active:translate-x-0.5 active:translate-y-0.5 active:shadow-none',
+                          'shrink-0 h-11 min-w-11 px-3 rounded-full border-2 border-outline shadow-[3px_3px_0_#111] font-extrabold text-xs transition-transform active:translate-x-0.5 active:translate-y-0.5 active:shadow-none',
                           isInCart(item.id)
                             ? 'bg-secondary text-on-secondary opacity-90'
                             : !item.price

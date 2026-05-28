@@ -55,7 +55,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-[#f6f6f6] flex flex-col items-center justify-center px-6 max-w-[470px] mx-auto border-x border-black/[0.08]">
-      <div className="w-full glass-card rounded-3xl p-8 shadow-lg space-y-6">
+      <div className="w-full glass-card rounded-3xl p-8 space-y-6">
         <div className="text-center space-y-1">
           <h1 className="text-2xl font-black text-on-surface tracking-tight">BlindBox</h1>
           <p className="text-sm text-on-surface-variant">登入以繼續使用市集</p>
@@ -98,7 +98,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full py-4 premium-gradient rounded-full text-white font-bold text-sm shadow-lg shadow-primary/25 disabled:opacity-60 active:scale-[0.98] transition-transform"
+            className="doodle-press w-full py-4 premium-gradient rounded-full text-white font-bold text-sm disabled:opacity-60 transition-transform"
           >
             {submitting ? '登入中…' : '登入'}
           </button>

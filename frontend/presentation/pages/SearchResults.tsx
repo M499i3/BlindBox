@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import { popmartShowcase } from '@/frontend/lib/popmartShowcase';
+import { useProductCollection } from '@/frontend/presentation/hooks/useProductCollection';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
 import { cn } from '@/frontend/shared/utils/cn';
 import { filterListingsByFuzzyQuery } from '@/frontend/shared/utils/searchListings';
@@ -13,6 +14,16 @@ export default function SearchResults() {
   const initialQ = searchParams.get('q') ?? '';
   const [draft, setDraft] = useState(initialQ);
   const { posts, addToCart, isInCart } = useAppState();
+  const {
+    toggleWishFromListing,
+    toggleOwnedFromListing,
+    isListingWished,
+    isListingOwned,
+    requestWishProduct,
+    toggleOwned,
+    isWished,
+    isOwned,
+  } = useProductCollection();
 
   useEffect(() => {
     setDraft(initialQ);
@@ -73,6 +84,40 @@ export default function SearchResults() {
                       className="h-full w-full object-cover"
                       referrerPolicy="no-referrer"
                     />
+                    <div className="absolute top-2 right-2 flex flex-col gap-2">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleWishFromListing(item);
+                        }}
+                        className="w-9 h-9 rounded-full bg-black/45 backdrop-blur-md flex items-center justify-center border border-white/15 active:scale-90 transition-transform"
+                        aria-label={isListingWished(item) ? '從想要移除' : '加入想要'}
+                      >
+                        <span
+                          className="material-symbols-outlined text-white text-[20px]"
+                          style={{ fontVariationSettings: isListingWished(item) ? "'FILL' 1" : "'FILL' 0" }}
+                        >
+                          favorite
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleOwnedFromListing(item);
+                        }}
+                        className="w-9 h-9 rounded-full bg-black/45 backdrop-blur-md flex items-center justify-center border border-white/15 active:scale-90 transition-transform"
+                        aria-label={isListingOwned(item) ? '從收藏冊移除' : '加入收藏冊'}
+                      >
+                        <span
+                          className="material-symbols-outlined text-white text-[20px]"
+                          style={{ fontVariationSettings: isListingOwned(item) ? "'FILL' 1" : "'FILL' 0" }}
+                        >
+                          check_circle
+                        </span>
+                      </button>
+                    </div>
                   </div>
                   <div className="p-3">
                     {item.tradeMode ? (
@@ -97,7 +142,7 @@ export default function SearchResults() {
                         }}
                         disabled={isInCart(item.id) || !item.price}
                         className={cn(
-                          'h-11 min-w-11 shrink-0 rounded-full border-2 border-outline px-3 text-xs font-extrabold shadow-[2px_2px_0_#111] transition-transform active:translate-x-0.5 active:translate-y-0.5 active:shadow-none',
+                          'h-11 min-w-11 shrink-0 rounded-full border-2 border-outline px-3 text-xs font-extrabold shadow-[3px_3px_0_#111] transition-transform active:translate-x-0.5 active:translate-y-0.5 active:shadow-none',
                           isInCart(item.id)
                             ? 'bg-secondary text-on-secondary opacity-90'
                             : !item.price
@@ -130,13 +175,47 @@ export default function SearchResults() {
                   onClick={() => navigate(`/product/${p.id}`)}
                   className="glass-card cursor-pointer overflow-hidden rounded-2xl text-left"
                 >
-                  <div className="aspect-square bg-neutral-100">
+                  <div className="relative aspect-square bg-neutral-100">
                     <img
                       src={p.image}
                       alt=""
                       className="h-full w-full object-cover"
                       referrerPolicy="no-referrer"
                     />
+                    <div className="absolute top-2 right-2 flex flex-col gap-2">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          requestWishProduct(p.id);
+                        }}
+                        className="w-9 h-9 rounded-full bg-black/45 backdrop-blur-md flex items-center justify-center border border-white/15 active:scale-90 transition-transform"
+                        aria-label={isWished(p.id) ? '從想要移除' : '加入想要'}
+                      >
+                        <span
+                          className="material-symbols-outlined text-white text-[20px]"
+                          style={{ fontVariationSettings: isWished(p.id) ? "'FILL' 1" : "'FILL' 0" }}
+                        >
+                          favorite
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleOwned(p.id);
+                        }}
+                        className="w-9 h-9 rounded-full bg-black/45 backdrop-blur-md flex items-center justify-center border border-white/15 active:scale-90 transition-transform"
+                        aria-label={isOwned(p.id) ? '從收藏冊移除' : '加入收藏冊'}
+                      >
+                        <span
+                          className="material-symbols-outlined text-white text-[20px]"
+                          style={{ fontVariationSettings: isOwned(p.id) ? "'FILL' 1" : "'FILL' 0" }}
+                        >
+                          check_circle
+                        </span>
+                      </button>
+                    </div>
                   </div>
                   <div className="p-3">
                     <p className="line-clamp-2 text-sm font-semibold leading-snug text-on-surface">{p.title}</p>
@@ -153,7 +232,7 @@ export default function SearchResults() {
                         }}
                         disabled={isInCart(`pm_${p.id}`) || !p.price}
                         className={cn(
-                          'h-11 min-w-0 shrink-0 rounded-full border-2 border-outline px-2.5 text-[11px] font-extrabold whitespace-nowrap shadow-[2px_2px_0_#111] transition-transform active:translate-x-0.5 active:translate-y-0.5 active:shadow-none',
+                          'h-11 min-w-0 shrink-0 rounded-full border-2 border-outline px-2.5 text-[11px] font-extrabold whitespace-nowrap shadow-[3px_3px_0_#111] transition-transform active:translate-x-0.5 active:translate-y-0.5 active:shadow-none',
                           isInCart(`pm_${p.id}`)
                             ? 'bg-secondary text-on-secondary opacity-90'
                             : !p.price

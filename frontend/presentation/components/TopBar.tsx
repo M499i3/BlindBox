@@ -41,7 +41,7 @@ export default function TopBar({ title, showBack, rightElement }: TopBarProps) {
           <button
             type="button"
             onClick={() => (backTarget ? navigate(backTarget) : navigate(-1))}
-            className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-outline bg-white shadow-[2px_2px_0_#111] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none active:bg-accent-sky transition-all shrink-0"
+            className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-outline bg-white shadow-[3px_3px_0_#111] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none active:bg-accent-sky transition-all shrink-0"
             aria-label="返回"
           >
             <span className="material-symbols-outlined text-on-background">arrow_back</span>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import AppShell from '@/frontend/presentation/components/AppShell';
+import WantModalHost from '@/frontend/presentation/components/WantModalHost';
 import AppRouter from '@/frontend/presentation/router/AppRouter';
 
 export default function App() {
@@ -9,6 +10,7 @@ export default function App() {
       <AppShell>
         <AppRouter />
       </AppShell>
+      <WantModalHost />
     </Router>
   );
 }

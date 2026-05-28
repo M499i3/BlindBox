@@ -87,10 +87,10 @@ export default function Chat() {
                       }
                     }}
                     onClick={() => setActiveNotifId(notif.id)}
-                    className="relative w-full glass-card rounded-2xl p-4 flex items-center gap-4 text-left"
+                    className="relative w-full glass-card shadow-[2px_2px_0_#111] rounded-2xl p-4 flex items-center gap-4 text-left"
                   >
                     {!notif.isRead && (
-                      <div className="absolute top-3 right-3 w-2.5 h-2.5 bg-primary rounded-full shadow-[0_0_12px_rgba(255,26,26,0.45)]" />
+                      <div className="absolute top-3 right-3 w-2.5 h-2.5 bg-primary rounded-full" />
                     )}
                     <div className="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center text-slate-400 flex-shrink-0">
                       <span
@@ -127,7 +127,7 @@ export default function Chat() {
               type="button"
               whileTap={{ scale: 0.98 }}
               onClick={() => navigate(`/chat/${chat.id}`)}
-              className="w-full glass-card rounded-2xl p-4 flex items-center gap-4 text-left"
+              className="w-full glass-card shadow-[2px_2px_0_#111] rounded-2xl p-4 flex items-center gap-4 text-left"
             >
               <div className="relative">
                 <UserAvatar size="lg" />
@@ -171,7 +171,7 @@ export default function Chat() {
             aria-label="關閉"
           />
           <div className="absolute left-1/2 -translate-x-1/2 bottom-0 w-full max-w-[470px] p-4 pb-8">
-            <div className="glass-card rounded-3xl p-5">
+            <div className="glass-card shadow-[2px_2px_0_#111] rounded-3xl p-5">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="text-[10px] font-black text-secondary tracking-wider uppercase">

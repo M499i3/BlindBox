@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import UserAvatar from '@/frontend/presentation/components/UserAvatar';
+import { useProductCollection } from '@/frontend/presentation/hooks/useProductCollection';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
 import { useCatalogProduct, deriveBrandLabel } from '@/frontend/presentation/hooks/useCatalog';
 import PriceTrendChart from '@/frontend/presentation/components/PriceTrendChart';
@@ -21,7 +22,8 @@ export default function ProductDetail() {
   const navigate = useNavigate();
   const location = useLocation();
   const { product } = useCatalogProduct(id);
-  const { toggleOwned, isOwned, toggleWish, isWished, posts } = useAppState();
+  const { toggleOwned, isOwned, posts } = useAppState();
+  const { requestWishProduct, isWished } = useProductCollection();
   const fromCatalog = useMemo(() => new URLSearchParams(location.search).get('src') === 'catalog', [location.search]);
   const catalogRightElement = useMemo(() => {
     if (!product) return undefined;
@@ -29,9 +31,9 @@ export default function ProductDetail() {
       <div className="flex gap-4">
         <button
           type="button"
-          onClick={() => toggleWish(product.id)}
+          onClick={() => requestWishProduct(product.id)}
           className={isWished(product.id) ? 'text-secondary' : 'text-slate-500'}
-          aria-label="加入願望清單"
+          aria-label="加入想要"
         >
           <span
             className="material-symbols-outlined"
@@ -55,7 +57,7 @@ export default function ProductDetail() {
         </button>
       </div>
     );
-  }, [product, isOwned, isWished, toggleOwned, toggleWish]);
+  }, [product, isOwned, isWished, toggleOwned, requestWishProduct]);
 
   const relatedPosts = useMemo(() => {
     if (!product) return { trade: [], group: [], sell: [] as typeof posts };
@@ -75,7 +77,7 @@ export default function ProductDetail() {
   if (!product) {
     return (
       <div className="animate-in fade-in duration-500 min-h-screen pt-24 px-6 text-center">
-        <p className="text-on-surface-variant text-sm mb-6">找不到此商品（可能已下架或 ID 不存在）。</p>
+        <p className="text-on-surface-variant text-sm mb-6">找不到此盲盒（可能已下架或 ID 不存在）。</p>
         <button
           type="button"
           onClick={() => navigate('/search')}
@@ -132,30 +134,30 @@ export default function ProductDetail() {
               </>
             )}
             <span className="opacity-70">/</span>
-            <span className="text-on-surface">商品</span>
+            <span className="text-on-surface">盲盒</span>
           </nav>
           <h1 className="text-lg font-extrabold text-on-surface leading-snug">{product.title}</h1>
         </section>
 
         {fromCatalog && (
           <>
-            <section className="glass-card rounded-2xl overflow-hidden">
+            <section className="rounded-2xl border-2 border-outline bg-white shadow-none overflow-hidden">
               <div className="aspect-square bg-neutral-100">
                 <img className="w-full h-full object-cover" src={hero} referrerPolicy="no-referrer" alt="" />
               </div>
               <div className="p-5 space-y-3">
                 <p className="text-[10px] font-black text-secondary tracking-wider uppercase">盲盒介紹</p>
                 <p className="text-sm text-on-surface-variant leading-relaxed">
-                  這裡是圖鑑模式的介紹頁（示意）。你可以先收藏/加願望清單，再回到商城查看成交/貼文。
+                  這裡是圖鑑模式的介紹頁（示意）。你可以先收藏/加想要，再回到商城查看成交/貼文。
                 </p>
                 <PriceTrendChart seed={product.id} currentPriceText={product.price} />
                 <div className="flex gap-2 flex-wrap">
                   <button
                     type="button"
                     onClick={() => navigate(`/search?q=${encodeURIComponent(product.title)}`)}
-                    className="w-full premium-gradient text-white py-4 rounded-full text-sm font-extrabold active:scale-[0.99] transition-transform"
+                    className="w-full premium-gradient text-white py-4 rounded-full text-sm font-extrabold shadow-[3px_3px_0_#111] active:scale-[0.99] transition-transform"
                   >
-                    到商城搜尋此商品
+                    到商城搜尋此盲盒
                   </button>
                 </div>
               </div>
@@ -188,7 +190,7 @@ export default function ProductDetail() {
                 type="button"
                 whileTap={{ scale: 0.99 }}
                 onClick={() => navigate(`/listing/${p.id}`)}
-                className="glass-card rounded-2xl p-4 flex items-center gap-4 text-left"
+                className="glass-card shadow-[4px_4px_0_#111] rounded-2xl p-4 flex items-center gap-4 text-left"
               >
                 <div className="w-16 h-16 rounded-xl overflow-hidden bg-neutral-100 flex-shrink-0 border border-black/[0.08]">
                   <img className="w-full h-full object-cover" src={p.image} referrerPolicy="no-referrer" alt="" />
@@ -198,7 +200,6 @@ export default function ProductDetail() {
                     <span className="text-[10px] font-bold uppercase tracking-wider text-primary">
                       {p.tradeMode || '我想換'}
                     </span>
-                    <span className="text-sm font-extrabold text-primary whitespace-nowrap">{p.price}</span>
                   </div>
                   <p className="text-sm font-bold text-on-surface line-clamp-1 mt-1">{p.title}</p>
                   <p className="text-xs text-on-surface-variant line-clamp-1 mt-1">{p.description}</p>
@@ -233,7 +234,7 @@ export default function ProductDetail() {
                 type="button"
                 whileTap={{ scale: 0.99 }}
                 onClick={() => navigate(`/listing/${p.id}`)}
-                className="glass-card rounded-2xl p-4 flex items-center gap-4 text-left"
+                className="glass-card shadow-[4px_4px_0_#111] rounded-2xl p-4 flex items-center gap-4 text-left"
               >
                 <div className="w-16 h-16 rounded-xl overflow-hidden bg-neutral-100 flex-shrink-0 border border-black/[0.08]">
                   <img className="w-full h-full object-cover" src={p.image} referrerPolicy="no-referrer" alt="" />
@@ -243,7 +244,6 @@ export default function ProductDetail() {
                     <span className="text-[10px] font-bold uppercase tracking-wider text-primary">
                       {p.tradeMode || '我要拆'}
                     </span>
-                    <span className="text-sm font-extrabold text-primary whitespace-nowrap">{p.price}</span>
                   </div>
                   <p className="text-sm font-bold text-on-surface line-clamp-1 mt-1">{p.title}</p>
                   <p className="text-xs text-on-surface-variant line-clamp-1 mt-1">{p.description}</p>
@@ -270,7 +270,7 @@ export default function ProductDetail() {
               </span>
             </h2>
             <div className="flex items-center gap-1 bg-surface-container px-3 py-1 rounded-full text-[10px] font-bold text-on-surface-variant">
-              <span>價格最低</span>
+              <span>最新</span>
               <span className="material-symbols-outlined text-sm">expand_more</span>
             </div>
           </div>
@@ -281,7 +281,7 @@ export default function ProductDetail() {
                 type="button"
                 whileTap={{ scale: 0.99 }}
                 onClick={() => navigate(`/listing/${p.id}`)}
-                className="glass-card rounded-2xl p-4 flex items-center gap-4 text-left"
+                className="glass-card shadow-[4px_4px_0_#111] rounded-2xl p-4 flex items-center gap-4 text-left"
               >
                 <div className="w-16 h-16 rounded-xl overflow-hidden bg-neutral-100 flex-shrink-0 border border-black/[0.08]">
                   <img className="w-full h-full object-cover" src={p.image} referrerPolicy="no-referrer" alt="" />
@@ -291,7 +291,6 @@ export default function ProductDetail() {
                     <span className="text-[10px] font-bold uppercase tracking-wider text-primary">
                       {p.tradeMode || '我要賣'}
                     </span>
-                    <span className="text-sm font-extrabold text-primary whitespace-nowrap">{p.price}</span>
                   </div>
                   <p className="text-sm font-bold text-on-surface line-clamp-1 mt-1">{p.title}</p>
                   <p className="text-xs text-on-surface-variant line-clamp-1 mt-1">{p.description}</p>
@@ -314,7 +313,7 @@ export default function ProductDetail() {
               onClick={() => navigate(`/search?q=${encodeURIComponent(product.title)}`)}
               className="w-full premium-gradient text-white py-4 rounded-full text-sm font-extrabold active:scale-[0.99] transition-transform"
             >
-              回商城查詢此商品
+              回商城查詢此盲盒
             </button>
           </section>
         )}

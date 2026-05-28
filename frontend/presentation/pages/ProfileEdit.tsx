@@ -91,7 +91,7 @@ export default function ProfileEdit() {
           type="button"
           whileTap={{ scale: 0.98 }}
           onClick={onSave}
-          className="w-full py-4 premium-gradient rounded-full text-white font-bold shadow-lg shadow-primary/25"
+          className="doodle-press w-full py-4 premium-gradient rounded-full text-white font-bold"
         >
           儲存
         </motion.button>
