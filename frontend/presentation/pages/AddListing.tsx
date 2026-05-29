@@ -13,6 +13,7 @@ export default function AddListing() {
   const [title, setTitle] = useState('');
   const [itemName, setItemName] = useState('');
   const [price, setPrice] = useState('');
+  const [quantity, setQuantity] = useState(1);
   const [description, setDescription] = useState('');
   const [brand, setBrand] = useState('POPMART 泡泡瑪特');
   const [series, setSeries] = useState('LABUBU The Monsters');
@@ -47,6 +48,7 @@ export default function AddListing() {
       title: title.trim() || itemName.trim() || '未命名貼文',
       itemName: itemName.trim() || title.trim() || '未命名商品',
       price: price.trim() ? `NT$ ${price.trim()}` : 'NT$ 0',
+      quantity,
       description: description.trim() || '無補充說明',
       brand,
       series,
@@ -219,6 +221,21 @@ export default function AddListing() {
               />
             </div>
           </div>
+
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold text-slate-400 ml-1 uppercase">
+              上架數量
+            </label>
+
+            <input
+              value={quantity}
+              min={1}
+              onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))}
+              className="w-full bg-surface-container border-none rounded-xl py-3 px-4 text-on-surface focus:ring-1 focus:ring-primary transition-all font-black"
+              type="number"
+            />
+          </div>
+
           <div className="space-y-2">
             <label className="text-[10px] font-bold text-slate-400 ml-1 uppercase">商品描述</label>
             <textarea

@@ -61,6 +61,28 @@ def place_order(
     if user_id == seller_id:
         raise HTTPException(status_code=403, detail="無法購買自己的貼文")
 
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            UPDATE listings
+            SET quantity = quantity - 1,
+                status = CASE
+                    WHEN quantity - 1 <= 0 THEN 'sold'::listing_status_enum
+                    ELSE status
+                END
+            WHERE id = %s
+            AND status = 'active'
+            AND deleted_at IS NULL
+            AND quantity > 0
+            RETURNING quantity
+            """,
+            (listing_id,),
+        )
+        stock_row = cur.fetchone()
+
+    if not stock_row:
+        raise HTTPException(status_code=400, detail="商品已售完，無法下單")
+
     order = create_order(
         conn,
         listing_id=listing_id,
