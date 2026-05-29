@@ -12,6 +12,7 @@ export type Listing = {
   shipping: string;
   allowSwap: boolean;
   allowBargain: boolean;
+  quantity: number; 
   image: string;
   createdAt: string;
   sellerName: string;

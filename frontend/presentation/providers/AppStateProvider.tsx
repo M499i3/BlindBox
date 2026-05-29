@@ -91,6 +91,7 @@ function buildSeededPosts(): Listing[] {
     shipping: '7-11 店到店',
     allowSwap: true,
     allowBargain: idx % 2 === 0,
+    quantity: 1,
     image: p.image,
     createdAt: new Date().toISOString(),
     sellerName: `Seller_${(idx % 8) + 1}`,

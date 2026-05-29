@@ -42,6 +42,7 @@ class Listing(BaseModel):
     shipping: str
     allow_swap: bool
     allow_bargain: bool
+    quantity: int = 1
     image: str
     created_at: str
     seller_name: str
@@ -60,6 +61,7 @@ class CreateListingInput(BaseModel):
     shipping: str
     allow_swap: bool
     allow_bargain: bool
+    quantity: int = 1
     image: Optional[str] = None
 
 

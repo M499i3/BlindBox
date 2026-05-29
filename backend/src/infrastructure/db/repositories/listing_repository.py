@@ -13,6 +13,7 @@ _LIST_SELECT = """
         l.item_name,
         l.price_amount,
         l.price_currency,
+        l.quantity,
         l.description,
         l.condition,
         l.trade_mode,
@@ -41,6 +42,7 @@ _MY_LISTINGS_SELECT = """
         l.item_name,
         l.price_amount,
         l.price_currency,
+        l.quantity,
         l.description,
         l.condition,
         l.trade_mode,
@@ -69,6 +71,7 @@ _LISTING_BY_ID = """
         l.item_name,
         l.price_amount,
         l.price_currency,
+        l.quantity,
         l.description,
         l.condition,
         l.trade_mode,
@@ -134,6 +137,7 @@ def _row_to_listing(row: dict) -> Listing:
         id=str(row["id"]),
         title=row["title"] or "",
         item_name=row.get("item_name") or "",
+        quantity=int(row.get("quantity") or 1),
         price=_format_price(row.get("price_amount"), row.get("price_currency")),
         description=row.get("description") or "",
         brand="",
@@ -192,11 +196,11 @@ def create_listing(
         cur.execute(
             """
             INSERT INTO listings
-              (id, seller_id, title, item_name, price_amount, price_currency,
+              (id, seller_id, title, item_name, quantity, price_amount, price_currency,
                description, condition, trade_mode, shipping_method,
                allow_swap, allow_bargain, status)
             VALUES
-              (%s, %s, %s, %s, %s, %s, %s,
+              (%s, %s, %s, %s, %s, %s, %s, %s,
                %s::listing_condition_enum,
                %s::trade_mode_enum,
                %s::shipping_method_enum,
@@ -207,6 +211,7 @@ def create_listing(
                 user_id,
                 data.title,
                 data.item_name,
+                data.quantity,
                 amount,
                 "TWD",
                 data.description,
