@@ -4,7 +4,7 @@ import showcaseJson from '@/frontend/data/popmart-hk-showcase.json';
 export const popmartShowcase = showcaseJson as CatalogShowcase;
 
 export function isMockDataEnabled(): boolean {
-  return import.meta.env.VITE_USE_MOCK_DATA !== 'false';
+  return import.meta.env.VITE_USE_MOCK_DATA === 'true';
 }
 
 export function deriveBrandLabel(title: string): string {
