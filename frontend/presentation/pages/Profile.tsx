@@ -9,7 +9,7 @@ import { useAuth } from '@/frontend/presentation/providers/AuthProvider';
 
 export default function Profile() {
   const navigate = useNavigate();
-  const { avatarDataUrl, displayName, listings, openWantModal } = useAppState();
+  const { avatarDataUrl, displayName, displayId, ratingAvg, ratingCount, transactionCount, listings, openWantModal } = useAppState();
   const collection = useProductCollection();
   const { wishCount, ownedCount } = collection;
   const { logout, user } = useAuth();
@@ -19,7 +19,7 @@ export default function Profile() {
     { label: '收藏數', value: String(ownedCount).padStart(2, '0') },
     { label: '想要', value: String(wishCount).padStart(2, '0') },
     { label: '上架中', value: String(listings.length).padStart(2, '0') },
-    { label: '已完成', value: '128' },
+    { label: '已完成', value: String(transactionCount).padStart(2, '0') },
   ];
 
   const menuItems = [
@@ -78,14 +78,14 @@ export default function Profile() {
           <div className="text-center">
             <h2 className="text-2xl font-bold text-on-surface">{displayName || user?.displayName || '使用者'}</h2>
             <p className="text-xs font-semibold text-on-primary-container tracking-wider uppercase opacity-60">
-              ID: 88204912
+              ID: {displayId || '—'}
             </p>
             <div className="flex items-center justify-center gap-2 mt-2 px-3 py-1 bg-white rounded-full border border-black/[0.08]">
               <span className="material-symbols-outlined text-amber-500 text-base" style={{ fontVariationSettings: "'FILL' 1" }}>
                 star
               </span>
-              <span className="font-bold text-sm text-on-surface">4.9</span>
-              <span className="text-on-surface-variant text-xs">| 128 筆成交</span>
+              <span className="font-bold text-sm text-on-surface">{ratingAvg.toFixed(1)}</span>
+              <span className="text-on-surface-variant text-xs">| {ratingCount} 則評價 · {transactionCount} 筆成交</span>
             </div>
           </div>
         </section>

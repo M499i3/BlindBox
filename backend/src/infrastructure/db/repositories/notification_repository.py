@@ -54,5 +54,55 @@ def get_notifications(
     return items
 
 
+def mark_notification_read(
+    conn: psycopg2.extensions.connection, user_id: str, notification_id: str
+) -> bool:
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            UPDATE notifications
+            SET is_read = TRUE
+            WHERE id = %s AND user_id = %s
+            """,
+            (notification_id, user_id),
+        )
+        updated = cur.rowcount > 0
+    conn.commit()
+    return updated
+
+
+def mark_all_notifications_read(
+    conn: psycopg2.extensions.connection, user_id: str
+) -> int:
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            UPDATE notifications
+            SET is_read = TRUE
+            WHERE user_id = %s AND is_read = FALSE
+            """,
+            (user_id,),
+        )
+        count = cur.rowcount
+    conn.commit()
+    return count
+
+
+def delete_notification(
+    conn: psycopg2.extensions.connection, user_id: str, notification_id: str
+) -> bool:
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            DELETE FROM notifications
+            WHERE id = %s AND user_id = %s
+            """,
+            (notification_id, user_id),
+        )
+        deleted = cur.rowcount > 0
+    conn.commit()
+    return deleted
+
+
 def notification_icon(ntype: str) -> str:
     return _TYPE_ICONS.get(ntype, "notifications")

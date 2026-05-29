@@ -55,3 +55,19 @@ export async function getNotifications(): Promise<NotificationItem[]> {
   const items = await apiFetch<ApiNotification[]>('/api/notifications');
   return items.map(toFrontend);
 }
+
+export async function markNotificationRead(notificationId: string): Promise<void> {
+  await apiFetch<unknown>(`/api/notifications/${encodeURIComponent(notificationId)}/read`, {
+    method: 'PATCH',
+  });
+}
+
+export async function markAllNotificationsRead(): Promise<void> {
+  await apiFetch<unknown>('/api/notifications/read-all', { method: 'PATCH' });
+}
+
+export async function deleteNotification(notificationId: string): Promise<void> {
+  await apiFetch<unknown>(`/api/notifications/${encodeURIComponent(notificationId)}`, {
+    method: 'DELETE',
+  });
+}

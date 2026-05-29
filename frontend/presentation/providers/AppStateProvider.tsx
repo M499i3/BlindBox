@@ -17,6 +17,11 @@ import {
   getListings,
   getMyListings,
 } from '@/frontend/infrastructure/api/listingsApi';
+import {
+  addCollectionItem,
+  getCollections,
+  removeCollectionItem,
+} from '@/frontend/infrastructure/api/collectionsApi';
 import { getProfile, updateProfile } from '@/frontend/infrastructure/api/profileApi';
 import { useAuth } from '@/frontend/presentation/providers/AuthProvider';
 import { createDefaultWishAlertSettings, type WishAlertSettings } from '@/frontend/domain/entities/wishAlert';
@@ -31,6 +36,10 @@ type AppStateValue = {
   avatarDataUrl: string | null;
   displayName: string;
   userId: string;
+  displayId: string;
+  ratingAvg: number;
+  ratingCount: number;
+  transactionCount: number;
   setAvatarDataUrl: (v: string | null) => void | Promise<void>;
   listings: Listing[];
   posts: Listing[];
@@ -96,6 +105,10 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const [avatarDataUrl, setAvatarDataUrlState] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState('');
   const [userId, setUserId] = useState('');
+  const [displayId, setDisplayId] = useState('');
+  const [ratingAvg, setRatingAvg] = useState(0);
+  const [ratingCount, setRatingCount] = useState(0);
+  const [transactionCount, setTransactionCount] = useState(0);
 
   const [listings, setListings] = useState<Listing[]>([]);
   const [posts, setPosts] = useState<Listing[]>([]);
@@ -157,28 +170,37 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     );
   }, [avatarDataUrl, displayName, listings, cartIds, ownedIds, wishIds, wishAlerts, mock]);
 
-  const loadUserProfile = useCallback(async () => {
-    const profile = await getProfile();
+  const applyProfile = useCallback((profile: Awaited<ReturnType<typeof getProfile>>) => {
     setAvatarDataUrlState(profile.avatarDataUrl);
     setDisplayName(profile.displayName);
     setUserId(profile.id);
+    setDisplayId(profile.displayId);
+    setRatingAvg(profile.ratingAvg);
+    setRatingCount(profile.ratingCount);
+    setTransactionCount(profile.transactionCount);
   }, []);
+
+  const loadUserProfile = useCallback(async () => {
+    const profile = await getProfile();
+    applyProfile(profile);
+  }, [applyProfile]);
 
   // Load marketplace data when authenticated (non-mock mode)
   const loadUserData = useCallback(async () => {
-    const [postsData, mine, cart, profile] = await Promise.all([
+    const [postsData, mine, cart, profile, collections] = await Promise.all([
       getListings(),
       getMyListings(),
       getCart(),
       getProfile(),
+      getCollections(),
     ]);
     setPosts(postsData);
     setListings(mine);
     setCartItems(cart);
-    setAvatarDataUrlState(profile.avatarDataUrl);
-    setDisplayName(profile.displayName);
-    setUserId(profile.id);
-  }, []);
+    applyProfile(profile);
+    setOwnedIds(collections.collected);
+    setWishIds(collections.wishlist);
+  }, [applyProfile]);
 
   useEffect(() => {
     if (authLoading) return;
@@ -189,6 +211,10 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       setAvatarDataUrlState(null);
       setDisplayName(mock ? 'Yu' : '');
       setUserId('');
+      setDisplayId('');
+      setRatingAvg(0);
+      setRatingCount(0);
+      setTransactionCount(0);
       return;
     }
     if (user?.displayName) setDisplayName(user.displayName);
@@ -198,6 +224,17 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       loadUserData().catch(console.error);
     }
   }, [isAuthenticated, authLoading, user?.id, user?.displayName, loadUserProfile, loadUserData, mock]);
+
+  const syncCollectionToggle = useCallback(
+    async (productId: string, type: 'collected' | 'wishlist', currentlyOn: boolean) => {
+      const data = currentlyOn
+        ? await removeCollectionItem(productId, type)
+        : await addCollectionItem(productId, type);
+      setOwnedIds(data.collected);
+      setWishIds(data.wishlist);
+    },
+    []
+  );
 
   const allPosts = useMemo(
     () => (mock ? [...listings, ...seededPosts] : posts),
@@ -277,15 +314,31 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     [resolvedCartIds]
   );
 
-  const toggleOwned = useCallback((id: string) => {
-    setOwnedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
-  }, []);
+  const toggleOwned = useCallback(
+    (id: string) => {
+      const currentlyOn = ownedIds.includes(id);
+      if (mock) {
+        setOwnedIds((prev) => (currentlyOn ? prev.filter((x) => x !== id) : [...prev, id]));
+        return;
+      }
+      syncCollectionToggle(id, 'collected', currentlyOn).catch(console.error);
+    },
+    [mock, ownedIds, syncCollectionToggle]
+  );
 
   const isOwned = useCallback((id: string) => ownedIds.includes(id), [ownedIds]);
 
-  const toggleWish = useCallback((id: string) => {
-    setWishIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
-  }, []);
+  const toggleWish = useCallback(
+    (id: string) => {
+      const currentlyOn = wishIds.includes(id);
+      if (mock) {
+        setWishIds((prev) => (currentlyOn ? prev.filter((x) => x !== id) : [...prev, id]));
+        return;
+      }
+      syncCollectionToggle(id, 'wishlist', currentlyOn).catch(console.error);
+    },
+    [mock, wishIds, syncCollectionToggle]
+  );
 
   const isWished = useCallback((id: string) => wishIds.includes(id), [wishIds]);
 
@@ -306,23 +359,44 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     setWishAlerts((prev) => ({ ...prev, [productId]: settings }));
   }, []);
 
-  const confirmWishWithSettings = useCallback((productId: string, settings: WishAlertSettings) => {
-    setWishIds((prev) => (prev.includes(productId) ? prev : [...prev, productId]));
-    setWishAlerts((prev) => ({ ...prev, [productId]: settings }));
-    setWantModalOpen(false);
-    setWantModalProductId(null);
-    setWantModalListing(null);
-  }, []);
+  const confirmWishWithSettings = useCallback(
+    (productId: string, settings: WishAlertSettings) => {
+      if (mock) {
+        setWishIds((prev) => (prev.includes(productId) ? prev : [...prev, productId]));
+      } else {
+        addCollectionItem(productId, 'wishlist')
+          .then((data) => {
+            setOwnedIds(data.collected);
+            setWishIds(data.wishlist);
+          })
+          .catch(console.error);
+      }
+      setWishAlerts((prev) => ({ ...prev, [productId]: settings }));
+      setWantModalOpen(false);
+      setWantModalProductId(null);
+      setWantModalListing(null);
+    },
+    [mock]
+  );
 
   const addWishWithDefaultSettings = useCallback(
     (productId: string, title: string) => {
       if (!productId || wishIds.includes(productId)) return;
       const lowest = getLowestMarketPriceForTitle(title, allPosts);
       const settings = createDefaultWishAlertSettings(lowest);
-      setWishIds((prev) => [...prev, productId]);
+      if (mock) {
+        setWishIds((prev) => [...prev, productId]);
+      } else {
+        addCollectionItem(productId, 'wishlist')
+          .then((data) => {
+            setOwnedIds(data.collected);
+            setWishIds(data.wishlist);
+          })
+          .catch(console.error);
+      }
       setWishAlerts((prev) => ({ ...prev, [productId]: settings }));
     },
-    [wishIds, allPosts]
+    [wishIds, allPosts, mock]
   );
 
   const openWantModal = useCallback(
@@ -353,6 +427,10 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       avatarDataUrl,
       displayName,
       userId,
+      displayId,
+      ratingAvg,
+      ratingCount,
+      transactionCount,
       setAvatarDataUrl,
       listings,
       posts: allPosts,
@@ -386,6 +464,10 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       avatarDataUrl,
       displayName,
       userId,
+      displayId,
+      ratingAvg,
+      ratingCount,
+      transactionCount,
       setAvatarDataUrl,
       listings,
       allPosts,

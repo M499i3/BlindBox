@@ -6,7 +6,9 @@ import UserAvatar from '@/frontend/presentation/components/UserAvatar';
 import { cn } from '@/frontend/shared/utils/cn';
 import { getChats, type ChatInboxItem } from '@/frontend/infrastructure/api/chatsApi';
 import {
+  deleteNotification,
   getNotifications,
+  markNotificationRead,
   notificationColor,
   notificationIcon,
   type NotificationItem,
@@ -83,10 +85,23 @@ export default function Chat() {
                     whileTap={{ scale: 0.99 }}
                     onDragEnd={(_, info) => {
                       if (info.offset.x < -72) {
-                        setNotifications((prev) => prev.filter((n) => n.id !== notif.id));
+                        deleteNotification(notif.id)
+                          .then(() => setNotifications((prev) => prev.filter((n) => n.id !== notif.id)))
+                          .catch(console.error);
                       }
                     }}
-                    onClick={() => setActiveNotifId(notif.id)}
+                    onClick={() => {
+                      setActiveNotifId(notif.id);
+                      if (!notif.isRead) {
+                        markNotificationRead(notif.id)
+                          .then(() =>
+                            setNotifications((prev) =>
+                              prev.map((n) => (n.id === notif.id ? { ...n, isRead: true } : n))
+                            )
+                          )
+                          .catch(console.error);
+                      }
+                    }}
                     className="relative w-full glass-card shadow-[2px_2px_0_#111] rounded-2xl p-4 flex items-center gap-4 text-left"
                   >
                     {!notif.isRead && (

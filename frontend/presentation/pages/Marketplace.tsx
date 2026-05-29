@@ -7,7 +7,7 @@ import { cn } from '@/frontend/shared/utils/cn';
 import { useProductCollection } from '@/frontend/presentation/hooks/useProductCollection';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
 import { useCatalogProducts } from '@/frontend/presentation/hooks/useCatalog';
-import { getRankings } from '@/frontend/infrastructure/api/marketplaceApi';
+import { getRankings, getTrendingTags } from '@/frontend/infrastructure/api/marketplaceApi';
 import type { MarketplaceRankingItem } from '@/frontend/infrastructure/api/marketplaceApi';
 import { APP_PAGE_CLASS, BOTTOM_NAV_OFFSET } from '@/frontend/presentation/constants/layout';
 import { TOPBAR_RIGHT_ICON_SIZE } from '@/frontend/presentation/constants/topbar';
@@ -24,19 +24,33 @@ export default function Marketplace() {
   const { products } = useCatalogProducts();
 
   const [rankings, setRankings] = useState<MarketplaceRankingItem[]>([]);
+  const [trendingTags, setTrendingTags] = useState<string[]>([]);
 
   useEffect(() => {
     getRankings().then(setRankings).catch(console.error);
+    getTrendingTags().then(setTrendingTags).catch(console.error);
   }, []);
 
-  const rankingItems = products.slice(0, 3).map((p, i) => ({
-    id: p.id,
-    rank: String(i + 1).padStart(2, '0'),
-    title: p.title,
-    price: p.price,
-    image: p.image,
-    isHot: i < 2,
-  }));
+  const rankingItems = useMemo(() => {
+    if (rankings.length > 0) {
+      return rankings.slice(0, 6).map((item) => ({
+        id: item.id,
+        rank: item.rank.replace(/^No\./, '').padStart(2, '0'),
+        title: item.title,
+        price: item.price,
+        image: item.image,
+        isHot: item.is_hot,
+      }));
+    }
+    return products.slice(0, 3).map((p, i) => ({
+      id: p.id,
+      rank: String(i + 1).padStart(2, '0'),
+      title: p.title,
+      price: p.price,
+      image: p.image,
+      isHot: i < 2,
+    }));
+  }, [rankings, products]);
 
   const newReleases = useMemo(() => {
     const pool = [...posts, ...listings];
@@ -121,6 +135,24 @@ export default function Marketplace() {
             </div>
           </div>
         </section>
+
+        {trendingTags.length > 0 && (
+          <section className="mb-section-gap">
+            <h2 className="text-lg font-semibold text-on-surface mb-3">熱門標籤</h2>
+            <div className="flex flex-wrap gap-2">
+              {trendingTags.slice(0, 12).map((tag) => (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => navigate(`/search?q=${encodeURIComponent(tag)}`)}
+                  className="px-3 py-1.5 rounded-full border border-black/[0.12] bg-white text-xs font-bold text-on-surface-variant active:scale-95 transition-transform"
+                >
+                  #{tag}
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Ranking */}
         <section className="mb-section-gap">

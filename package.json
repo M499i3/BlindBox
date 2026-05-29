@@ -12,6 +12,7 @@
     "scrape:popmart": "node scripts/scrape-popmart.mjs",
     "check:supabase": "node scripts/check-supabase.mjs",
     "db:check": "node scripts/check-database.mjs",
+    "test:integration": "node scripts/integration-smoke.mjs",
     "db:current": "cd backend && python -m alembic current",
     "db:migrate": "cd backend && python -m alembic upgrade head",
     "db:stamp": "cd backend && python -m alembic stamp head",

@@ -65,9 +65,23 @@ class CreateListingInput(BaseModel):
 
 class UserProfile(BaseModel):
     id: str
+    display_id: str = ""
     display_name: str
     avatar_url: Optional[str] = None
     bio: str = ""
+    rating_avg: float = 0.0
+    rating_count: int = 0
+    transaction_count: int = 0
+
+
+class UserCollections(BaseModel):
+    collected: list[str]
+    wishlist: list[str]
+
+
+class AddCollectionItemRequest(BaseModel):
+    product_id: str
+    type: str
 
 
 class LoginRequest(BaseModel):

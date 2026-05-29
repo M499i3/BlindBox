@@ -11,17 +11,25 @@ def get_profile(
 ) -> UserProfile | None:
     with conn.cursor(cursor_factory=RealDictCursor) as cur:
         cur.execute(
-            "SELECT id, display_name, avatar_url, bio FROM users WHERE id = %s",
+            """
+            SELECT id, display_id, display_name, avatar_url, bio,
+                   rating_avg, rating_count, transaction_count
+            FROM users WHERE id = %s
+            """,
             (user_id,),
         )
         row = cur.fetchone()
     if not row:
         return None
     return UserProfile(
-    id=row["id"],
-    display_name=row["display_name"] or "",
-    avatar_url=row.get("avatar_url"),
-    bio=row.get("bio") or "",
+        id=str(row["id"]),
+        display_id=str(row.get("display_id") or ""),
+        display_name=row["display_name"] or "",
+        avatar_url=row.get("avatar_url"),
+        bio=row.get("bio") or "",
+        rating_avg=float(row.get("rating_avg") or 0),
+        rating_count=int(row.get("rating_count") or 0),
+        transaction_count=int(row.get("transaction_count") or 0),
     )
 
 
@@ -57,6 +65,7 @@ def update_profile(
     if profile is None:
         return UserProfile(
             id=user_id,
+            display_id="",
             display_name="",
             avatar_url=None,
             bio="",

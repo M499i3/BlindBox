@@ -18,6 +18,7 @@ from api.routes import (
     catalog,
     cart,
     chats,
+    collections,
     listings,
     marketplace,
     notifications,
@@ -45,6 +46,7 @@ app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(catalog.router, prefix="/api/catalog", tags=["catalog"])
 app.include_router(listings.router, prefix="/api/listings", tags=["listings"])
 app.include_router(cart.router, prefix="/api/cart", tags=["cart"])
+app.include_router(collections.router, prefix="/api/collections", tags=["collections"])
 app.include_router(profile.router, prefix="/api/profile", tags=["profile"])
 app.include_router(marketplace.router, prefix="/api/marketplace", tags=["marketplace"])
 app.include_router(orders.router, prefix="/api/orders", tags=["orders"])

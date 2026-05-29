@@ -4,17 +4,25 @@ import { apiFetch } from './apiClient';
 /** API 回傳的欄位命名（snake_case） */
 type ApiProfile = {
   id: string;
+  display_id: string;
   display_name: string;
   avatar_url: string | null;
   bio: string;
+  rating_avg: number;
+  rating_count: number;
+  transaction_count: number;
 };
 
 function toFrontend(p: ApiProfile): UserProfile {
   return {
     id: p.id,
+    displayId: p.display_id ?? '',
     displayName: p.display_name,
     avatarDataUrl: p.avatar_url ?? null,
     bio: p.bio ?? '',
+    ratingAvg: p.rating_avg ?? 0,
+    ratingCount: p.rating_count ?? 0,
+    transactionCount: p.transaction_count ?? 0,
   };
 }
 

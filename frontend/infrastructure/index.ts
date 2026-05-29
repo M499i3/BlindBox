@@ -8,4 +8,5 @@ export * from '@/frontend/infrastructure/api/profileApi';
 export * from '@/frontend/infrastructure/api/marketplaceApi';
 export * from '@/frontend/infrastructure/api/ordersApi';
 export * from '@/frontend/infrastructure/api/notificationsApi';
+export * from '@/frontend/infrastructure/api/collectionsApi';
 export * from '@/frontend/infrastructure/api/chatsApi';

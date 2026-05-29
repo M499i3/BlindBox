@@ -1,19 +1,52 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { createOrder } from '@/frontend/infrastructure/api/ordersApi';
+import { isMockDataEnabled } from '@/frontend/lib/popmartShowcase';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
 
+function isSeededListingId(id: string): boolean {
+  return id.startsWith('l_') || id.startsWith('pm_');
+}
+
 export default function CartPage() {
   const navigate = useNavigate();
-  const { cartItems, removeFromCart, userId } = useAppState();
+  const { cartItems, removeFromCart } = useAppState();
   const [shippingMethod, setShippingMethod] = useState('');
-  
-  console.log(cartItems);
+  const [checkingOut, setCheckingOut] = useState(false);
+  const mock = isMockDataEnabled();
 
   const total = cartItems.reduce((sum, item) => {
     const n = Number(item.price.replace(/[^\d.]/g, ''));
     return sum + (Number.isFinite(n) ? n : 0);
   }, 0);
+
+  const handleCheckout = async () => {
+    if (!shippingMethod) {
+      alert('請選擇配送方式');
+      return;
+    }
+    if (cartItems.length === 0) return;
+
+    setCheckingOut(true);
+    try {
+      for (const item of cartItems) {
+        if (mock && isSeededListingId(item.id)) {
+          alert('示範商品無法結帳，請改用市集上的真實貼文');
+          return;
+        }
+        await createOrder(item.id);
+        await removeFromCart(item.id);
+      }
+      alert('結帳成功！');
+      navigate('/purchase-history');
+    } catch (error) {
+      console.error(error);
+      alert('結帳失敗，請稍後再試');
+    } finally {
+      setCheckingOut(false);
+    }
+  };
 
   return (
     <div className="animate-in fade-in duration-500 pb-28">
@@ -63,95 +96,11 @@ export default function CartPage() {
 
             <button
               type="button"
-              onClick={async () => {
-                if (!shippingMethod) {
-                  alert('請選擇配送方式');
-                  return;
-                }
-                console.log('userId =', userId);
-
-                if (!userId) {
-                  alert('找不到目前使用者，請重新整理後再試');
-                  return;
-                }
-
-                try {
-                  
-                  for (const item of cartItems) {
-                    let sellerId = item.seller_id || item.sellerId || item.seller?.id;
-
-                    const isFakeId =
-                      item.id.startsWith('l_') ||
-                      item.id.startsWith('pm_');
-
-                      if (isFakeId) {
-                        const oldOrders = JSON.parse(localStorage.getItem('orders') || '[]');
-                      
-                        const newOrder = {
-                          id: item.id,
-                          title: item.title,
-                          seller: '測試賣家',
-                          date: new Date().toLocaleString(),
-                          status: '待付款',
-                          statusColor: 'text-primary',
-                          total: item.price,
-                          image: item.image,
-                        };
-                      
-                        localStorage.setItem('orders', JSON.stringify([newOrder, ...oldOrders]));
-                      
-                        removeFromCart(item.id);
-                        continue;
-                      }
-
-                    if (!sellerId && !isFakeId) {
-                      const res = await fetch(`http://localhost:8000/api/listings/${item.id}`);
-                      const listing = await res.json();
-                      sellerId = listing.seller_id;
-                    }
-
-                    if (!sellerId) {
-                      sellerId = userId;
-                    }
-
-                    const token = localStorage.getItem('blindbox_access_token');
-                    const orderRes = await fetch('http://localhost:8000/api/orders', {
-                    method: 'POST',
-                    headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                    },
-                    body: JSON.stringify({
-                    listing_id: item.id,
-                    buyer_id: userId,
-                    seller_id: sellerId,
-                    status: 'pending_payment',
-                    amount: Number(item.price.replace(/[^\d.]/g, '')),
-                    currency: 'TWD',
-                    shipping_method: shippingMethod,
-                    }),
-                  });
-
-if (!orderRes.ok) {
-  const text = await orderRes.text();
-  console.error('建立訂單失敗:', text);
-  alert('建立訂單失敗');
-  return;
-}
-              
-                    removeFromCart(item.id);
-                  }
-              
-                  alert('結帳成功！');
-                  navigate('/purchase-history');
-                } catch (error) {
-                  console.error(error);
-                  alert('結帳失敗，請稍後再試');
-                }
-              }}
-              className="w-full py-3 rounded-full border-2 border-outline bg-primary text-on-primary font-bold text-sm shadow-none"
+              disabled={checkingOut}
+              onClick={handleCheckout}
+              className="w-full py-3 rounded-full border-2 border-outline bg-primary text-on-primary font-bold text-sm shadow-none disabled:opacity-60"
             >
-              前往結帳
+              {checkingOut ? '結帳中…' : '前往結帳'}
             </button>
           </section>
       )}

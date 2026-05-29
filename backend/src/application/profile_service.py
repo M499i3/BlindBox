@@ -15,6 +15,7 @@ def get_user_profile(
     profile = get_profile(conn, user_id)
     return profile or UserProfile(
         id=user_id,
+        display_id="",
         display_name="User",
         avatar_url=None,
         bio="",
