@@ -5,9 +5,16 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+
+BACKEND_SRC = Path(__file__).resolve().parents[1] / "src"
+if str(BACKEND_SRC) not in sys.path:
+    sys.path.insert(0, str(BACKEND_SRC))
+
+from domain.ip_rules import derive_brand_label  # noqa: E402
 
 
 @dataclass(frozen=True)
@@ -26,33 +33,20 @@ class SeedProduct:
 
 
 BRAND_SLUGS: dict[str, tuple[str, str]] = {
-    "SKULLPANDA": ("skullpanda", "SKULLPANDA"),
-    "PUCKY": ("pucky", "PUCKY"),
-    "DIMOO": ("dimoo", "Dimoo"),
-    "MOLLY": ("molly", "Molly"),
     "LABUBU": ("labubu", "LABUBU"),
+    "SKULLPANDA": ("skullpanda", "SKULLPANDA"),
+    "CRYBABY": ("crybaby", "CRYBABY"),
+    "星星人": ("twinkle-twinkle", "星星人"),
+    "Hirono": ("hirono", "Hirono"),
+    "Zsiga": ("zsiga", "Zsiga"),
+    "PINO JELLY": ("pino-jelly", "PINO JELLY"),
+    "HACIPUPU": ("hacipupu", "HACIPUPU"),
+    "PUCKY": ("pucky", "PUCKY"),
+    "Dimoo": ("dimoo", "Dimoo"),
+    "Molly": ("molly", "Molly"),
     "CHAKA": ("chaka", "CHAKA"),
-    "Pop Mart": ("popmart", "Pop Mart"),
+    "其他 IP": ("other-ip", "其他 IP"),
 }
-
-
-def derive_brand_label(title: str) -> str:
-    u = title.upper()
-    if "SKULLPANDA" in u:
-        return "SKULLPANDA"
-    if "PUCKY" in u:
-        return "PUCKY"
-    if "DIMOO" in u:
-        return "Dimoo"
-    if "MOLLY" in u:
-        return "Molly"
-    if "LABUBU" in u:
-        return "LABUBU"
-    if "CHAKA" in u:
-        return "CHAKA"
-    if "泡泡" in title:
-        return "Pop Mart"
-    return "Pop Mart"
 
 
 def brand_slug_and_name(label: str) -> tuple[str, str]:
@@ -84,9 +78,9 @@ def parse_price(price: str) -> tuple[int | None, str | None]:
         major = float(digits)
     except ValueError:
         return None, None
-    currency = "HKD"
-    if re.search(r"NT\$|TWD", price, re.I):
-        currency = "TWD"
+    currency = "TWD"
+    if re.search(r"HK\$|HKD", price, re.I):
+        currency = "HKD"
     elif re.search(r"¥|CNY", price, re.I):
         currency = "CNY"
     return int(round(major * 100)), currency
