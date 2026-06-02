@@ -1,9 +1,11 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
 import { useCatalogProducts } from '@/frontend/presentation/hooks/useCatalog';
+import { getCatalogBrands, getCatalogSeries } from '@/frontend/infrastructure/api/catalogApi';
+import type { BrandRow, SeriesRow } from '@/frontend/domain/entities/catalog';
 import { cn } from '@/frontend/shared/utils/cn';
 
 const FIELD =
@@ -23,8 +25,11 @@ export default function AddListing() {
   const [price, setPrice] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [description, setDescription] = useState('');
-  const [brand, setBrand] = useState('POPMART 泡泡瑪特');
-  const [series, setSeries] = useState('LABUBU The Monsters');
+  const [brand, setBrand] = useState('');
+  const [series, setSeries] = useState('');
+  const [brandSlug, setBrandSlug] = useState('');
+  const [brandOptions, setBrandOptions] = useState<BrandRow[]>([]);
+  const [seriesOptions, setSeriesOptions] = useState<SeriesRow[]>([]);
   const [condition, setCondition] = useState('全新未拆');
   const [tradeMode, setTradeMode] = useState('我要賣');
   const [allowSwap, setAllowSwap] = useState(true);
@@ -46,6 +51,41 @@ export default function AddListing() {
     () => Math.min(9, Math.max(1, images.length + 1)),
     [images.length]
   );
+
+  useEffect(() => {
+    getCatalogBrands()
+      .then((rows) => {
+        if (!rows.length) return;
+        setBrandOptions(rows);
+        const first = rows[0];
+        const firstSlug = first.slug ?? first.name.toLowerCase().replace(/\s+/g, '-');
+        setBrand(first.name);
+        setBrandSlug(firstSlug);
+      })
+      .catch(() => {
+        const fallback = [
+          { name: 'POPMART 泡泡瑪特', slug: 'popmart', image: '' },
+          { name: '52TOYS', slug: '52toys', image: '' },
+          { name: 'Finding Unicorn', slug: 'finding-unicorn', image: '' },
+        ];
+        setBrandOptions(fallback);
+        setBrand(fallback[0].name);
+        setBrandSlug(fallback[0].slug);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (!brandSlug) return;
+    getCatalogSeries(brandSlug)
+      .then((rows) => {
+        setSeriesOptions(rows);
+        setSeries(rows[0]?.name ?? '');
+      })
+      .catch(() => {
+        setSeriesOptions([]);
+        setSeries('');
+      });
+  }, [brandSlug]);
 
   const onUploadImage = (index: number, file?: File | null) => {
     if (!file) return;
@@ -95,7 +135,7 @@ export default function AddListing() {
     <div className="animate-in fade-in duration-500 min-h-screen pb-32 text-black">
       <TopBar
         showBack
-        title="新增上架商品"
+        title="上架商品"
         rightElement={
           <button type="button" className="text-black" aria-label="通知">
             <span className="material-symbols-outlined">notifications</span>
@@ -200,12 +240,19 @@ export default function AddListing() {
               <select
                 id="add-listing-brand"
                 value={brand}
-                onChange={(e) => setBrand(e.target.value)}
+                onChange={(e) => {
+                  const nextName = e.target.value;
+                  const selected = brandOptions.find((b) => b.name === nextName);
+                  setBrand(nextName);
+                  setBrandSlug(selected?.slug ?? nextName.toLowerCase().replace(/\s+/g, '-'));
+                }}
                 className={cn(FIELD, 'cursor-pointer appearance-none')}
               >
-                <option>POPMART 泡泡瑪特</option>
-                <option>52TOYS</option>
-                <option>Finding Unicorn</option>
+                {brandOptions.map((b) => (
+                  <option key={b.slug ?? b.name} value={b.name}>
+                    {b.name}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="space-y-1.5">
@@ -218,9 +265,15 @@ export default function AddListing() {
                 onChange={(e) => setSeries(e.target.value)}
                 className={cn(FIELD, 'cursor-pointer appearance-none')}
               >
-                <option>LABUBU The Monsters</option>
-                <option>Molly</option>
-                <option>Skullpanda</option>
+                {seriesOptions.length > 0 ? (
+                  seriesOptions.map((s) => (
+                    <option key={s.id} value={s.name}>
+                      {s.name}
+                    </option>
+                  ))
+                ) : (
+                  <option value="">（此品牌尚無系列）</option>
+                )}
               </select>
             </div>
           </div>

@@ -26,4 +26,11 @@ export type CatalogShowcase = {
 export type BrandRow = {
   name: string;
   image: string;
+  slug?: string;
+};
+
+export type SeriesRow = {
+  id: string;
+  slug: string;
+  name: string;
 };

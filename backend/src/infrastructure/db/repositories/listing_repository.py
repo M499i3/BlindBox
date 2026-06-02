@@ -23,6 +23,8 @@ _LIST_SELECT = """
         l.created_at,
         l.seller_id,
         u.display_name AS seller_name,
+        b.name AS brand_name,
+        s.name AS series_name,
         (
             SELECT li.url FROM listing_images li
             WHERE li.listing_id = l.id
@@ -36,6 +38,8 @@ _LIST_SELECT = """
         ) AS image_urls
     FROM listings l
     LEFT JOIN users u ON u.id = l.seller_id
+    LEFT JOIN brands b ON b.id = l.brand_id
+    LEFT JOIN series s ON s.id = l.series_id
     WHERE l.status = 'active' AND l.deleted_at IS NULL
     ORDER BY l.created_at DESC
 """
@@ -57,6 +61,8 @@ _MY_LISTINGS_SELECT = """
         l.created_at,
         l.seller_id,
         u.display_name AS seller_name,
+        b.name AS brand_name,
+        s.name AS series_name,
         (
             SELECT li.url FROM listing_images li
             WHERE li.listing_id = l.id
@@ -70,6 +76,8 @@ _MY_LISTINGS_SELECT = """
         ) AS image_urls
     FROM listings l
     LEFT JOIN users u ON u.id = l.seller_id
+    LEFT JOIN brands b ON b.id = l.brand_id
+    LEFT JOIN series s ON s.id = l.series_id
     WHERE l.status = 'active' AND l.deleted_at IS NULL AND l.seller_id = %s
     ORDER BY l.created_at DESC
 """
@@ -91,6 +99,8 @@ _LISTING_BY_ID = """
         l.created_at,
         l.seller_id,
         u.display_name AS seller_name,
+        b.name AS brand_name,
+        s.name AS series_name,
         (
             SELECT li.url FROM listing_images li
             WHERE li.listing_id = l.id
@@ -104,6 +114,8 @@ _LISTING_BY_ID = """
         ) AS image_urls
     FROM listings l
     LEFT JOIN users u ON u.id = l.seller_id
+    LEFT JOIN brands b ON b.id = l.brand_id
+    LEFT JOIN series s ON s.id = l.series_id
     WHERE l.id = %s AND l.deleted_at IS NULL
     LIMIT 1
 """
@@ -147,6 +159,55 @@ def _parse_price_amount(price_str: str) -> int:
     return round(float(digits) * 100)
 
 
+def _to_slug(value: str) -> str:
+    import re
+    slug = re.sub(r"\s+", "-", (value or "").strip().lower())
+    slug = re.sub(r"[^\w\u4e00-\u9fff-]", "", slug)
+    slug = re.sub(r"-{2,}", "-", slug).strip("-")
+    return slug or "unknown"
+
+
+def _ensure_brand_and_series_ids(
+    cur,
+    brand_name: str | None,
+    series_name: str | None,
+) -> tuple[str | None, str | None]:
+    brand = (brand_name or "").strip()
+    series = (series_name or "").strip()
+    if not brand:
+        return None, None
+
+    brand_slug = _to_slug(brand)
+    cur.execute(
+        """
+        INSERT INTO brands (slug, name)
+        VALUES (%s, %s)
+        ON CONFLICT (slug)
+        DO UPDATE SET name = EXCLUDED.name, updated_at = now()
+        RETURNING id
+        """,
+        (brand_slug, brand),
+    )
+    brand_id = str(cur.fetchone()["id"])
+
+    if not series:
+        return brand_id, None
+
+    series_slug = _to_slug(series)
+    cur.execute(
+        """
+        INSERT INTO series (brand_id, slug, name)
+        VALUES (%s, %s, %s)
+        ON CONFLICT (brand_id, slug)
+        DO UPDATE SET name = EXCLUDED.name, updated_at = now()
+        RETURNING id
+        """,
+        (brand_id, series_slug, series),
+    )
+    series_id = str(cur.fetchone()["id"])
+    return brand_id, series_id
+
+
 def _row_to_listing(row: dict) -> Listing:
     image_urls = [url for url in (row.get("image_urls") or []) if isinstance(url, str) and url]
     image_url = row.get("image_url") or (image_urls[0] if image_urls else "")
@@ -157,8 +218,8 @@ def _row_to_listing(row: dict) -> Listing:
         quantity=int(row.get("quantity") or 1),
         price=_format_price(row.get("price_amount"), row.get("price_currency")),
         description=row.get("description") or "",
-        brand="",
-        series="",
+        brand=row.get("brand_name") or "",
+        series=row.get("series_name") or "",
         condition=_CONDITION_UI.get(str(row.get("condition") or ""), str(row.get("condition") or "")),
         trade_mode=_TRADE_MODE_UI.get(str(row.get("trade_mode") or ""), str(row.get("trade_mode") or "")),
         shipping=_SHIPPING_UI.get(str(row.get("shipping_method") or ""), str(row.get("shipping_method") or "")),
@@ -211,14 +272,15 @@ def create_listing(
     shipping_db = _SHIPPING_MAP.get(data.shipping or "", "711_store")
 
     with conn.cursor() as cur:
+        brand_id, series_id = _ensure_brand_and_series_ids(cur, data.brand, data.series)
         cur.execute(
             """
             INSERT INTO listings
-              (id, seller_id, title, item_name, quantity, price_amount, price_currency,
+              (id, seller_id, brand_id, series_id, title, item_name, quantity, price_amount, price_currency,
                description, condition, trade_mode, shipping_method,
                allow_swap, allow_bargain, status)
             VALUES
-              (%s, %s, %s, %s, %s, %s, %s, %s,
+              (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
                %s::listing_condition_enum,
                %s::trade_mode_enum,
                %s::shipping_method_enum,
@@ -227,6 +289,8 @@ def create_listing(
             (
                 listing_id,
                 user_id,
+                brand_id,
+                series_id,
                 data.title,
                 data.item_name,
                 data.quantity,

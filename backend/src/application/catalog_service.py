@@ -6,8 +6,10 @@ import psycopg2.extensions
 
 from domain.entities import CatalogProduct
 from infrastructure.db.repositories.catalog_repository import (
+    get_all_brands,
     get_all_products,
     get_product_by_id,
+    get_series_by_brand_slug,
 )
 
 _BRAND_RULES: list[tuple[str, str]] = [
@@ -61,3 +63,13 @@ def get_product(
     conn: psycopg2.extensions.connection, product_id: str
 ) -> CatalogProduct | None:
     return get_product_by_id(conn, product_id)
+
+
+def list_brands(conn: psycopg2.extensions.connection) -> list[dict]:
+    return get_all_brands(conn)
+
+
+def list_series(
+    conn: psycopg2.extensions.connection, brand_slug: str
+) -> list[dict]:
+    return get_series_by_brand_slug(conn, brand_slug)

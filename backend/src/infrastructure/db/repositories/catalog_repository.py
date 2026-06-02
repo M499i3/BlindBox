@@ -32,6 +32,20 @@ _PRODUCT_BY_EXTERNAL_ID = """
     LIMIT 1
 """
 
+_BRANDS_SELECT = """
+    SELECT id, slug, name
+    FROM brands
+    ORDER BY name ASC
+"""
+
+_SERIES_BY_BRAND = """
+    SELECT s.id, s.slug, s.name
+    FROM series s
+    JOIN brands b ON b.id = s.brand_id
+    WHERE b.slug = %s
+    ORDER BY s.name ASC
+"""
+
 
 def _format_price(amount: int | None, currency: str | None) -> str:
     if amount is None or amount == 0:
@@ -70,3 +84,25 @@ def get_product_by_id(
     if not row:
         return None
     return _row_to_product(dict(row))
+
+
+def get_all_brands(conn: psycopg2.extensions.connection) -> list[dict]:
+    with conn.cursor() as cur:
+        cur.execute(_BRANDS_SELECT)
+        rows = cur.fetchall()
+    return [
+        {"id": str(r["id"]), "slug": r["slug"], "name": r["name"]}
+        for r in rows
+    ]
+
+
+def get_series_by_brand_slug(
+    conn: psycopg2.extensions.connection, brand_slug: str
+) -> list[dict]:
+    with conn.cursor() as cur:
+        cur.execute(_SERIES_BY_BRAND, (brand_slug,))
+        rows = cur.fetchall()
+    return [
+        {"id": str(r["id"]), "slug": r["slug"], "name": r["name"]}
+        for r in rows
+    ]
