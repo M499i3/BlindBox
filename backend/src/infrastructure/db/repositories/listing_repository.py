@@ -264,6 +264,9 @@ def create_listing(
     conn: psycopg2.extensions.connection,
     user_id: str,
     data: CreateListingInput,
+    *,
+    split_box_group_id: str | None = None,
+    split_box_slot_id: str | None = None,
 ) -> Listing:
     listing_id = str(uuid.uuid4())
     amount = _parse_price_amount(data.price)
@@ -278,13 +281,15 @@ def create_listing(
             INSERT INTO listings
               (id, seller_id, brand_id, series_id, title, item_name, quantity, price_amount, price_currency,
                description, condition, trade_mode, shipping_method,
-               allow_swap, allow_bargain, status)
+               allow_swap, allow_bargain, status,
+               split_box_group_id, split_box_slot_id)
             VALUES
               (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
                %s::listing_condition_enum,
                %s::trade_mode_enum,
                %s::shipping_method_enum,
-               %s, %s, 'active')
+               %s, %s, 'active',
+               %s, %s)
             """,
             (
                 listing_id,
@@ -302,6 +307,8 @@ def create_listing(
                 shipping_db,
                 data.allow_swap,
                 data.allow_bargain,
+                split_box_group_id,
+                split_box_slot_id,
             ),
         )
         raw_images = [img.strip() for img in (data.images or []) if isinstance(img, str) and img.strip()]

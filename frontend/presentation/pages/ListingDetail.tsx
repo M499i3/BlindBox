@@ -29,7 +29,7 @@ import { cn } from '@/frontend/shared/utils/cn';
 export default function ListingDetail() {
   const navigate = useNavigate();
   const { id = '' } = useParams();
-  const { addToCart, removeFromCart, isInCart, avatarDataUrl, userId, posts, listings } = useAppState();
+  const { addToCart, removeFromCart, isInCart, avatarDataUrl, userId, posts, listings, getPostById } = useAppState();
   const [listing, setListing] = useState<Listing | undefined | null>(null);
   const [loading, setLoading] = useState(!!id);
   const [imageIndex, setImageIndex] = useState(0);
@@ -46,9 +46,12 @@ export default function ListingDetail() {
     setLoading(true);
     getListing(id)
       .then((item) => setListing(item))
-      .catch(() => setListing(undefined))
+      .catch(() => {
+        const local = getPostById(id) ?? listings.find((l) => l.id === id);
+        setListing(local ?? undefined);
+      })
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, getPostById, listings]);
 
   const matchedCatalog = useMemo(() => {
     if (!listing) return null;

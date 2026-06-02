@@ -247,3 +247,76 @@ class OrderCreated(BaseModel):
     chat_id: str | None = None
     status: str
     status_label: str
+
+
+class SplitBoxSlotInput(BaseModel):
+    catalog_product_id: str
+    product_title: str
+    product_image: str | None = None
+    reserved_by_host: bool = False
+    custom_price: str | None = None
+
+
+class CreateSplitBoxInput(BaseModel):
+    title: str
+    brand: str
+    series: str
+    description: str | None = None
+    cover_image: str | None = None
+    shipping: str = "7-11 店到店"
+    shipping_note: str | None = None
+    total_price: str
+    closes_at: str | None = None
+    slots: list[SplitBoxSlotInput]
+
+
+class SplitBoxSlot(BaseModel):
+    id: str
+    group_id: str
+    catalog_product_id: str
+    product_title: str
+    product_image: str = ""
+    listing_id: str | None = None
+    reserved_by_host: bool = False
+    claimed_by_user_id: str | None = None
+    claimed_by_name: str | None = None
+    claimed_at: str | None = None
+    price: str = ""
+    status: str
+
+
+class SplitBoxGroupSummary(BaseModel):
+    id: str
+    title: str
+    cover_image: str = ""
+    brand: str = ""
+    series: str = ""
+    status: str
+    organizer_id: str
+    organizer_name: str = ""
+    target_count: int = 0
+    reserved_count: int = 0
+    claimed_count: int = 0
+    available_count: int = 0
+    price_per_slot: str = ""
+    closes_at: str | None = None
+    created_at: str = ""
+
+
+class SplitBoxGroupDetail(SplitBoxGroupSummary):
+    description: str = ""
+    shipping: str = ""
+    shipping_note: str = ""
+    total_price: str = ""
+    shipped_at: str | None = None
+    slots: list[SplitBoxSlot] = Field(default_factory=list)
+    is_organizer: bool = False
+    my_claimed_slot_ids: list[str] = Field(default_factory=list)
+
+
+class ClaimSplitBoxSlotInput(BaseModel):
+    slot_id: str
+
+
+class ShipSplitBoxInput(BaseModel):
+    shipping_note: str | None = None

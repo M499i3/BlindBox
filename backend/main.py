@@ -25,6 +25,7 @@ from api.routes import (
     orders,
     profile,
     swap_proposals,
+    split_boxes,
 )
 
 
@@ -59,6 +60,7 @@ app.include_router(marketplace.router, prefix="/api/marketplace", tags=["marketp
 app.include_router(orders.router, prefix="/api/orders", tags=["orders"])
 app.include_router(chats.router, prefix="/api/chats", tags=["chats"])
 app.include_router(swap_proposals.router, prefix="/api/swap-proposals", tags=["swap-proposals"])
+app.include_router(split_boxes.router, prefix="/api/split-boxes", tags=["split-boxes"])
 app.include_router(notifications.router, prefix="/api/notifications", tags=["notifications"])
 
 

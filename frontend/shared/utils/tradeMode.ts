@@ -40,7 +40,9 @@ export function listingMatchesTradeMode(item: Listing, mode: TradeMode): boolean
   // 曾勾選「開放交換」或交易方式為換：僅出現在「換」，不出現在買／拆
   if (isSwap) return false;
 
-  if (mode === 'unbox') return tm.includes('拆') || cond.includes('拆');
+  if (mode === 'unbox') {
+    return tm.includes('拆') || cond.includes('拆') || tm.includes('group_buy');
+  }
   return tm.includes('賣') || tm.includes('買') || (!tm.includes('換') && !tm.includes('拆'));
 }
 

@@ -9,8 +9,10 @@ import TradeModeFilter from '@/frontend/presentation/components/TradeModeFilter'
 import { cn } from '@/frontend/shared/utils/cn';
 import { useProductCollection } from '@/frontend/presentation/hooks/useProductCollection';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
-import { useCatalogProducts } from '@/frontend/presentation/hooks/useCatalog';
 import { getRankings, getTrendingTags } from '@/frontend/infrastructure/api/marketplaceApi';
+import { listSplitBoxes } from '@/frontend/infrastructure/api/splitBoxApi';
+import type { SplitBoxGroupSummary } from '@/frontend/domain/entities/splitBox';
+import { SPLIT_BOX_STATUS_LABEL } from '@/frontend/domain/entities/splitBox';
 import type { MarketplaceRankingItem } from '@/frontend/infrastructure/api/marketplaceApi';
 import type { Listing } from '@/frontend/domain/entities/listing';
 import { filterListingsByFuzzyQuery } from '@/frontend/shared/utils/searchListings';
@@ -18,6 +20,12 @@ import { isSwapListing, isTradeModeParam, listingMatchesTradeMode, parseTradeMod
 import { APP_PAGE_CLASS, BOTTOM_NAV_OFFSET } from '@/frontend/presentation/constants/layout';
 import { TOPBAR_RIGHT_ICON_SIZE } from '@/frontend/presentation/constants/topbar';
 import { isOwnListing } from '@/frontend/shared/utils/listingOwnership';
+
+function isRealListing(item: Listing): boolean {
+  if (item.isSeeded) return false;
+  if (item.id.startsWith('pm_')) return false;
+  return true;
+}
 
 const HOME_SCROLL_KEY = 'home:listScroll';
 
@@ -53,7 +61,6 @@ export default function Marketplace() {
     isListingWished,
     isListingOwned,
   } = useProductCollection();
-  const { products } = useCatalogProducts();
   const modeParam = searchParams.get('mode');
   const showFilterView = isTradeModeParam(modeParam);
   const mode = parseTradeMode(modeParam);
@@ -81,6 +88,7 @@ export default function Marketplace() {
 
   const [rankings, setRankings] = useState<MarketplaceRankingItem[]>([]);
   const [trendingTags, setTrendingTags] = useState<string[]>([]);
+  const [splitBoxes, setSplitBoxes] = useState<SplitBoxGroupSummary[]>([]);
 
   useEffect(() => {
     restoreHomeScroll();
@@ -91,35 +99,23 @@ export default function Marketplace() {
     getTrendingTags().then(setTrendingTags).catch(console.error);
   }, []);
 
+  useEffect(() => {
+    if (mode !== 'unbox') return;
+    listSplitBoxes().then(setSplitBoxes).catch(() => setSplitBoxes([]));
+  }, [mode]);
+
   const listingPool = useMemo(() => {
     const map = new Map<string, Listing>();
-    for (const item of posts) map.set(item.id, item);
+    for (const item of posts) {
+      if (!isRealListing(item)) continue;
+      map.set(item.id, item);
+    }
     let fromListings = Array.from(map.values());
     if (userId) {
       fromListings = fromListings.filter((item) => !isOwnListing(item, userId));
     }
-    if (fromListings.length > 0 || !showFilterView) return fromListings;
-
-    return products.map((p, idx) => ({
-      id: `pm_${p.id}`,
-      title: p.title,
-      itemName: p.title,
-      price: p.price || 'HK$ 0.00',
-      description: '',
-      brand: 'Pop Mart',
-      series: '',
-      condition: idx % 3 === 1 ? '可拆盒' : '全新未拆',
-      tradeMode: idx % 3 === 0 ? '我想換' : idx % 3 === 1 ? '我要拆' : '我要賣',
-      shipping: '7-11 店到店',
-      allowSwap: idx % 3 === 0,
-      allowBargain: false,
-      quantity: 1,
-      image: p.image,
-      createdAt: new Date().toISOString(),
-      sellerName: 'Blindy',
-      isSeeded: true,
-    }));
-  }, [posts, products, showFilterView, userId]);
+    return fromListings;
+  }, [posts, userId]);
 
   const filteredListings = useMemo(() => {
     if (!showFilterView) return [];
@@ -162,37 +158,24 @@ export default function Marketplace() {
   );
 
   const openListing = useCallback(
-    (item: Listing) => {
+    (item: Pick<Listing, 'id'>) => {
       saveHomeScroll();
-      if (item.isSeeded) {
-        navigate(`/search?q=${encodeURIComponent(item.title)}`, { state: { from: homeReturnPath } });
-        return;
-      }
       navigate(`/listing/${item.id}`, { state: { from: homeReturnPath } });
     },
     [navigate, homeReturnPath]
   );
 
   const rankingItems = useMemo(() => {
-    if (rankings.length > 0) {
-      return rankings.slice(0, 6).map((item) => ({
-        id: item.id,
-        rank: item.rank.replace(/^No\./, '').padStart(2, '0'),
-        title: item.title,
-        price: item.price,
-        image: item.image,
-        isHot: item.is_hot,
-      }));
-    }
-    return products.slice(0, 3).map((p, i) => ({
-      id: p.id,
-      rank: String(i + 1).padStart(2, '0'),
-      title: p.title,
-      price: p.price,
-      image: p.image,
-      isHot: i < 2,
+    if (rankings.length === 0) return [];
+    return rankings.slice(0, 6).map((item) => ({
+      id: item.id,
+      rank: item.rank.replace(/^No\./, '').padStart(2, '0'),
+      title: item.title,
+      price: item.price,
+      image: item.image,
+      isHot: item.is_hot,
     }));
-  }, [rankings, products]);
+  }, [rankings]);
 
   const newReleases = useMemo(() => {
     const sorted = listingPool
@@ -318,13 +301,52 @@ export default function Marketplace() {
         </section>
 
         {showFilterView ? (
-          <section className="mb-section-gap pb-6">
-            {filteredListings.length === 0 ? (
+          <section className="mb-section-gap pb-6 space-y-6">
+            {mode === 'unbox' && splitBoxes.length > 0 ? (
+              <div>
+                <h3 className="mb-3 text-sm font-extrabold text-on-surface">拆盒團</h3>
+                <div className="space-y-3">
+                  {splitBoxes.map((g) => {
+                    const claimable = g.targetCount - g.reservedCount;
+                    return (
+                      <button
+                        key={g.id}
+                        type="button"
+                        onClick={() => navigate(`/split-box/${g.id}`)}
+                        className="flex w-full items-center gap-3 rounded-2xl border-2 border-outline bg-white p-3 text-left shadow-[4px_4px_0_#111] active:opacity-95"
+                      >
+                        <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-neutral-50">
+                          {g.coverImage ? (
+                            <img src={g.coverImage} alt="" className="h-full w-full object-contain p-1" referrerPolicy="no-referrer" />
+                          ) : (
+                            <img src="/split-box.svg" alt="" className="h-full w-full object-contain p-2 opacity-70" />
+                          )}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[10px] font-bold uppercase tracking-wider text-secondary">拆盒團</p>
+                          <p className="truncate text-sm font-extrabold">{g.title}</p>
+                          <p className="mt-0.5 text-[11px] text-on-surface-variant">
+                            {SPLIT_BOX_STATUS_LABEL[g.status] ?? g.status} · {g.claimedCount}/{claimable} · {g.pricePerSlot}/款
+                          </p>
+                        </div>
+                        <span className="material-symbols-outlined shrink-0 text-on-surface-variant">chevron_right</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : null}
+
+            {filteredListings.length === 0 && !(mode === 'unbox' && splitBoxes.length > 0) ? (
               <p className="py-16 text-center text-sm text-on-surface-variant">
                 {query.trim() ? '找不到符合的商品' : '此類型暫無商品'}
               </p>
-            ) : (
-              <div className="grid grid-cols-2 items-stretch gap-grid-gutter">
+            ) : filteredListings.length > 0 ? (
+              <div>
+                {mode === 'unbox' && splitBoxes.length > 0 ? (
+                  <h3 className="mb-3 text-sm font-extrabold text-on-surface">拆盒款式貼文</h3>
+                ) : null}
+                <div className="grid grid-cols-2 items-stretch gap-grid-gutter">
                 {filteredListings.map((item) => (
                   <ListingProductCard
                     key={item.id}
@@ -351,12 +373,14 @@ export default function Marketplace() {
                     {...renderCartProps(item)}
                   />
                 ))}
+                </div>
               </div>
-            )}
+            ) : null}
           </section>
         ) : (
           <>
         {/* Ranking */}
+        {rankingItems.length > 0 ? (
         <section className="mb-section-gap">
           <div className="flex justify-between items-center mb-stack-lg">
             <h2 className="text-2xl font-semibold text-on-surface">全圖鑑排行榜</h2>
@@ -390,6 +414,7 @@ export default function Marketplace() {
             ))}
           </div>
         </section>
+        ) : null}
 
         {/* New Releases */}
         {newReleases.length > 0 && (
@@ -419,10 +444,7 @@ export default function Marketplace() {
                         ? 'border-primary/50 text-primary'
                         : 'border-primary-fixed-dim text-primary-fixed-dim'
                     }
-                    onClick={() => {
-                      if (listing) openListing(listing);
-                      else navigate(`/listing/${item.id}`);
-                    }}
+                    onClick={() => openListing(listing ?? { id: item.id })}
                     isWished={isListingWished(listing ?? item)}
                     isOwned={isListingOwned(listing ?? item)}
                     onToggleWish={(e) => {
@@ -461,10 +483,7 @@ export default function Marketplace() {
                         ? 'border-primary/50 text-primary'
                         : 'border-primary-fixed-dim text-primary-fixed-dim'
                     }
-                    onClick={() => {
-                      if (listing) openListing(listing);
-                      else navigate(`/listing/${item.id}`);
-                    }}
+                    onClick={() => openListing(listing ?? { id: item.id })}
                     isWished={isListingWished(listing ?? item)}
                     isOwned={isListingOwned(listing ?? item)}
                     onToggleWish={(e) => {

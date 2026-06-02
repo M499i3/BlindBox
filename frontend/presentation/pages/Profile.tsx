@@ -37,6 +37,7 @@ export default function Profile() {
     { label: '購買紀錄', icon: 'shopping_bag', to: '/purchase-history' },
     { label: '出售紀錄', icon: 'sell', to: '/profile/selling' },
     { label: '上架中', icon: 'list_alt', to: '/profile/listings' },
+    { label: '拆盒團', icon: 'groups', to: '/profile/split-boxes' },
   ];
 
   return (

@@ -11,10 +11,11 @@ const TOPBAR_TITLE_ICON_SIZE = 36;
 interface TopBarProps {
   title?: string;
   showBack?: boolean;
+  onBack?: () => void;
   rightElement?: React.ReactNode;
 }
 
-export default function TopBar({ title, showBack, rightElement }: TopBarProps) {
+export default function TopBar({ title, showBack, onBack, rightElement }: TopBarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const backTarget = (location.state as { from?: string } | null)?.from;
@@ -40,7 +41,14 @@ export default function TopBar({ title, showBack, rightElement }: TopBarProps) {
         {showBack && (
           <button
             type="button"
-            onClick={() => (backTarget ? navigate(backTarget) : navigate(-1))}
+            onClick={() => {
+              if (onBack) {
+                onBack();
+                return;
+              }
+              if (backTarget) navigate(backTarget);
+              else navigate(-1);
+            }}
             className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-outline bg-white shadow-[3px_3px_0_#111] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none active:bg-accent-sky transition-all shrink-0"
             aria-label="返回"
           >

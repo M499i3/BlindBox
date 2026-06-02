@@ -23,11 +23,17 @@ import NotificationsHub from '@/frontend/presentation/pages/NotificationsHub';
 import ListingDetail from '@/frontend/presentation/pages/ListingDetail';
 import CartPage from '@/frontend/presentation/pages/CartPage';
 import Login from '@/frontend/presentation/pages/Login';
+import SplitBoxDetail from '@/frontend/presentation/pages/SplitBoxDetail';
+import MySplitBoxes from '@/frontend/presentation/pages/MySplitBoxes';
 
 function ShopRedirect() {
   const [searchParams] = useSearchParams();
   const qs = searchParams.toString();
   return <Navigate to={qs ? `/?${qs}` : '/'} replace />;
+}
+
+function SplitBoxNewRedirect() {
+  return <Navigate to="/add-listing?type=split" replace />;
 }
 
 export default function AppRouter() {
@@ -49,6 +55,8 @@ export default function AppRouter() {
             <Route path="/profile/listings" element={<MyListings />} />
             <Route path="/purchase-history" element={<PurchaseHistory />} />
             <Route path="/add-listing" element={<AddListing />} />
+            <Route path="/split-box/new" element={<SplitBoxNewRedirect />} />
+            <Route path="/profile/split-boxes" element={<MySplitBoxes />} />
             <Route path="/search" element={<SearchResults />} />
             <Route path="/notifications" element={<NotificationsHub />} />
             <Route path="/cart" element={<CartPage />} />
@@ -57,6 +65,7 @@ export default function AppRouter() {
           <Route element={<ScrollLayout />}>
             <Route path="/catalog/:id" element={<CatalogProductDetail />} />
             <Route path="/listing/:id" element={<ListingDetail />} />
+            <Route path="/split-box/:id" element={<SplitBoxDetail />} />
             <Route path="/brand/:id" element={<BrandDetail />} />
             <Route path="/series/:id" element={<SeriesDetail />} />
             <Route path="/subseries" element={<SubseriesDetail />} />
