@@ -7,10 +7,15 @@ function toFrontend(p: ApiProduct): CatalogProduct {
   return { id: p.id, title: p.title, price: p.price, image: p.image, sourceUrl: p.source_url };
 }
 
-export async function getCatalogProducts(opts?: { q?: string; brand?: string }): Promise<CatalogProduct[]> {
+export async function getCatalogProducts(opts?: {
+  q?: string;
+  brand?: string;
+  series?: string;
+}): Promise<CatalogProduct[]> {
   const params = new URLSearchParams();
   if (opts?.q) params.set('q', opts.q);
   if (opts?.brand) params.set('brand', opts.brand);
+  if (opts?.series) params.set('series', opts.series);
   const qs = params.toString();
   const items = await apiFetch<ApiProduct[]>(`/api/catalog/products${qs ? `?${qs}` : ''}`);
   return items.map(toFrontend);

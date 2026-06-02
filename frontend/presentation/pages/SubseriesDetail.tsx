@@ -1,10 +1,15 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { motion } from 'motion/react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import { useProductCollection } from '@/frontend/presentation/hooks/useProductCollection';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
-import { deriveBrandLabel, useCatalogProducts } from '@/frontend/presentation/hooks/useCatalog';
+import {
+  deriveBrandLabel,
+  useCatalogProducts,
+  useCatalogStyles,
+} from '@/frontend/presentation/hooks/useCatalog';
+import { isMockDataEnabled } from '@/frontend/lib/popmartShowcase';
 
 function deriveSeriesName(title: string) {
   const cleaned = title
@@ -18,21 +23,36 @@ function deriveSeriesName(title: string) {
 export default function SubseriesDetail() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
+  const mock = isMockDataEnabled();
   const { toggleOwned, isOwned } = useAppState();
   const { requestWishProduct, isWished } = useProductCollection();
 
+  const brandSlug = params.get('brand') ?? '';
+  const seriesSlug = params.get('series') ?? '';
   const ip = params.get('ip') ?? '';
   const name = params.get('name') ?? '';
 
-  const { products: catalogProducts } = useCatalogProducts();
+  const { products: catalogProducts } = useCatalogProducts(
+    mock ? undefined : { brand: brandSlug || undefined, series: seriesSlug || undefined }
+  );
+  const { styles: dbStyles } = useCatalogStyles(
+    mock ? undefined : brandSlug || undefined,
+    mock ? undefined : seriesSlug || undefined
+  );
 
-  const products = useMemo(() => {
-    return catalogProducts.filter((p) => {
-      if (ip && deriveBrandLabel(p.title) !== ip) return false;
-      const s = deriveSeriesName(p.title);
-      return name ? s === name : Boolean(s);
-    });
-  }, [catalogProducts, ip, name]);
+  const products = mock
+    ? catalogProducts.filter((p) => {
+        if (ip && deriveBrandLabel(p.title) !== ip) return false;
+        const s = deriveSeriesName(p.title);
+        return name ? s === name : Boolean(s);
+      })
+    : dbStyles.map((s) => ({
+        id: s.id,
+        title: s.name,
+        image: s.image,
+        price: '',
+        sourceUrl: '',
+      }));
 
   const hero =
     products[0]?.image ??
@@ -52,7 +72,7 @@ export default function SubseriesDetail() {
           <div className="space-y-4">
             <h2 className="text-3xl font-bold text-on-surface">{name || '系列'}</h2>
             <p className="text-on-surface-variant leading-relaxed text-sm">
-              {ip ? `IP：${ip}。` : ''} 依層級瀏覽：品牌 → IP → 系列 → 盲盒。
+              {mock && ip ? `IP：${ip}。` : ''} 依層級瀏覽：品牌 → 系列 → 盲盒。
             </p>
 
             <div className="flex gap-10 mt-2">
@@ -60,12 +80,6 @@ export default function SubseriesDetail() {
                 <span className="text-2xl font-bold text-primary">{products.length}</span>
                 <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mt-1">
                   盲盒
-                </span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-2xl font-bold text-primary">{new Set(products.map((p) => deriveBrandLabel(p.title))).size}</span>
-                <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mt-1">
-                  IP
                 </span>
               </div>
             </div>
@@ -77,70 +91,72 @@ export default function SubseriesDetail() {
             <h3 className="text-xl font-bold text-secondary">盲盒</h3>
           </div>
 
-        <div className="grid grid-cols-2 gap-grid-gutter">
-          {products.slice(0, 60).map((p) => (
-            <motion.button
-              key={p.id}
-              type="button"
-              whileTap={{ scale: 0.98 }}
+          <div className="grid grid-cols-2 gap-grid-gutter">
+            {products.slice(0, 60).map((p) => (
+              <motion.button
+                key={p.id}
+                type="button"
+                whileTap={{ scale: 0.98 }}
                 onClick={() => navigate(`/product/${p.id}?src=catalog`)}
-              className="glass-card rounded-2xl overflow-hidden text-left"
-            >
-              <div className="relative aspect-square bg-neutral-100">
-                <img className="w-full h-full object-cover" src={p.image} referrerPolicy="no-referrer" alt="" />
+                className="glass-card rounded-2xl overflow-hidden text-left"
+              >
+                <div className="relative aspect-square bg-neutral-100">
+                  <img className="w-full h-full object-cover" src={p.image} referrerPolicy="no-referrer" alt="" />
 
-                <div className="absolute top-2 right-2 flex flex-col gap-2">
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      requestWishProduct(p.id);
-                    }}
-                    className="w-9 h-9 rounded-full bg-black/45 backdrop-blur-md flex items-center justify-center border border-white/15 active:scale-90 transition-transform"
-                    aria-label="加入想要"
-                  >
-                    <span
-                      className="material-symbols-outlined text-white text-[20px]"
-                      style={{ fontVariationSettings: isWished(p.id) ? "'FILL' 1" : "'FILL' 0" }}
+                  <div className="absolute top-2 right-2 flex flex-col gap-2">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        requestWishProduct(p.id);
+                      }}
+                      className="w-9 h-9 rounded-full bg-black/45 backdrop-blur-md flex items-center justify-center border border-white/15 active:scale-90 transition-transform"
+                      aria-label="加入想要"
                     >
-                      favorite
-                    </span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleOwned(p.id);
-                    }}
-                    className="w-9 h-9 rounded-full bg-black/45 backdrop-blur-md flex items-center justify-center border border-white/15 active:scale-90 transition-transform"
-                    aria-label="加入收藏冊"
-                  >
-                    <span
-                      className="material-symbols-outlined text-white text-[20px]"
-                      style={{ fontVariationSettings: isOwned(p.id) ? "'FILL' 1" : "'FILL' 0" }}
+                      <span
+                        className="material-symbols-outlined text-white text-[20px]"
+                        style={{ fontVariationSettings: isWished(p.id) ? "'FILL' 1" : "'FILL' 0" }}
+                      >
+                        favorite
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleOwned(p.id);
+                      }}
+                      className="w-9 h-9 rounded-full bg-black/45 backdrop-blur-md flex items-center justify-center border border-white/15 active:scale-90 transition-transform"
+                      aria-label="加入收藏冊"
                     >
-                      check_circle
-                    </span>
-                  </button>
+                      <span
+                        className="material-symbols-outlined text-white text-[20px]"
+                        style={{ fontVariationSettings: isOwned(p.id) ? "'FILL' 1" : "'FILL' 0" }}
+                      >
+                        check_circle
+                      </span>
+                    </button>
+                  </div>
                 </div>
-              </div>
 
-              <div className="p-3">
-                <p className="text-[10px] font-semibold text-primary mb-0.5">{deriveBrandLabel(p.title)}</p>
-                <p className="text-xs font-bold text-on-surface line-clamp-2 leading-snug">{p.title}</p>
-              </div>
-            </motion.button>
-          ))}
+                <div className="p-3">
+                  {!mock && brandSlug && (
+                    <p className="text-[10px] font-semibold text-primary mb-0.5">{brandSlug}</p>
+                  )}
+                  {mock && ip && <p className="text-[10px] font-semibold text-primary mb-0.5">{ip}</p>}
+                  <p className="text-xs font-bold text-on-surface line-clamp-2 leading-snug">{p.title}</p>
+                </div>
+              </motion.button>
+            ))}
 
-          {products.length === 0 && (
-            <div className="col-span-2 text-center py-10 text-sm text-on-surface-variant">
-              沒有找到符合的盲盒。
-            </div>
-          )}
-        </div>
+            {products.length === 0 && (
+              <div className="col-span-2 text-center py-10 text-sm text-on-surface-variant">
+                沒有找到符合的盲盒。
+              </div>
+            )}
+          </div>
         </section>
       </main>
     </div>
   );
 }
-

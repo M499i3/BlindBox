@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
-import { popmartShowcase } from '@/frontend/lib/popmartShowcase';
+import { useCatalogProducts } from '@/frontend/presentation/hooks/useCatalog';
 import { useProductCollection } from '@/frontend/presentation/hooks/useProductCollection';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
 import { cn } from '@/frontend/shared/utils/cn';
@@ -24,6 +24,7 @@ export default function SearchResults() {
     isWished,
     isOwned,
   } = useProductCollection();
+  const { products: catalogHot } = useCatalogProducts();
 
   useEffect(() => {
     setDraft(initialQ);
@@ -168,7 +169,7 @@ export default function SearchResults() {
           <section className="space-y-3">
             <h2 className="text-sm font-bold text-on-surface">熱門（官網新品）</h2>
             <div className="grid grid-cols-2 gap-3">
-              {popmartShowcase.products.slice(0, 8).map((p) => (
+              {catalogHot.slice(0, 8).map((p) => (
                 <motion.div
                   key={p.id}
                   whileTap={{ scale: 0.98 }}

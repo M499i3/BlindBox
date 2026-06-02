@@ -1,6 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { BrandRow, CatalogProduct } from '@/frontend/domain/entities/catalog';
-import { getCatalogBrands, getCatalogProducts, getCatalogProductById } from '@/frontend/infrastructure/api/catalogApi';
+import {
+  getCatalogBrands,
+  getCatalogProducts,
+  getCatalogProductById,
+  getCatalogSeries,
+  getCatalogStyles,
+} from '@/frontend/infrastructure/api/catalogApi';
+import type { SeriesRow, StyleRow } from '@/frontend/domain/entities/catalog';
 import {
   deriveBrandLabel as deriveBrandLabelFromMock,
   filterMockProducts,
@@ -23,15 +30,16 @@ export function buildBrandRow(products: CatalogProduct[], limit = 6): BrandRow[]
 
 let _cache: CatalogProduct[] | null = null;
 
-export function useCatalogProducts(opts?: { q?: string; brand?: string }) {
+export function useCatalogProducts(opts?: { q?: string; brand?: string; series?: string }) {
   const mock = isMockDataEnabled();
+  const hasFilter = Boolean(opts?.q || opts?.brand || opts?.series);
   const mockProducts = useMemo(
     () => (mock ? filterMockProducts(opts) : []),
-    [mock, opts?.q, opts?.brand]
+    [mock, opts?.q, opts?.brand, opts?.series]
   );
 
   const [products, setProducts] = useState<CatalogProduct[]>(mock ? mockProducts : _cache ?? []);
-  const [loading, setLoading] = useState(!mock && !_cache);
+  const [loading, setLoading] = useState(!mock && !_cache && !hasFilter);
 
   useEffect(() => {
     if (mock) {
@@ -39,7 +47,7 @@ export function useCatalogProducts(opts?: { q?: string; brand?: string }) {
       setLoading(false);
       return;
     }
-    if (_cache && !opts?.q && !opts?.brand) {
+    if (_cache && !hasFilter) {
       setProducts(_cache);
       setLoading(false);
       return;
@@ -47,17 +55,17 @@ export function useCatalogProducts(opts?: { q?: string; brand?: string }) {
     setLoading(true);
     getCatalogProducts(opts)
       .then((ps) => {
-        if (!opts?.q && !opts?.brand) _cache = ps;
+        if (!hasFilter) _cache = ps;
         setProducts(ps);
       })
       .catch(() => {
         const fallback = filterMockProducts(opts);
-        if (!opts?.q && !opts?.brand) _cache = fallback;
+        if (!hasFilter) _cache = fallback;
         setProducts(fallback);
       })
       .finally(() => setLoading(false));
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mock, mockProducts, opts?.q, opts?.brand]);
+  }, [mock, mockProducts, opts?.q, opts?.brand, opts?.series, hasFilter]);
 
   return { products, loading };
 }
@@ -112,4 +120,56 @@ export function useCatalogBrands() {
   }, [mock]);
 
   return brands;
+}
+
+export function useCatalogSeries(brandSlug: string | undefined) {
+  const mock = isMockDataEnabled();
+  const [series, setSeries] = useState<SeriesRow[]>([]);
+  const [loading, setLoading] = useState(!mock && !!brandSlug);
+
+  useEffect(() => {
+    if (!brandSlug) {
+      setSeries([]);
+      setLoading(false);
+      return;
+    }
+    if (mock) {
+      setSeries([]);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    getCatalogSeries(brandSlug)
+      .then(setSeries)
+      .catch(() => setSeries([]))
+      .finally(() => setLoading(false));
+  }, [mock, brandSlug]);
+
+  return { series, loading };
+}
+
+export function useCatalogStyles(brandSlug: string | undefined, seriesSlug: string | undefined) {
+  const mock = isMockDataEnabled();
+  const [styles, setStyles] = useState<StyleRow[]>([]);
+  const [loading, setLoading] = useState(!mock && !!brandSlug && !!seriesSlug);
+
+  useEffect(() => {
+    if (!brandSlug || !seriesSlug) {
+      setStyles([]);
+      setLoading(false);
+      return;
+    }
+    if (mock) {
+      setStyles([]);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    getCatalogStyles(brandSlug, seriesSlug)
+      .then(setStyles)
+      .catch(() => setStyles([]))
+      .finally(() => setLoading(false));
+  }, [mock, brandSlug, seriesSlug]);
+
+  return { styles, loading };
 }

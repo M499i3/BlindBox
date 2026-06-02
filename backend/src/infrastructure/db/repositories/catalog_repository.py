@@ -13,9 +13,14 @@ _PRODUCT_SELECT = """
         cp.official_price_amount,
         cp.official_price_currency,
         cp.image_url,
-        cp.source_url
+        cp.source_url,
+        b.slug AS brand_slug,
+        b.name AS brand_name,
+        s.slug AS series_slug,
+        s.name AS series_name
     FROM catalog_products cp
-    ORDER BY cp.updated_at DESC
+    LEFT JOIN series s ON s.id = cp.series_id
+    LEFT JOIN brands b ON b.id = s.brand_id
 """
 
 _PRODUCT_BY_EXTERNAL_ID = """
@@ -26,20 +31,26 @@ _PRODUCT_BY_EXTERNAL_ID = """
         cp.official_price_amount,
         cp.official_price_currency,
         cp.image_url,
-        cp.source_url
+        cp.source_url,
+        b.slug AS brand_slug,
+        b.name AS brand_name,
+        s.slug AS series_slug,
+        s.name AS series_name
     FROM catalog_products cp
+    LEFT JOIN series s ON s.id = cp.series_id
+    LEFT JOIN brands b ON b.id = s.brand_id
     WHERE cp.external_id = %s OR cp.id::text = %s
     LIMIT 1
 """
 
 _BRANDS_SELECT = """
-    SELECT id, slug, name
+    SELECT id, slug, name, logo_url
     FROM brands
     ORDER BY name ASC
 """
 
 _SERIES_BY_BRAND = """
-    SELECT s.id, s.slug, s.name
+    SELECT s.id, s.slug, s.name, s.cover_url, s.total_count
     FROM series s
     JOIN brands b ON b.id = s.brand_id
     WHERE b.slug = %s
@@ -77,9 +88,31 @@ def _row_to_product(row: dict) -> CatalogProduct:
     )
 
 
-def get_all_products(conn: psycopg2.extensions.connection) -> list[CatalogProduct]:
+def get_all_products(
+    conn: psycopg2.extensions.connection,
+    *,
+    query: str | None = None,
+    brand_slug: str | None = None,
+    series_slug: str | None = None,
+) -> list[CatalogProduct]:
+    sql = _PRODUCT_SELECT + " WHERE 1=1"
+    params: list[str] = []
+
+    if brand_slug:
+        sql += " AND b.slug = %s"
+        params.append(brand_slug)
+    if series_slug:
+        sql += " AND s.slug = %s"
+        params.append(series_slug)
+    if query:
+        q = f"%{query.strip().lower()}%"
+        sql += " AND (LOWER(cp.title) LIKE %s OR LOWER(b.name) LIKE %s OR LOWER(s.name) LIKE %s)"
+        params.extend([q, q, q])
+
+    sql += " ORDER BY cp.updated_at DESC"
+
     with conn.cursor() as cur:
-        cur.execute(_PRODUCT_SELECT)
+        cur.execute(sql, params)
         rows = cur.fetchall()
     return [_row_to_product(dict(r)) for r in rows]
 
@@ -100,7 +133,12 @@ def get_all_brands(conn: psycopg2.extensions.connection) -> list[dict]:
         cur.execute(_BRANDS_SELECT)
         rows = cur.fetchall()
     return [
-        {"id": str(r["id"]), "slug": r["slug"], "name": r["name"]}
+        {
+            "id": str(r["id"]),
+            "slug": r["slug"],
+            "name": r["name"],
+            "image": r.get("logo_url") or "",
+        }
         for r in rows
     ]
 
@@ -112,7 +150,13 @@ def get_series_by_brand_slug(
         cur.execute(_SERIES_BY_BRAND, (brand_slug,))
         rows = cur.fetchall()
     return [
-        {"id": str(r["id"]), "slug": r["slug"], "name": r["name"]}
+        {
+            "id": str(r["id"]),
+            "slug": r["slug"],
+            "name": r["name"],
+            "image": r.get("cover_url") or "",
+            "count": int(r.get("total_count") or 0),
+        }
         for r in rows
     ]
 

@@ -33,6 +33,8 @@ export type SeriesRow = {
   id: string;
   slug: string;
   name: string;
+  image?: string;
+  count?: number;
 };
 
 export type StyleRow = {

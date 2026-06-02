@@ -23,9 +23,10 @@ router = APIRouter()
 def get_products(
     q: Annotated[str | None, Query(description="搜尋關鍵字")] = None,
     brand: Annotated[str | None, Query(description="品牌 slug")] = None,
+    series: Annotated[str | None, Query(description="系列 slug")] = None,
     conn: psycopg2.extensions.connection = Depends(get_db),
 ) -> list[CatalogProduct]:
-    return list_products(conn, query=q, brand=brand)
+    return list_products(conn, query=q, brand=brand, series=series)
 
 
 @router.get("/products/{product_id}", response_model=CatalogProduct)
@@ -45,7 +46,10 @@ def get_brands(
 ) -> list[dict]:
     rows = list_brands(conn)
     if rows:
-        return [{"name": r["name"], "slug": r["slug"], "image": ""} for r in rows]
+        return [
+            {"name": r["name"], "slug": r["slug"], "image": r.get("image") or ""}
+            for r in rows
+        ]
 
     products = list_products(conn)
     seen: dict[str, str] = {}

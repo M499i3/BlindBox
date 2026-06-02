@@ -37,27 +37,16 @@ def list_products(
     conn: psycopg2.extensions.connection,
     query: str | None = None,
     brand: str | None = None,
+    series: str | None = None,
 ) -> list[CatalogProduct]:
-    products = get_all_products(conn)
-
-    if query:
-        q = query.strip().lower()
-        products = [
-            p
-            for p in products
-            if q in p.title.lower() or q in derive_brand_label(p.title).lower()
-        ]
-
-    if brand:
-        raw = re.sub(r"[_\-]", " ", brand).strip().lower()
-        products = [
-            p
-            for p in products
-            if derive_brand_label(p.title).lower() == raw
-            or raw in p.title.lower()
-        ]
-
-    return products
+    brand_slug = re.sub(r"[_\-]+", "-", brand.strip().lower()).strip("-") if brand else None
+    series_slug = series.strip() if series else None
+    return get_all_products(
+        conn,
+        query=query,
+        brand_slug=brand_slug,
+        series_slug=series_slug,
+    )
 
 
 def get_product(
