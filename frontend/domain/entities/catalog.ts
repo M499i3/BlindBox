@@ -5,6 +5,10 @@ export type CatalogProduct = {
   price: string;
   image: string;
   sourceUrl: string;
+  brandSlug?: string;
+  brandName?: string;
+  seriesSlug?: string;
+  seriesName?: string;
 };
 
 export type CatalogBanner = {
@@ -35,6 +39,14 @@ export type SeriesRow = {
   name: string;
   image?: string;
   count?: number;
+  brandSlug?: string;
+  brandName?: string;
+};
+
+export type CatalogSearchResult = {
+  brands: BrandRow[];
+  series: SeriesRow[];
+  products: CatalogProduct[];
 };
 
 export type StyleRow = {

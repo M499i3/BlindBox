@@ -11,6 +11,8 @@ from infrastructure.db.repositories.catalog_repository import (
     get_product_by_id,
     get_series_by_brand_slug,
     get_styles_by_brand_series_slug,
+    search_brands,
+    search_series,
 )
 
 _BRAND_RULES: list[tuple[str, str]] = [
@@ -69,3 +71,16 @@ def list_styles(
     conn: psycopg2.extensions.connection, brand_slug: str, series_slug: str
 ) -> list[dict]:
     return get_styles_by_brand_series_slug(conn, brand_slug, series_slug)
+
+
+def catalog_search(
+    conn: psycopg2.extensions.connection, query: str
+) -> dict:
+    q = query.strip()
+    if not q:
+        return {"brands": [], "series": [], "products": []}
+    return {
+        "brands": search_brands(conn, q),
+        "series": search_series(conn, q),
+        "products": get_all_products(conn, query=q)[:40],
+    }

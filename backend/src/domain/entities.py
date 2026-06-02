@@ -11,6 +11,10 @@ class CatalogProduct(BaseModel):
     price: str
     image: str
     source_url: str
+    brand_slug: str | None = None
+    brand_name: str | None = None
+    series_slug: str | None = None
+    series_name: str | None = None
 
 
 class CatalogShowcase(BaseModel):

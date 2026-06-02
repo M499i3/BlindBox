@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 
 from api.dependencies import get_db
 from application.catalog_service import (
+    catalog_search,
     derive_brand_label,
     get_product,
     list_brands,
@@ -17,6 +18,14 @@ from application.catalog_service import (
 from domain.entities import CatalogProduct
 
 router = APIRouter()
+
+
+@router.get("/search")
+def search_catalog(
+    q: Annotated[str, Query(min_length=1, description="搜尋關鍵字")],
+    conn: psycopg2.extensions.connection = Depends(get_db),
+) -> dict:
+    return catalog_search(conn, q)
 
 
 @router.get("/products", response_model=list[CatalogProduct])

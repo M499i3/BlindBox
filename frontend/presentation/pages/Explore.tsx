@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import { cn } from '@/frontend/shared/utils/cn';
 import {
@@ -8,18 +8,47 @@ import {
   useCatalogProducts,
   useCatalogSeries,
 } from '@/frontend/presentation/hooks/useCatalog';
-import { isMockDataEnabled } from '@/frontend/lib/popmartShowcase';
+import { getCatalogSearch } from '@/frontend/infrastructure/api/catalogApi';
+import type { CatalogSearchResult } from '@/frontend/domain/entities/catalog';
+import { buildMockCatalogSearch, isMockDataEnabled } from '@/frontend/lib/popmartShowcase';
 
 export default function Explore() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const mock = isMockDataEnabled();
-  const [catalogQuery, setCatalogQuery] = useState('');
+
+  const activeQuery = (searchParams.get('q') ?? '').trim();
+  const [draft, setDraft] = useState(activeQuery);
   const [selectedBrandSlug, setSelectedBrandSlug] = useState('');
   const [selectedIp, setSelectedIp] = useState<string>('');
+  const [searchResult, setSearchResult] = useState<CatalogSearchResult | null>(null);
+  const [searchLoading, setSearchLoading] = useState(false);
+
+  const isSearching = activeQuery.length > 0;
 
   const dbBrands = useCatalogBrands();
   const { products } = useCatalogProducts();
-  const { series: dbSeries } = useCatalogSeries(mock ? undefined : selectedBrandSlug);
+  const { series: dbSeries } = useCatalogSeries(mock || isSearching ? undefined : selectedBrandSlug);
+
+  useEffect(() => {
+    setDraft(activeQuery);
+  }, [activeQuery]);
+
+  useEffect(() => {
+    if (!activeQuery) {
+      setSearchResult(null);
+      setSearchLoading(false);
+      return;
+    }
+    setSearchLoading(true);
+    const run = mock
+      ? Promise.resolve(buildMockCatalogSearch(activeQuery))
+      : getCatalogSearch(activeQuery);
+    run
+      .then(setSearchResult)
+      .catch(() => setSearchResult(buildMockCatalogSearch(activeQuery)))
+      .finally(() => setSearchLoading(false));
+  }, [activeQuery, mock]);
 
   const deriveSeriesName = (title: string) => {
     const cleaned = title
@@ -30,19 +59,28 @@ export default function Explore() {
     return m?.[1]?.trim();
   };
 
+  const submitSearch = (raw: string) => {
+    const q = raw.trim();
+    if (q) setSearchParams({ q }, { replace: true });
+    else setSearchParams({}, { replace: true });
+  };
+
+  const clearSearch = () => {
+    setDraft('');
+    setSearchParams({}, { replace: true });
+  };
+
   const mockBrandCards = useMemo(
     () => [
       {
         slug: 'pop-mart',
         title: 'Pop Mart',
         image: products[0]?.image,
-        to: '/brand/pop-mart',
       },
       {
         slug: 'jellycat',
         title: 'Jellycat',
         image: products[1]?.image ?? products[0]?.image,
-        to: '/brand/jellycat',
       },
     ],
     [products]
@@ -54,16 +92,15 @@ export default function Explore() {
       slug: b.slug ?? b.name.toLowerCase().replace(/\s+/g, '-'),
       title: b.name,
       image: b.image,
-      to: `/brand/${encodeURIComponent(b.slug ?? b.name)}`,
     }));
   }, [mock, mockBrandCards, dbBrands]);
 
   useEffect(() => {
-    if (brandCards.length === 0) return;
+    if (isSearching || brandCards.length === 0) return;
     if (!selectedBrandSlug || !brandCards.some((b) => b.slug === selectedBrandSlug)) {
       setSelectedBrandSlug(brandCards[0].slug);
     }
-  }, [brandCards, selectedBrandSlug]);
+  }, [brandCards, selectedBrandSlug, isSearching]);
 
   const selectedBrandTitle =
     brandCards.find((b) => b.slug === selectedBrandSlug)?.title ?? brandCards[0]?.title ?? '';
@@ -81,22 +118,22 @@ export default function Explore() {
   }, [products, selectedBrandTitle, deriveBrandLabel]);
 
   useEffect(() => {
-    if (mock) {
-      if (selectedBrandTitle !== 'Pop Mart') {
-        setSelectedIp('');
-        return;
-      }
-      if (mockIpOptions.length === 0) {
-        setSelectedIp('');
-        return;
-      }
-      if (!selectedIp || !mockIpOptions.some((x) => x.ip === selectedIp)) {
-        setSelectedIp(mockIpOptions[0].ip);
-      }
+    if (isSearching || !mock) {
+      if (!mock) setSelectedIp('');
       return;
     }
-    setSelectedIp('');
-  }, [mock, mockIpOptions, selectedBrandTitle, selectedIp]);
+    if (selectedBrandTitle !== 'Pop Mart') {
+      setSelectedIp('');
+      return;
+    }
+    if (mockIpOptions.length === 0) {
+      setSelectedIp('');
+      return;
+    }
+    if (!selectedIp || !mockIpOptions.some((x) => x.ip === selectedIp)) {
+      setSelectedIp(mockIpOptions[0].ip);
+    }
+  }, [mock, mockIpOptions, selectedBrandTitle, selectedIp, isSearching]);
 
   const mockSeriesOptions = useMemo(() => {
     if (!selectedIp) return [];
@@ -108,25 +145,29 @@ export default function Explore() {
       if (!map.has(s)) map.set(s, { name: s, image: p.image, count: 0 });
       map.get(s)!.count += 1;
     }
-    const q = catalogQuery.trim();
-    const list = Array.from(map.values());
-    const filtered = q ? list.filter((x) => x.name.includes(q)) : list;
-    return filtered.sort((a, b) => b.count - a.count).slice(0, 40);
-  }, [products, selectedIp, catalogQuery, deriveBrandLabel, deriveSeriesName]);
+    return Array.from(map.values()).sort((a, b) => b.count - a.count).slice(0, 40);
+  }, [products, selectedIp, deriveBrandLabel, deriveSeriesName]);
 
-  const dbSeriesOptions = useMemo(() => {
-    const q = catalogQuery.trim();
-    let list = dbSeries.map((s) => ({
-      slug: s.slug,
-      name: s.name,
-      image: s.image,
-      count: s.count ?? 0,
-    }));
-    if (q) list = list.filter((x) => x.name.includes(q));
-    return list;
-  }, [dbSeries, catalogQuery]);
+  const dbSeriesOptions = useMemo(
+    () =>
+      dbSeries.map((s) => ({
+        slug: s.slug,
+        name: s.name,
+        image: s.image,
+        count: s.count ?? 0,
+      })),
+    [dbSeries]
+  );
 
   const seriesOptions = mock ? mockSeriesOptions : dbSeriesOptions;
+
+  const resultEmpty =
+    isSearching &&
+    !searchLoading &&
+    searchResult &&
+    searchResult.brands.length === 0 &&
+    searchResult.series.length === 0 &&
+    searchResult.products.length === 0;
 
   return (
     <div className="w-full min-w-0 max-w-full overflow-x-hidden animate-in fade-in duration-500">
@@ -134,167 +175,304 @@ export default function Explore() {
 
       <div className="pt-topbar-content px-container-margin w-full min-w-0 max-w-full mx-auto">
         <section className="mb-2">
-          <div className="ui-search">
+          <form
+            className="ui-search"
+            onSubmit={(e) => {
+              e.preventDefault();
+              submitSearch(draft);
+            }}
+          >
             <span className="material-symbols-outlined ui-search-icon">search</span>
             <input
-              value={catalogQuery}
-              onChange={(e) => setCatalogQuery(e.target.value)}
-              className="text-sm"
-              placeholder="搜尋系列"
+              name="q"
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              className="text-sm pr-10"
+              placeholder="搜尋品牌、系列或盲盒"
               type="search"
+              enterKeyHint="search"
             />
-          </div>
+            {(draft || activeQuery) && (
+              <button
+                type="button"
+                onClick={clearSearch}
+                className="absolute right-3 top-1/2 z-10 -translate-y-1/2 text-on-surface-variant"
+                aria-label="清除搜尋"
+              >
+                <span className="material-symbols-outlined text-lg">close</span>
+              </button>
+            )}
+          </form>
         </section>
 
-        <section className="pt-0 pb-2">
-          <p className="text-[10px] font-black text-secondary tracking-wider uppercase mb-2">BRAND</p>
-          <div className="overflow-x-auto overflow-y-visible no-scrollbar -mx-1 px-1 py-2 pr-3">
-            <div className="flex gap-3">
-              {brandCards.map((b) => {
-                const active = selectedBrandSlug === b.slug;
-                return (
-                  <button
-                    key={b.slug}
-                    type="button"
-                    onClick={() => setSelectedBrandSlug(b.slug)}
-                    className="shrink-0 flex flex-col items-center"
-                    aria-label={`選擇品牌：${b.title}`}
-                    aria-pressed={active}
-                  >
-                    <div className="flex h-[96px] w-[96px] items-center justify-center">
-                      <div
-                        className={cn(
-                          'rounded-3xl overflow-hidden border-[2.5px] shadow-[4px_4px_0_#111] bg-white transition-[width,height,opacity] duration-200',
-                          active
-                            ? 'h-[96px] w-[96px] border-secondary opacity-100'
-                            : 'h-[72px] w-[72px] border-outline opacity-60'
-                        )}
-                      >
-                        {b.image ? (
-                          <img src={b.image} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+        {isSearching && (
+          <section className="pb-28 space-y-6">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-sm text-on-surface-variant">
+                {searchLoading
+                  ? '搜尋中…'
+                  : `「${activeQuery}」的結果${
+                      searchResult
+                        ? `（${searchResult.brands.length + searchResult.series.length + searchResult.products.length}）`
+                        : ''
+                    }`}
+              </p>
+            </div>
+
+            {resultEmpty && (
+              <div className="glass-card shadow-[4px_4px_0_#111] rounded-2xl p-5">
+                <p className="text-sm text-on-surface-variant">找不到符合的圖鑑內容，請試試其他關鍵字。</p>
+              </div>
+            )}
+
+            {searchResult && searchResult.brands.length > 0 && (
+              <div>
+                <p className="text-[10px] font-black text-secondary tracking-wider uppercase mb-2">品牌</p>
+                <div className="flex flex-wrap gap-2">
+                  {searchResult.brands.map((b) => (
+                    <button
+                      key={b.slug ?? b.name}
+                      type="button"
+                      onClick={() => navigate(`/brand/${encodeURIComponent(b.slug ?? b.name)}`)}
+                      className="px-3 py-2 rounded-full border border-black/[0.12] bg-white text-xs font-bold text-on-surface active:scale-95"
+                    >
+                      {b.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {searchResult && searchResult.series.length > 0 && (
+              <div className="space-y-3">
+                <p className="text-[10px] font-black text-secondary tracking-wider uppercase">系列</p>
+                {searchResult.series.map((s) => {
+                  const brandSlug = s.brandSlug ?? '';
+                  const href = mock
+                    ? `/subseries?ip=${encodeURIComponent(s.brandName ?? '')}&name=${encodeURIComponent(s.name)}`
+                    : `/subseries?brand=${encodeURIComponent(brandSlug)}&series=${encodeURIComponent(s.slug)}&name=${encodeURIComponent(s.name)}`;
+                  return (
+                    <button
+                      key={`${brandSlug}-${s.slug}`}
+                      type="button"
+                      onClick={() => navigate(href)}
+                      className="w-full glass-card shadow-[4px_4px_0_#111] rounded-2xl overflow-hidden flex items-center gap-4 p-4 text-left"
+                    >
+                      <div className="w-16 h-16 rounded-2xl overflow-hidden bg-neutral-100 shrink-0 border border-black/[0.08]">
+                        {s.image ? (
+                          <img src={s.image} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                         ) : null}
                       </div>
-                    </div>
-                    <div className="mt-1 text-center">
-                      <div
-                        className={cn(
-                          'text-[11px] font-black leading-tight transition-colors',
-                          active ? 'text-on-background' : 'text-on-surface-variant'
+                      <div className="min-w-0 flex-1">
+                        {s.brandName && <p className="text-xs font-bold text-primary">{s.brandName}</p>}
+                        <p className="text-sm font-extrabold text-on-surface line-clamp-2 leading-snug">{s.name}</p>
+                        {s.count != null && s.count > 0 && (
+                          <p className="text-[11px] text-on-surface-variant mt-1">{s.count} 款</p>
                         )}
-                      >
-                        {b.title}
                       </div>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        {mock && (
-          <section className="pb-2">
-            <div className="flex items-end justify-between mb-2">
-              <p className="text-[10px] font-black text-secondary tracking-wider uppercase">IP</p>
-            </div>
-
-            {mockIpOptions.length === 0 ? (
-              <div className="glass-card rounded-2xl p-5">
-                <p className="text-sm text-on-surface-variant">此品牌暫無可用的 IP 資料。</p>
+                      <span className="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+                    </button>
+                  );
+                })}
               </div>
-            ) : (
-              <div className="overflow-x-auto overflow-y-visible no-scrollbar -mx-1 px-1 py-2 pr-3">
-                <div className="flex gap-4">
-                  {mockIpOptions.map((ip) => {
-                    const active = selectedIp === ip.ip;
-                    return (
-                      <button
-                        key={ip.ip}
-                        type="button"
-                        onClick={() => setSelectedIp(ip.ip)}
-                        className="shrink-0 flex flex-col items-center gap-2"
-                        aria-label={`選擇 IP：${ip.ip}`}
-                        aria-pressed={active}
-                      >
-                        <div className="flex h-[80px] w-[80px] items-center justify-center">
-                          <div
-                            className={cn(
-                              'rounded-full overflow-hidden border-[2.5px] bg-white shadow-[4px_4px_0_#111] transition-[width,height,opacity] duration-200',
-                              active
-                                ? 'h-[80px] w-[80px] border-secondary opacity-100'
-                                : 'h-[60px] w-[60px] border-outline opacity-60'
-                            )}
-                          >
-                            {ip.image ? (
-                              <img src={ip.image} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                            ) : null}
-                          </div>
-                        </div>
-                        <span
-                          className={cn(
-                            'text-[11px] font-extrabold max-w-[96px] truncate transition-colors',
-                            active ? 'text-on-background' : 'text-on-surface-variant'
-                          )}
-                        >
-                          {ip.ip}
-                        </span>
-                      </button>
-                    );
-                  })}
+            )}
+
+            {searchResult && searchResult.products.length > 0 && (
+              <div>
+                <p className="text-[10px] font-black text-secondary tracking-wider uppercase mb-3">盲盒</p>
+                <div className="grid grid-cols-2 gap-grid-gutter">
+                  {searchResult.products.map((p) => (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onClick={() => navigate(`/product/${p.id}?src=catalog`)}
+                      className="glass-card rounded-2xl overflow-hidden text-left active:scale-[0.98] transition-transform"
+                    >
+                      <div className="aspect-square bg-neutral-100">
+                        {p.image ? (
+                          <img src={p.image} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                        ) : null}
+                      </div>
+                      <div className="p-3">
+                        {(p.brandName || p.seriesName) && (
+                          <p className="text-[10px] font-semibold text-primary mb-0.5 line-clamp-1">
+                            {[p.brandName, p.seriesName].filter(Boolean).join(' · ')}
+                          </p>
+                        )}
+                        <p className="text-xs font-bold text-on-surface line-clamp-2 leading-snug">{p.title}</p>
+                        {p.price && <p className="text-[11px] text-on-surface-variant mt-1">{p.price}</p>}
+                      </div>
+                    </button>
+                  ))}
                 </div>
               </div>
             )}
           </section>
         )}
 
-        <section className="pb-28">
-          <div className="flex items-end justify-between mb-3">
-            <div className="min-w-0">
-              <p className="text-[10px] font-black text-secondary tracking-wider uppercase">SERIES</p>
-              <h2 className="text-lg font-extrabold text-on-background mt-1 truncate">
-                {mock ? (selectedIp || '請先選擇 IP') : selectedBrandTitle || '請先選擇品牌'}
-              </h2>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            {(mock ? selectedIp : selectedBrandSlug) && seriesOptions.length === 0 && (
-              <div className="glass-card shadow-[4px_4px_0_#111] rounded-2xl p-5">
-                <p className="text-sm text-on-surface-variant">
-                  {mock ? '此 IP 暫無可辨識的系列。' : '此品牌暫無系列，請先執行圖鑑種子匯入。'}
-                </p>
+        {!isSearching && (
+          <>
+            <section className="pt-0 pb-2">
+              <p className="text-[10px] font-black text-secondary tracking-wider uppercase mb-2">BRAND</p>
+              <div className="overflow-x-auto overflow-y-visible no-scrollbar -mx-1 px-1 py-2 pr-3">
+                <div className="flex gap-3">
+                  {brandCards.map((b) => {
+                    const active = selectedBrandSlug === b.slug;
+                    return (
+                      <button
+                        key={b.slug}
+                        type="button"
+                        onClick={() => setSelectedBrandSlug(b.slug)}
+                        className="shrink-0 flex flex-col items-center"
+                        aria-label={`選擇品牌：${b.title}`}
+                        aria-pressed={active}
+                      >
+                        <div className="flex h-[96px] w-[96px] items-center justify-center">
+                          <div
+                            className={cn(
+                              'rounded-3xl overflow-hidden border-[2.5px] shadow-[4px_4px_0_#111] bg-white transition-[width,height,opacity] duration-200',
+                              active
+                                ? 'h-[96px] w-[96px] border-secondary opacity-100'
+                                : 'h-[72px] w-[72px] border-outline opacity-60'
+                            )}
+                          >
+                            {b.image ? (
+                              <img
+                                src={b.image}
+                                alt=""
+                                className="w-full h-full object-cover"
+                                referrerPolicy="no-referrer"
+                              />
+                            ) : null}
+                          </div>
+                        </div>
+                        <div className="mt-1 text-center">
+                          <div
+                            className={cn(
+                              'text-[11px] font-black leading-tight transition-colors',
+                              active ? 'text-on-background' : 'text-on-surface-variant'
+                            )}
+                          >
+                            {b.title}
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
+            </section>
+
+            {mock && (
+              <section className="pb-2">
+                <div className="flex items-end justify-between mb-2">
+                  <p className="text-[10px] font-black text-secondary tracking-wider uppercase">IP</p>
+                </div>
+
+                {mockIpOptions.length === 0 ? (
+                  <div className="glass-card rounded-2xl p-5">
+                    <p className="text-sm text-on-surface-variant">此品牌暫無可用的 IP 資料。</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto overflow-y-visible no-scrollbar -mx-1 px-1 py-2 pr-3">
+                    <div className="flex gap-4">
+                      {mockIpOptions.map((ip) => {
+                        const active = selectedIp === ip.ip;
+                        return (
+                          <button
+                            key={ip.ip}
+                            type="button"
+                            onClick={() => setSelectedIp(ip.ip)}
+                            className="shrink-0 flex flex-col items-center gap-2"
+                            aria-label={`選擇 IP：${ip.ip}`}
+                            aria-pressed={active}
+                          >
+                            <div className="flex h-[80px] w-[80px] items-center justify-center">
+                              <div
+                                className={cn(
+                                  'rounded-full overflow-hidden border-[2.5px] bg-white shadow-[4px_4px_0_#111] transition-[width,height,opacity] duration-200',
+                                  active
+                                    ? 'h-[80px] w-[80px] border-secondary opacity-100'
+                                    : 'h-[60px] w-[60px] border-outline opacity-60'
+                                )}
+                              >
+                                {ip.image ? (
+                                  <img
+                                    src={ip.image}
+                                    alt=""
+                                    className="w-full h-full object-cover"
+                                    referrerPolicy="no-referrer"
+                                  />
+                                ) : null}
+                              </div>
+                            </div>
+                            <span
+                              className={cn(
+                                'text-[11px] font-extrabold max-w-[96px] truncate transition-colors',
+                                active ? 'text-on-background' : 'text-on-surface-variant'
+                              )}
+                            >
+                              {ip.ip}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </section>
             )}
 
-            {seriesOptions.map((s) => {
-              const seriesSlug = 'slug' in s ? s.slug : undefined;
-              const href = mock
-                ? `/subseries?ip=${encodeURIComponent(selectedIp)}&name=${encodeURIComponent(s.name)}`
-                : `/subseries?brand=${encodeURIComponent(selectedBrandSlug)}&series=${encodeURIComponent(seriesSlug ?? '')}&name=${encodeURIComponent(s.name)}`;
-              return (
-                <button
-                  key={seriesSlug ?? s.name}
-                  type="button"
-                  onClick={() => navigate(href)}
-                  className="w-full glass-card shadow-[4px_4px_0_#111] rounded-2xl overflow-hidden flex items-center gap-4 p-4 text-left"
-                >
-                  <div className="w-16 h-16 rounded-2xl overflow-hidden bg-neutral-100 shrink-0 border border-black/[0.08]">
-                    {s.image ? (
-                      <img src={s.image} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                    ) : null}
+            <section className="pb-28">
+              <div className="flex items-end justify-between mb-3">
+                <div className="min-w-0">
+                  <p className="text-[10px] font-black text-secondary tracking-wider uppercase">SERIES</p>
+                  <h2 className="text-lg font-extrabold text-on-background mt-1 truncate">
+                    {mock ? selectedIp || '請先選擇 IP' : selectedBrandTitle || '請先選擇品牌'}
+                  </h2>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                {(mock ? selectedIp : selectedBrandSlug) && seriesOptions.length === 0 && (
+                  <div className="glass-card shadow-[4px_4px_0_#111] rounded-2xl p-5">
+                    <p className="text-sm text-on-surface-variant">
+                      {mock ? '此 IP 暫無可辨識的系列。' : '此品牌暫無系列，請先執行圖鑑種子匯入。'}
+                    </p>
                   </div>
-                  <div className="min-w-0 flex-1">
-                    {!mock && <p className="text-xs font-bold text-primary">{selectedBrandTitle}</p>}
-                    {mock && selectedIp && <p className="text-xs font-bold text-primary">{selectedIp}</p>}
-                    <p className="text-sm font-extrabold text-on-surface line-clamp-2 leading-snug">{s.name}</p>
-                    <p className="text-[11px] text-on-surface-variant mt-1">{s.count} 款</p>
-                  </div>
-                  <span className="material-symbols-outlined text-on-surface-variant">chevron_right</span>
-                </button>
-              );
-            })}
-          </div>
-        </section>
+                )}
+
+                {seriesOptions.map((s) => {
+                  const seriesSlug = 'slug' in s ? s.slug : undefined;
+                  const href = mock
+                    ? `/subseries?ip=${encodeURIComponent(selectedIp)}&name=${encodeURIComponent(s.name)}`
+                    : `/subseries?brand=${encodeURIComponent(selectedBrandSlug)}&series=${encodeURIComponent(seriesSlug ?? '')}&name=${encodeURIComponent(s.name)}`;
+                  return (
+                    <button
+                      key={seriesSlug ?? s.name}
+                      type="button"
+                      onClick={() => navigate(href)}
+                      className="w-full glass-card shadow-[4px_4px_0_#111] rounded-2xl overflow-hidden flex items-center gap-4 p-4 text-left"
+                    >
+                      <div className="w-16 h-16 rounded-2xl overflow-hidden bg-neutral-100 shrink-0 border border-black/[0.08]">
+                        {s.image ? (
+                          <img src={s.image} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                        ) : null}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        {!mock && <p className="text-xs font-bold text-primary">{selectedBrandTitle}</p>}
+                        {mock && selectedIp && <p className="text-xs font-bold text-primary">{selectedIp}</p>}
+                        <p className="text-sm font-extrabold text-on-surface line-clamp-2 leading-snug">{s.name}</p>
+                        <p className="text-[11px] text-on-surface-variant mt-1">{s.count} 款</p>
+                      </div>
+                      <span className="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+          </>
+        )}
       </div>
     </div>
   );

@@ -85,6 +85,10 @@ def _row_to_product(row: dict) -> CatalogProduct:
         price=_format_price(row["official_price_amount"], row["official_price_currency"]),
         image=row["image_url"] or "",
         source_url=row["source_url"] or "",
+        brand_slug=row.get("brand_slug"),
+        brand_name=row.get("brand_name"),
+        series_slug=row.get("series_slug"),
+        series_name=row.get("series_name"),
     )
 
 
@@ -156,6 +160,66 @@ def get_series_by_brand_slug(
             "name": r["name"],
             "image": r.get("cover_url") or "",
             "count": int(r.get("total_count") or 0),
+        }
+        for r in rows
+    ]
+
+
+_BRANDS_SEARCH = """
+    SELECT id, slug, name, logo_url
+    FROM brands
+    WHERE LOWER(name) LIKE %s
+    ORDER BY name ASC
+    LIMIT 12
+"""
+
+_SERIES_SEARCH = """
+    SELECT
+        s.id,
+        s.slug,
+        s.name,
+        s.cover_url,
+        s.total_count,
+        b.slug AS brand_slug,
+        b.name AS brand_name
+    FROM series s
+    JOIN brands b ON b.id = s.brand_id
+    WHERE LOWER(s.name) LIKE %s OR LOWER(b.name) LIKE %s
+    ORDER BY s.name ASC
+    LIMIT 24
+"""
+
+
+def search_brands(conn: psycopg2.extensions.connection, query: str) -> list[dict]:
+    pattern = f"%{query.strip().lower()}%"
+    with conn.cursor() as cur:
+        cur.execute(_BRANDS_SEARCH, (pattern,))
+        rows = cur.fetchall()
+    return [
+        {
+            "id": str(r["id"]),
+            "slug": r["slug"],
+            "name": r["name"],
+            "image": r.get("logo_url") or "",
+        }
+        for r in rows
+    ]
+
+
+def search_series(conn: psycopg2.extensions.connection, query: str) -> list[dict]:
+    pattern = f"%{query.strip().lower()}%"
+    with conn.cursor() as cur:
+        cur.execute(_SERIES_SEARCH, (pattern, pattern))
+        rows = cur.fetchall()
+    return [
+        {
+            "id": str(r["id"]),
+            "slug": r["slug"],
+            "name": r["name"],
+            "image": r.get("cover_url") or "",
+            "count": int(r.get("total_count") or 0),
+            "brand_slug": r["brand_slug"],
+            "brand_name": r["brand_name"],
         }
         for r in rows
     ]
