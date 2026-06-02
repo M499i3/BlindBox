@@ -16,6 +16,7 @@ export default function ListingDetail() {
   const { addToCart, removeFromCart, isInCart, avatarDataUrl, userId } = useAppState();
   const [listing, setListing] = useState<Listing | undefined | null>(null);
   const [loading, setLoading] = useState(!!id);
+  const [imageIndex, setImageIndex] = useState(0);
   const { products: catalogProducts } = useCatalogProducts();
   const [contacting, setContacting] = useState(false);
  
@@ -40,6 +41,17 @@ export default function ListingDetail() {
     if (!name) return null;
     return pickBestTitleMatch(catalogProducts, name);
   }, [catalogProducts, listing]);
+
+  const listingImages = useMemo(() => {
+    if (!listing) return [];
+    const images = listing.images?.filter(Boolean) ?? [];
+    if (images.length > 0) return images;
+    return listing.image ? [listing.image] : [];
+  }, [listing]);
+
+  useEffect(() => {
+    setImageIndex(0);
+  }, [id, listing?.id]);
 
   if (loading) {
     return (
@@ -71,8 +83,44 @@ export default function ListingDetail() {
       <TopBar showBack title="貼文詳情" />
       <main className="pt-topbar-content px-5 space-y-6 w-full min-w-0 max-w-full">
         <section className="rounded-2xl border-2 border-outline bg-white shadow-none overflow-hidden">
-          <div className="aspect-square bg-neutral-100">
-            <img src={listing.image} alt="" className="w-full h-full object-cover" />
+          <div className="relative aspect-square bg-neutral-100">
+            <img
+              src={listingImages[imageIndex] ?? listing.image}
+              alt=""
+              className="w-full h-full object-cover"
+            />
+            {listingImages.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setImageIndex((prev) => (prev - 1 + listingImages.length) % listingImages.length)
+                  }
+                  className="absolute left-3 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/55 text-white"
+                  aria-label="上一張照片"
+                >
+                  <span className="material-symbols-outlined">chevron_left</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setImageIndex((prev) => (prev + 1) % listingImages.length)}
+                  className="absolute right-3 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/55 text-white"
+                  aria-label="下一張照片"
+                >
+                  <span className="material-symbols-outlined">chevron_right</span>
+                </button>
+                <div className="absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 gap-1 rounded-full bg-black/45 px-2.5 py-1.5">
+                  {listingImages.map((_, idx) => (
+                    <span
+                      key={`${listing.id}-dot-${idx}`}
+                      className={`h-1.5 w-1.5 rounded-full ${
+                        idx === imageIndex ? 'bg-white' : 'bg-white/45'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
           </div>
           <div className="p-5 space-y-3">
             <h1 className="text-xl font-bold text-on-surface leading-snug">{listing.title}</h1>

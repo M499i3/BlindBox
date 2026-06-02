@@ -12,6 +12,66 @@ import type { MarketplaceRankingItem } from '@/frontend/infrastructure/api/marke
 import { APP_PAGE_CLASS, BOTTOM_NAV_OFFSET } from '@/frontend/presentation/constants/layout';
 import { TOPBAR_RIGHT_ICON_SIZE } from '@/frontend/presentation/constants/topbar';
 
+function ListingImageCarousel({
+  images,
+  title,
+}: {
+  images: string[];
+  title: string;
+}) {
+  const [index, setIndex] = useState(0);
+  const total = images.length;
+  const current = images[index] ?? images[0] ?? '';
+
+  useEffect(() => {
+    setIndex(0);
+  }, [images]);
+
+  if (!current) return <div className="w-full h-full bg-neutral-100" />;
+
+  if (total <= 1) {
+    return <img className="w-full h-full object-cover" src={current} referrerPolicy="no-referrer" alt={title} />;
+  }
+
+  return (
+    <>
+      <img className="w-full h-full object-cover" src={current} referrerPolicy="no-referrer" alt={title} />
+      <button
+        type="button"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setIndex((prev) => (prev - 1 + total) % total);
+        }}
+        className="absolute left-2 top-1/2 -translate-y-1/2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-black/55 text-white"
+        aria-label="上一張照片"
+      >
+        <span className="material-symbols-outlined text-base">chevron_left</span>
+      </button>
+      <button
+        type="button"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setIndex((prev) => (prev + 1) % total);
+        }}
+        className="absolute right-2 top-1/2 -translate-y-1/2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-black/55 text-white"
+        aria-label="下一張照片"
+      >
+        <span className="material-symbols-outlined text-base">chevron_right</span>
+      </button>
+      <div className="absolute bottom-2 left-1/2 z-10 flex -translate-x-1/2 gap-1 rounded-full bg-black/40 px-2 py-1">
+        {images.map((_, dotIdx) => (
+          <span
+            key={`${title}-dot-${dotIdx}`}
+            className={cn('h-1.5 w-1.5 rounded-full', dotIdx === index ? 'bg-white' : 'bg-white/45')}
+          />
+        ))}
+      </div>
+    </>
+  );
+}
+
 export default function Marketplace() {
   const navigate = useNavigate();
   const { cartIds, listings, posts, addToCart, isInCart } = useAppState();
@@ -65,7 +125,7 @@ export default function Marketplace() {
       id: p.id,
       title: p.title,
       price: p.price,
-      image: p.image,
+      images: p.images?.length ? p.images : [p.image].filter(Boolean),
       status: p.tradeMode || '最新上架',
     }));
   }, [posts, listings]);
@@ -75,7 +135,7 @@ export default function Marketplace() {
     title: p.title,
     price: p.price,
     type: p.tradeMode || (i % 2 === 0 ? '可交換' : '可購買'),
-    image: p.image,
+    images: p.images?.length ? p.images : [p.image].filter(Boolean),
   }));
 
   return (
@@ -206,7 +266,7 @@ export default function Marketplace() {
                   className="glass-card rounded-2xl overflow-hidden shrink-0 basis-[48%] min-w-[48%] max-w-[48%] flex flex-col cursor-pointer"
                 >
                   <div className="relative aspect-square">
-                    <img className="w-full h-full object-cover" src={item.image} referrerPolicy="no-referrer" alt={item.title} />
+                    <ListingImageCarousel images={item.images} title={item.title} />
                     <div className="absolute top-2 right-2 flex flex-col gap-2">
                       <button
                         type="button"
@@ -300,7 +360,7 @@ export default function Marketplace() {
                   className="glass-card rounded-2xl overflow-hidden flex flex-col cursor-pointer"
                 >
                   <div className="relative aspect-square">
-                    <img className="w-full h-full object-cover" src={item.image} referrerPolicy="no-referrer" alt={item.title} />
+                    <ListingImageCarousel images={item.images} title={item.title} />
                     <div className="absolute top-2 right-2 flex flex-col gap-2">
                       <button
                         type="button"

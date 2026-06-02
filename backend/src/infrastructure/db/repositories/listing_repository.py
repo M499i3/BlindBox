@@ -28,7 +28,12 @@ _LIST_SELECT = """
             WHERE li.listing_id = l.id
             ORDER BY li.sort_order
             LIMIT 1
-        ) AS image_url
+        ) AS image_url,
+        (
+            SELECT COALESCE(array_agg(li.url ORDER BY li.sort_order), ARRAY[]::text[])
+            FROM listing_images li
+            WHERE li.listing_id = l.id
+        ) AS image_urls
     FROM listings l
     LEFT JOIN users u ON u.id = l.seller_id
     WHERE l.status = 'active' AND l.deleted_at IS NULL
@@ -57,7 +62,12 @@ _MY_LISTINGS_SELECT = """
             WHERE li.listing_id = l.id
             ORDER BY li.sort_order
             LIMIT 1
-        ) AS image_url
+        ) AS image_url,
+        (
+            SELECT COALESCE(array_agg(li.url ORDER BY li.sort_order), ARRAY[]::text[])
+            FROM listing_images li
+            WHERE li.listing_id = l.id
+        ) AS image_urls
     FROM listings l
     LEFT JOIN users u ON u.id = l.seller_id
     WHERE l.status = 'active' AND l.deleted_at IS NULL AND l.seller_id = %s
@@ -86,7 +96,12 @@ _LISTING_BY_ID = """
             WHERE li.listing_id = l.id
             ORDER BY li.sort_order
             LIMIT 1
-        ) AS image_url
+        ) AS image_url,
+        (
+            SELECT COALESCE(array_agg(li.url ORDER BY li.sort_order), ARRAY[]::text[])
+            FROM listing_images li
+            WHERE li.listing_id = l.id
+        ) AS image_urls
     FROM listings l
     LEFT JOIN users u ON u.id = l.seller_id
     WHERE l.id = %s AND l.deleted_at IS NULL
@@ -133,7 +148,8 @@ def _parse_price_amount(price_str: str) -> int:
 
 
 def _row_to_listing(row: dict) -> Listing:
-    image_url = row.get("image_url") or ""
+    image_urls = [url for url in (row.get("image_urls") or []) if isinstance(url, str) and url]
+    image_url = row.get("image_url") or (image_urls[0] if image_urls else "")
     return Listing(
         id=str(row["id"]),
         title=row["title"] or "",
@@ -149,7 +165,7 @@ def _row_to_listing(row: dict) -> Listing:
         allow_swap=bool(row.get("allow_swap", False)),
         allow_bargain=bool(row.get("allow_bargain", False)),
         image=image_url,
-        images=[image_url] if image_url else [],
+        images=image_urls,
         created_at=str(row.get("created_at") or ""),
         seller_name=row.get("seller_name") or "Unknown",
         seller_id=str(row.get("seller_id") or ""),

@@ -1,9 +1,70 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import { useProductCollection } from '@/frontend/presentation/hooks/useProductCollection';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
+import { cn } from '@/frontend/shared/utils/cn';
+
+function ListingImageCarousel({
+  images,
+  title,
+}: {
+  images: string[];
+  title: string;
+}) {
+  const [index, setIndex] = useState(0);
+  const total = images.length;
+  const current = images[index] ?? images[0] ?? '';
+
+  useEffect(() => {
+    setIndex(0);
+  }, [images]);
+
+  if (!current) return <div className="w-full h-full bg-neutral-100" />;
+
+  if (total <= 1) {
+    return <img src={current} alt={title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />;
+  }
+
+  return (
+    <>
+      <img src={current} alt={title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+      <button
+        type="button"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setIndex((prev) => (prev - 1 + total) % total);
+        }}
+        className="absolute left-2 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-black/55 text-white"
+        aria-label="上一張照片"
+      >
+        <span className="material-symbols-outlined text-base">chevron_left</span>
+      </button>
+      <button
+        type="button"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setIndex((prev) => (prev + 1) % total);
+        }}
+        className="absolute right-2 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-black/55 text-white"
+        aria-label="下一張照片"
+      >
+        <span className="material-symbols-outlined text-base">chevron_right</span>
+      </button>
+      <div className="absolute bottom-2 left-1/2 z-10 flex -translate-x-1/2 gap-1 rounded-full bg-black/40 px-2 py-1">
+        {images.map((_, dotIdx) => (
+          <span
+            key={`${title}-dot-${dotIdx}`}
+            className={cn('h-1.5 w-1.5 rounded-full', dotIdx === index ? 'bg-white' : 'bg-white/45')}
+          />
+        ))}
+      </div>
+    </>
+  );
+}
 
 export default function MyListings() {
   const navigate = useNavigate();
@@ -47,11 +108,9 @@ export default function MyListings() {
             className="glass-card rounded-2xl overflow-hidden text-left"
           >
             <div className="aspect-square bg-neutral-100 relative">
-              <img
-                src={p.image}
-                alt=""
-                className="w-full h-full object-cover"
-                referrerPolicy="no-referrer"
+              <ListingImageCarousel
+                images={p.images?.length ? p.images : [p.image].filter(Boolean)}
+                title={p.title}
               />
               <div className="absolute top-2 left-2 flex flex-col gap-2">
                 <button

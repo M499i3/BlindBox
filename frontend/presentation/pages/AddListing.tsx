@@ -42,6 +42,11 @@ export default function AddListing() {
       .slice(0, 8);
   }, [productPool, query]);
 
+  const visibleImageSlots = useMemo(
+    () => Math.min(9, Math.max(1, images.length + 1)),
+    [images.length]
+  );
+
   const onUploadImage = (index: number, file?: File | null) => {
     if (!file) return;
     const reader = new FileReader();
@@ -102,7 +107,7 @@ export default function AddListing() {
         <section className="space-y-3">
           <p className={SECTION_TITLE}>照片上傳（最多 9 張）</p>
           <div className="grid grid-cols-3 gap-3">
-            {Array.from({ length: 9 }, (_, index) => {
+            {Array.from({ length: visibleImageSlots }, (_, index) => {
               const image = images[index];
               const isMain = index === 0;
               return (
