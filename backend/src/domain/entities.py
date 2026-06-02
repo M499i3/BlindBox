@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class CatalogProduct(BaseModel):
@@ -44,6 +44,7 @@ class Listing(BaseModel):
     allow_bargain: bool
     quantity: int = 1
     image: str
+    images: list[str] = Field(default_factory=list)
     created_at: str
     seller_name: str
     seller_id: str
@@ -63,6 +64,7 @@ class CreateListingInput(BaseModel):
     allow_bargain: bool
     quantity: int = 1
     image: Optional[str] = None
+    images: list[str] = Field(default_factory=list)
 
 
 class UserProfile(BaseModel):

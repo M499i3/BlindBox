@@ -14,6 +14,7 @@ export type Listing = {
   allowBargain: boolean;
   quantity: number; 
   image: string;
+  images?: string[];
   createdAt: string;
   sellerId?: string;
   sellerName: string;

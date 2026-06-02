@@ -17,7 +17,7 @@ export default function AddListing() {
   const navigate = useNavigate();
   const { createListing } = useAppState();
   const { products } = useCatalogProducts();
-  const [image, setImage] = useState<string>('');
+  const [images, setImages] = useState<string[]>([]);
   const [title, setTitle] = useState('');
   const [itemName, setItemName] = useState('');
   const [price, setPrice] = useState('');
@@ -42,13 +42,22 @@ export default function AddListing() {
       .slice(0, 8);
   }, [productPool, query]);
 
-  const onUploadImage = (file?: File | null) => {
+  const onUploadImage = (index: number, file?: File | null) => {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
-      if (typeof reader.result === 'string') setImage(reader.result);
+      if (typeof reader.result !== 'string') return;
+      setImages((prev) => {
+        const next = [...prev];
+        next[index] = reader.result;
+        return next.slice(0, 9);
+      });
     };
     reader.readAsDataURL(file);
+  };
+
+  const removeImage = (index: number) => {
+    setImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   const submit = async () => {
@@ -71,7 +80,8 @@ export default function AddListing() {
       shipping,
       allowSwap,
       allowBargain,
-      image,
+      image: images[0] ?? '',
+      images,
     });
     navigate(`/listing/${listingId}`);
   };
@@ -92,26 +102,47 @@ export default function AddListing() {
         <section className="space-y-3">
           <p className={SECTION_TITLE}>照片上傳（最多 9 張）</p>
           <div className="grid grid-cols-3 gap-3">
-            <label className="group relative flex aspect-square cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-black bg-white transition-colors hover:bg-neutral-50">
-              {image ? (
-                <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover" />
-              ) : (
-                <>
-                  <span className="material-symbols-outlined text-black group-hover:scale-110 transition-transform">
-                    add_a_photo
-                  </span>
-                  <span className="mt-2 text-[10px] font-bold text-black">主圖</span>
-                </>
-              )}
-              <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => onUploadImage(e.target.files?.[0])}
-              />
-            </label>
-            <div className="aspect-square rounded-2xl border-2 border-dashed border-black/25 bg-neutral-100" />
-            <div className="aspect-square rounded-2xl border-2 border-dashed border-black/25 bg-neutral-100" />
+            {Array.from({ length: 9 }, (_, index) => {
+              const image = images[index];
+              const isMain = index === 0;
+              return (
+                <label
+                  key={index}
+                  className="group relative flex aspect-square cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-black bg-white transition-colors hover:bg-neutral-50"
+                >
+                  {image ? (
+                    <>
+                      <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          removeImage(index);
+                        }}
+                        className="absolute right-1.5 top-1.5 z-10 flex h-6 w-6 items-center justify-center rounded-full border border-black bg-white/90 text-black"
+                        aria-label="移除照片"
+                      >
+                        <span className="material-symbols-outlined text-base">close</span>
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <span className="material-symbols-outlined text-black group-hover:scale-110 transition-transform">
+                        add_a_photo
+                      </span>
+                      <span className="mt-2 text-[10px] font-bold text-black">{isMain ? '主圖' : `照片 ${index + 1}`}</span>
+                    </>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => onUploadImage(index, e.target.files?.[0])}
+                  />
+                </label>
+              );
+            })}
           </div>
         </section>
 
@@ -136,7 +167,7 @@ export default function AddListing() {
                   key={p.id}
                   type="button"
                   onClick={() => {
-                    setImage(p.image);
+                    setImages([p.image]);
                     setItemName(p.title);
                     if (!title) setTitle(p.title);
                   }}

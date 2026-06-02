@@ -133,6 +133,7 @@ def _parse_price_amount(price_str: str) -> int:
 
 
 def _row_to_listing(row: dict) -> Listing:
+    image_url = row.get("image_url") or ""
     return Listing(
         id=str(row["id"]),
         title=row["title"] or "",
@@ -147,7 +148,8 @@ def _row_to_listing(row: dict) -> Listing:
         shipping=_SHIPPING_UI.get(str(row.get("shipping_method") or ""), str(row.get("shipping_method") or "")),
         allow_swap=bool(row.get("allow_swap", False)),
         allow_bargain=bool(row.get("allow_bargain", False)),
-        image=row.get("image_url") or "",
+        image=image_url,
+        images=[image_url] if image_url else [],
         created_at=str(row.get("created_at") or ""),
         seller_name=row.get("seller_name") or "Unknown",
         seller_id=str(row.get("seller_id") or ""),
@@ -222,13 +224,18 @@ def create_listing(
                 data.allow_bargain,
             ),
         )
-        if data.image and data.image.startswith(("http://", "https://")):
+        raw_images = [img.strip() for img in (data.images or []) if isinstance(img, str) and img.strip()]
+        if not raw_images and data.image and data.image.strip():
+            raw_images = [data.image.strip()]
+
+        # DB 會限制 sort_order 0~8，這裡先在應用層做同樣的防線
+        for sort_order, image_url in enumerate(raw_images[:9]):
             cur.execute(
                 """
                 INSERT INTO listing_images (listing_id, url, sort_order)
-                VALUES (%s, %s, 0)
+                VALUES (%s, %s, %s)
                 """,
-                (listing_id, data.image),
+                (listing_id, image_url, sort_order),
             )
         conn.commit()
 

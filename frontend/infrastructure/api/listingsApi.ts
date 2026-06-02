@@ -16,6 +16,7 @@ type ApiListing = {
   allow_swap: boolean;
   allow_bargain: boolean;
   image: string;
+  images?: string[];
   created_at: string;
   seller_name: string;
   seller_id?: string;
@@ -23,7 +24,7 @@ type ApiListing = {
 };
 
 function toFrontend(l: ApiListing): Listing {
-  console.log('API seller_id =', l.seller_id);
+  const images = l.images?.filter(Boolean) ?? [];
   return {
     id: l.id,
     title: l.title,
@@ -37,7 +38,8 @@ function toFrontend(l: ApiListing): Listing {
     shipping: l.shipping,
     allowSwap: l.allow_swap,
     allowBargain: l.allow_bargain,
-    image: l.image,
+    image: l.image || images[0] || '',
+    images,
     createdAt: l.created_at,
     sellerName: l.seller_name,
     quantity: l.quantity ?? 1,
@@ -46,6 +48,7 @@ function toFrontend(l: ApiListing): Listing {
 }
 
 function toApi(input: CreateListingInput): Record<string, unknown> {
+  const images = input.images?.filter(Boolean) ?? [];
   return {
     title: input.title,
     item_name: input.itemName,
@@ -59,6 +62,7 @@ function toApi(input: CreateListingInput): Record<string, unknown> {
     allow_swap: input.allowSwap,
     allow_bargain: input.allowBargain,
     image: input.image,
+    images,
     quantity: input.quantity,
   };
 }
