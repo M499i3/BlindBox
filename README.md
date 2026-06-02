@@ -61,6 +61,13 @@ npm run dev               # http://localhost:3001
 
 開啟 `http://localhost:3001/login`，用下方測試帳號登入後使用市集、聊天等功能。
 
+### 手機／區網測試
+
+1. 電腦與手機同一 Wi‑Fi，先啟動 **後端** 再啟動 **前端**（`npm run backend:dev`、`npm run dev`）。
+2. 手機瀏覽器開終端機顯示的 **Network** 網址，例如 `http://192.168.0.140:3001/login`。
+3. 前端會自動把 API 指到同一 IP 的 `8000` 埠（無需改 `.env` 的 `VITE_API_URL`）。
+4. 若仍無法連線：確認 Windows 防火牆允許 **3001、8000**；手機先開 `http://<電腦IP>:8000/docs` 能開 Swagger 即代表後端可達。
+
 ## 常用指令
 
 ```bash

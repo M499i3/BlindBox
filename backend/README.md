@@ -133,9 +133,6 @@ Migration `0003_chat_buyer_seller_order` 為 `chats` 新增 `buyer_id`、`seller
 
 ## CORS 設定
 
-`main.py` 目前允許以下 origin：
+`main.py` 允許 `localhost` / `127.0.0.1` 的 3001、3002，並以 regex 允許區網 IP（`192.168.x.x`、`10.x.x.x`、`172.16–31.x.x`）的 3001、3002，供手機連 Vite Network 網址測試。
 
-- `http://localhost:3001`
-- `http://localhost:3002`
-
-若前端跑在其他 port，在 `backend/main.py` 的 `allow_origins` 列表新增即可（需重啟後端）。
+若前端跑在其他 port，在 `backend/main.py` 的 `allow_origins` 或 `allow_origin_regex` 調整後重啟後端。
