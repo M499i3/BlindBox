@@ -40,15 +40,18 @@ def update_profile(
 ) -> UserProfile:
     fields: list[str] = []
     values: list[object] = []
+    provided = getattr(data, "model_fields_set", set())
 
-    if data.display_name is not None:
+    if "display_name" in provided and data.display_name is not None:
         fields.append("display_name = %s")
         values.append(data.display_name)
-    if data.bio is not None:
+    if "bio" in provided and data.bio is not None:
         fields.append("bio = %s")
         values.append(data.bio)
-    if data.avatar_url is not None:
-        if data.avatar_url.startswith(("http://", "https://")):
+    if "avatar_url" in provided:
+        if data.avatar_url is None:
+            fields.append("avatar_url = NULL")
+        elif data.avatar_url.startswith(("http://", "https://")):
             fields.append("avatar_url = %s")
             values.append(data.avatar_url)
 

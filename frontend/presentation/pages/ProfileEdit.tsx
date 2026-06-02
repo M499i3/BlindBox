@@ -5,24 +5,31 @@ import TopBar from '@/frontend/presentation/components/TopBar';
 import UserAvatar from '@/frontend/presentation/components/UserAvatar';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
 import { updateProfile } from '@/frontend/infrastructure/api/profileApi';
+import { uploadImageToStorage } from '@/frontend/infrastructure/storage/supabaseStorage';
 
 export default function ProfileEdit() {
   const navigate = useNavigate();
   const { avatarDataUrl, displayName: currentName, setAvatarDataUrl } = useAppState();
   const [localDisplayName, setLocalDisplayName] = useState(currentName || 'Yu');
   const [localBio, setLocalBio] = useState('');
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   useEffect(() => {
     if (currentName) setLocalDisplayName(currentName);
   }, [currentName]);
 
-  const onUpload = (file?: File | null) => {
+  const onUpload = async (file?: File | null) => {
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === 'string') setAvatarDataUrl(reader.result);
-    };
-    reader.readAsDataURL(file);
+    try {
+      setUploadingAvatar(true);
+      const avatarUrl = await uploadImageToStorage({ file, folder: 'avatars' });
+      await setAvatarDataUrl(avatarUrl);
+    } catch (err) {
+      console.error(err);
+      alert('頭貼上傳失敗，請稍後再試');
+    } finally {
+      setUploadingAvatar(false);
+    }
   };
 
   const onSave = async () => {
@@ -44,12 +51,13 @@ export default function ProfileEdit() {
             )}
             <div className="space-y-2">
               <label className="inline-flex items-center px-4 py-2 rounded-full bg-white border border-black/[0.08] text-sm font-semibold cursor-pointer">
-                上傳頭像
+                {uploadingAvatar ? '上傳中…' : '上傳頭像'}
                 <input
                   type="file"
                   accept="image/*"
                   className="hidden"
                   onChange={(e) => onUpload(e.target.files?.[0])}
+                  disabled={uploadingAvatar}
                 />
               </label>
               {avatarDataUrl && (

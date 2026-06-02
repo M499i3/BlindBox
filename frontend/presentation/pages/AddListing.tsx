@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
 import { getCatalogBrands, getCatalogSeries, getCatalogStyles } from '@/frontend/infrastructure/api/catalogApi';
+import { uploadImageToStorage } from '@/frontend/infrastructure/storage/supabaseStorage';
 import type { BrandRow, SeriesRow, StyleRow } from '@/frontend/domain/entities/catalog';
 import { cn } from '@/frontend/shared/utils/cn';
 
@@ -18,6 +19,7 @@ export default function AddListing() {
   const navigate = useNavigate();
   const { createListing } = useAppState();
   const [images, setImages] = useState<string[]>([]);
+  const [localImageFiles, setLocalImageFiles] = useState<(File | null)[]>([]);
   const [title, setTitle] = useState('');
   const [itemName, setItemName] = useState('');
   const [price, setPrice] = useState('');
@@ -36,6 +38,7 @@ export default function AddListing() {
   const [allowBargain, setAllowBargain] = useState(false);
   const [shipping, setShipping] = useState('7-11 店到店');
   const [query, setQuery] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -106,46 +109,65 @@ export default function AddListing() {
 
   const onUploadImage = (index: number, file?: File | null) => {
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result !== 'string') return;
-      setImages((prev) => {
-        const next = [...prev];
-        next[index] = reader.result;
-        return next.slice(0, 9);
-      });
-    };
-    reader.readAsDataURL(file);
+    const previewUrl = URL.createObjectURL(file);
+    setImages((prev) => {
+      const next = [...prev];
+      next[index] = previewUrl;
+      return next.slice(0, 9);
+    });
+    setLocalImageFiles((prev) => {
+      const next = [...prev];
+      next[index] = file;
+      return next.slice(0, 9);
+    });
   };
 
   const removeImage = (index: number) => {
     setImages((prev) => prev.filter((_, i) => i !== index));
+    setLocalImageFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const submit = async () => {
+    if (submitting) return;
     const numericPrice = Number(price);
 
     if (!numericPrice || numericPrice <= 0) {
       alert('價格必須大於 0 元');
       return;
     }
-    const listingId = await createListing({
-      title: title.trim() || itemName.trim() || '未命名貼文',
-      itemName: itemName.trim() || title.trim() || '未命名商品',
-      price: `NT$ ${numericPrice}`,
-      quantity,
-      description: description.trim() || '無補充說明',
-      brand,
-      series,
-      condition,
-      tradeMode,
-      shipping,
-      allowSwap,
-      allowBargain,
-      image: images[0] ?? '',
-      images,
-    });
-    navigate(`/listing/${listingId}`);
+    try {
+      setSubmitting(true);
+      const uploadedImages = await Promise.all(
+        images.map(async (img, idx) => {
+          const file = localImageFiles[idx];
+          if (!file) return img;
+          return uploadImageToStorage({ file, folder: 'listings' });
+        })
+      );
+
+      const listingId = await createListing({
+        title: title.trim() || itemName.trim() || '未命名貼文',
+        itemName: itemName.trim() || title.trim() || '未命名商品',
+        price: `NT$ ${numericPrice}`,
+        quantity,
+        description: description.trim() || '無補充說明',
+        brand,
+        series,
+        condition,
+        tradeMode,
+        shipping,
+        allowSwap,
+        allowBargain,
+        image: uploadedImages[0] ?? '',
+        images: uploadedImages,
+      });
+      navigate(`/listing/${listingId}`);
+    } catch (err) {
+      console.error(err);
+      alert('圖片上傳失敗，請稍後再試');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -230,6 +252,7 @@ export default function AddListing() {
                   type="button"
                   onClick={() => {
                     if (p.image) setImages([p.image]);
+                    setLocalImageFiles([]);
                     setItemName(p.name);
                     if (!title) setTitle(p.name);
                   }}
@@ -514,10 +537,11 @@ export default function AddListing() {
           <motion.button
             type="button"
             whileTap={{ scale: 0.97 }}
+            disabled={submitting}
             onClick={submit}
-            className="rounded-full border-2 border-black bg-black py-4 text-xs font-black uppercase tracking-widest text-white active:scale-95"
+            className="rounded-full border-2 border-black bg-black py-4 text-xs font-black uppercase tracking-widest text-white active:scale-95 disabled:opacity-60"
           >
-            發布 listing
+            {submitting ? '上傳中…' : '發布 listing'}
           </motion.button>
         </div>
       </main>
