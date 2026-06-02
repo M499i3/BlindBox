@@ -3,9 +3,8 @@ import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
-import { useCatalogProducts } from '@/frontend/presentation/hooks/useCatalog';
-import { getCatalogBrands, getCatalogSeries } from '@/frontend/infrastructure/api/catalogApi';
-import type { BrandRow, SeriesRow } from '@/frontend/domain/entities/catalog';
+import { getCatalogBrands, getCatalogSeries, getCatalogStyles } from '@/frontend/infrastructure/api/catalogApi';
+import type { BrandRow, SeriesRow, StyleRow } from '@/frontend/domain/entities/catalog';
 import { cn } from '@/frontend/shared/utils/cn';
 
 const FIELD =
@@ -18,7 +17,6 @@ const SECTION_TITLE = 'text-[10px] font-black uppercase tracking-widest text-bla
 export default function AddListing() {
   const navigate = useNavigate();
   const { createListing } = useAppState();
-  const { products } = useCatalogProducts();
   const [images, setImages] = useState<string[]>([]);
   const [title, setTitle] = useState('');
   const [itemName, setItemName] = useState('');
@@ -30,6 +28,8 @@ export default function AddListing() {
   const [brandSlug, setBrandSlug] = useState('');
   const [brandOptions, setBrandOptions] = useState<BrandRow[]>([]);
   const [seriesOptions, setSeriesOptions] = useState<SeriesRow[]>([]);
+  const [seriesSlug, setSeriesSlug] = useState('');
+  const [styleOptions, setStyleOptions] = useState<StyleRow[]>([]);
   const [condition, setCondition] = useState('全新未拆');
   const [tradeMode, setTradeMode] = useState('我要賣');
   const [allowSwap, setAllowSwap] = useState(true);
@@ -37,15 +37,17 @@ export default function AddListing() {
   const [shipping, setShipping] = useState('7-11 店到店');
   const [query, setQuery] = useState('');
 
-  const productPool = useMemo(() => products.slice(0, 30), [products]);
-
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return productPool.slice(0, 8);
-    return productPool
-      .filter((p) => p.title.toLowerCase().includes(q))
-      .slice(0, 8);
-  }, [productPool, query]);
+    let pool = styleOptions;
+
+    if (itemName.trim()) {
+      pool = pool.filter((style) => style.name === itemName.trim());
+    }
+
+    if (!q) return pool.slice(0, 8);
+    return pool.filter((style) => style.name.toLowerCase().includes(q)).slice(0, 8);
+  }, [styleOptions, query, itemName]);
 
   const visibleImageSlots = useMemo(
     () => Math.min(9, Math.max(1, images.length + 1)),
@@ -79,13 +81,28 @@ export default function AddListing() {
     getCatalogSeries(brandSlug)
       .then((rows) => {
         setSeriesOptions(rows);
-        setSeries(rows[0]?.name ?? '');
+        const first = rows[0];
+        setSeries(first?.name ?? '');
+        setSeriesSlug(first?.slug ?? '');
+        setItemName('');
       })
       .catch(() => {
         setSeriesOptions([]);
         setSeries('');
+        setSeriesSlug('');
+        setItemName('');
       });
   }, [brandSlug]);
+
+  useEffect(() => {
+    if (!brandSlug || !seriesSlug) {
+      setStyleOptions([]);
+      return;
+    }
+    getCatalogStyles(brandSlug, seriesSlug)
+      .then((rows) => setStyleOptions(rows))
+      .catch(() => setStyleOptions([]));
+  }, [brandSlug, seriesSlug]);
 
   const onUploadImage = (index: number, file?: File | null) => {
     if (!file) return;
@@ -212,9 +229,9 @@ export default function AddListing() {
                   key={p.id}
                   type="button"
                   onClick={() => {
-                    setImages([p.image]);
-                    setItemName(p.title);
-                    if (!title) setTitle(p.title);
+                    if (p.image) setImages([p.image]);
+                    setItemName(p.name);
+                    if (!title) setTitle(p.name);
                   }}
                   className="aspect-square overflow-hidden rounded-xl border-2 border-black bg-white active:scale-95"
                 >
@@ -237,44 +254,60 @@ export default function AddListing() {
               <label className={LABEL} htmlFor="add-listing-brand">
                 品牌
               </label>
-              <select
-                id="add-listing-brand"
-                value={brand}
-                onChange={(e) => {
-                  const nextName = e.target.value;
-                  const selected = brandOptions.find((b) => b.name === nextName);
-                  setBrand(nextName);
-                  setBrandSlug(selected?.slug ?? nextName.toLowerCase().replace(/\s+/g, '-'));
-                }}
-                className={cn(FIELD, 'cursor-pointer appearance-none')}
-              >
-                {brandOptions.map((b) => (
-                  <option key={b.slug ?? b.name} value={b.name}>
-                    {b.name}
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <select
+                  id="add-listing-brand"
+                  value={brand}
+                  onChange={(e) => {
+                    const nextName = e.target.value;
+                    const selected = brandOptions.find((b) => b.name === nextName);
+                    setBrand(nextName);
+                    setBrandSlug(selected?.slug ?? nextName.toLowerCase().replace(/\s+/g, '-'));
+                  }}
+                  className={cn(FIELD, 'cursor-pointer appearance-none pr-10')}
+                >
+                  {brandOptions.map((b) => (
+                    <option key={b.slug ?? b.name} value={b.name}>
+                      {b.name}
+                    </option>
+                  ))}
+                </select>
+                <span className="material-symbols-outlined pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-black/60">
+                  expand_more
+                </span>
+              </div>
             </div>
             <div className="space-y-1.5">
               <label className={LABEL} htmlFor="add-listing-series">
                 系列
               </label>
-              <select
-                id="add-listing-series"
-                value={series}
-                onChange={(e) => setSeries(e.target.value)}
-                className={cn(FIELD, 'cursor-pointer appearance-none')}
-              >
-                {seriesOptions.length > 0 ? (
-                  seriesOptions.map((s) => (
-                    <option key={s.id} value={s.name}>
-                      {s.name}
-                    </option>
-                  ))
-                ) : (
-                  <option value="">（此品牌尚無系列）</option>
-                )}
-              </select>
+              <div className="relative">
+                <select
+                  id="add-listing-series"
+                  value={series}
+                  onChange={(e) => {
+                    const nextName = e.target.value;
+                    const selected = seriesOptions.find((s) => s.name === nextName);
+                    setSeries(nextName);
+                    setSeriesSlug(selected?.slug ?? '');
+                    setItemName('');
+                  }}
+                  className={cn(FIELD, 'cursor-pointer appearance-none pr-10')}
+                >
+                  {seriesOptions.length > 0 ? (
+                    seriesOptions.map((s) => (
+                      <option key={s.id} value={s.name}>
+                        {s.name}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="">（此品牌尚無系列）</option>
+                  )}
+                </select>
+                <span className="material-symbols-outlined pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-black/60">
+                  expand_more
+                </span>
+              </div>
             </div>
           </div>
           <div className="space-y-1.5">
@@ -294,14 +327,24 @@ export default function AddListing() {
             <label className={LABEL} htmlFor="add-listing-item-name">
               子系列 / 款式名稱
             </label>
-            <input
-              id="add-listing-item-name"
-              value={itemName}
-              onChange={(e) => setItemName(e.target.value)}
-              className={FIELD}
-              placeholder="例如：精靈天團系列 - 坐姿坐下"
-              type="text"
-            />
+            <div className="relative">
+              <select
+                id="add-listing-item-name"
+                value={itemName}
+                onChange={(e) => setItemName(e.target.value)}
+                className={cn(FIELD, 'cursor-pointer appearance-none pr-10')}
+              >
+                <option value="">請選擇款式（選填）</option>
+                {styleOptions.map((style) => (
+                  <option key={style.id} value={style.name}>
+                    {style.name}
+                  </option>
+                ))}
+              </select>
+              <span className="material-symbols-outlined pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-black/60">
+                expand_more
+              </span>
+            </div>
           </div>
         </section>
 

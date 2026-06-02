@@ -46,6 +46,15 @@ _SERIES_BY_BRAND = """
     ORDER BY s.name ASC
 """
 
+_STYLES_BY_BRAND_SERIES = """
+    SELECT cp.id, cp.title, cp.image_url
+    FROM catalog_products cp
+    JOIN series s ON s.id = cp.series_id
+    JOIN brands b ON b.id = s.brand_id
+    WHERE b.slug = %s AND s.slug = %s
+    ORDER BY cp.title ASC
+"""
+
 
 def _format_price(amount: int | None, currency: str | None) -> str:
     if amount is None or amount == 0:
@@ -104,5 +113,17 @@ def get_series_by_brand_slug(
         rows = cur.fetchall()
     return [
         {"id": str(r["id"]), "slug": r["slug"], "name": r["name"]}
+        for r in rows
+    ]
+
+
+def get_styles_by_brand_series_slug(
+    conn: psycopg2.extensions.connection, brand_slug: str, series_slug: str
+) -> list[dict]:
+    with conn.cursor() as cur:
+        cur.execute(_STYLES_BY_BRAND_SERIES, (brand_slug, series_slug))
+        rows = cur.fetchall()
+    return [
+        {"id": str(r["id"]), "name": r["title"], "image": r.get("image_url") or ""}
         for r in rows
     ]

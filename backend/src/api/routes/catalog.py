@@ -12,6 +12,7 @@ from application.catalog_service import (
     list_brands,
     list_products,
     list_series,
+    list_styles,
 )
 from domain.entities import CatalogProduct
 
@@ -61,3 +62,12 @@ def get_series(
     conn: psycopg2.extensions.connection = Depends(get_db),
 ) -> list[dict]:
     return list_series(conn, brand)
+
+
+@router.get("/styles")
+def get_styles(
+    brand: Annotated[str, Query(description="品牌 slug")],
+    series: Annotated[str, Query(description="系列 slug")],
+    conn: psycopg2.extensions.connection = Depends(get_db),
+) -> list[dict]:
+    return list_styles(conn, brand, series)

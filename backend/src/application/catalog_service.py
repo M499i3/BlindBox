@@ -10,6 +10,7 @@ from infrastructure.db.repositories.catalog_repository import (
     get_all_products,
     get_product_by_id,
     get_series_by_brand_slug,
+    get_styles_by_brand_series_slug,
 )
 
 _BRAND_RULES: list[tuple[str, str]] = [
@@ -73,3 +74,9 @@ def list_series(
     conn: psycopg2.extensions.connection, brand_slug: str
 ) -> list[dict]:
     return get_series_by_brand_slug(conn, brand_slug)
+
+
+def list_styles(
+    conn: psycopg2.extensions.connection, brand_slug: str, series_slug: str
+) -> list[dict]:
+    return get_styles_by_brand_series_slug(conn, brand_slug, series_slug)

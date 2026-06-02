@@ -1,4 +1,4 @@
-import type { BrandRow, CatalogProduct, SeriesRow } from '../../domain/entities/catalog';
+import type { BrandRow, CatalogProduct, SeriesRow, StyleRow } from '../../domain/entities/catalog';
 import { apiFetch } from './apiClient';
 
 type ApiProduct = { id: string; title: string; price: string; image: string; source_url: string };
@@ -28,4 +28,9 @@ export function getCatalogBrands(): Promise<BrandRow[]> {
 export function getCatalogSeries(brandSlug: string): Promise<SeriesRow[]> {
   const qs = new URLSearchParams({ brand: brandSlug }).toString();
   return apiFetch<SeriesRow[]>(`/api/catalog/series?${qs}`);
+}
+
+export function getCatalogStyles(brandSlug: string, seriesSlug: string): Promise<StyleRow[]> {
+  const qs = new URLSearchParams({ brand: brandSlug, series: seriesSlug }).toString();
+  return apiFetch<StyleRow[]>(`/api/catalog/styles?${qs}`);
 }
