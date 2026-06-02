@@ -10,7 +10,6 @@ const links: {
   accentClass: string;
 }[] = [
   { to: '/', label: '首頁', navImage: 'home', accentClass: 'nav-accent-0' },
-  { to: '/shop', label: '商城', navImage: 'shop', accentClass: 'nav-accent-2' },
   { to: '/explore', label: '圖鑑', navImage: 'explore', accentClass: 'nav-tab-plain' },
   { to: '/chat', label: '消息', navImage: 'mail', accentClass: 'nav-accent-3' },
   { to: '/profile', label: '我的', navImage: 'profile', accentClass: 'nav-accent-4' },

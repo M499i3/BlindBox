@@ -187,6 +187,41 @@ class SendMessageRequest(BaseModel):
     content: str
 
 
+class SwapProposalListingSummary(BaseModel):
+    id: str
+    title: str
+    item_name: str
+    image: str
+    condition: str
+    brand: str
+    series: str
+
+
+class SwapProposal(BaseModel):
+    id: str
+    chat_id: str | None = None
+    proposer_id: str
+    proposer_name: str
+    receiver_id: str
+    receiver_name: str
+    wanted_listing_id: str
+    offered_listing_id: str
+    wanted_listing: SwapProposalListingSummary
+    offered_listing: SwapProposalListingSummary
+    additional_amount: int = 0
+    message: str = ""
+    status: str
+    created_at: str
+
+
+class CreateSwapProposalInput(BaseModel):
+    wanted_listing_id: str
+    offered_listing_id: str | None = None
+    offer: CreateListingInput | None = None
+    message: str | None = None
+    additional_amount: int = 0
+
+
 class ChatContext(BaseModel):
     id: str
     counterparty_name: str

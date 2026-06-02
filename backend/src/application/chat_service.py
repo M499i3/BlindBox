@@ -36,6 +36,15 @@ def open_chat_for_listing(
     seller_id = str(listing["seller_id"])
     if user_id == seller_id:
         raise HTTPException(status_code=403, detail="無法與自己的貼文開啟聊天")
+
+    from application.swap_proposal_service import can_contact_for_swap_listing
+
+    if not can_contact_for_swap_listing(conn, user_id, listing_id):
+        raise HTTPException(
+            status_code=403,
+            detail="交換貼文需通過交換申請後才能聯絡賣家",
+        )
+
     chat_id = find_or_create_chat(conn, listing_id, user_id, seller_id)
     item = get_inbox_item(conn, user_id, chat_id)
     if not item:

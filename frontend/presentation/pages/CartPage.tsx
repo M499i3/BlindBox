@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { createOrder } from '@/frontend/infrastructure/api/ordersApi';
 import { isMockDataEnabled } from '@/frontend/lib/popmartShowcase';
 import TopBar from '@/frontend/presentation/components/TopBar';
+import ListingCardImage from '@/frontend/presentation/components/ListingCardImage';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
 
 function isSeededListingId(id: string): boolean {
@@ -106,7 +107,7 @@ export default function CartPage() {
                 aria-label={`選擇 ${item.title}`}
               />
             </label>
-            <img src={item.image} alt="" className="w-20 h-20 rounded-xl object-cover bg-neutral-100" />
+            <ListingCardImage src={item.image} alt={item.title} className="w-20 h-20 rounded-xl" />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold text-on-surface line-clamp-2">{item.title}</p>
               <p className="text-sm font-black text-primary mt-1">{item.price}</p>

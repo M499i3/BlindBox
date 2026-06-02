@@ -5,12 +5,13 @@ import { useCatalogProducts } from '@/frontend/presentation/hooks/useCatalog';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
 import { buildCatalogHierarchy } from '@/frontend/shared/utils/catalogHierarchy';
 import {
-  catalogProductFromListing,
+  canonicalProductId,
   idsEqual,
+  isProductInCollection,
   migrateCollectionIds,
+  resolveCollectionId,
   resolveProductIdFromListing,
   resolveProductIdFromTitle,
-  resolveStorableWishProductId,
 } from '@/frontend/shared/utils/productCollection';
 
 type ListingLike = Pick<Listing, 'id' | 'title' | 'itemName'>;
@@ -21,8 +22,8 @@ export function useProductCollection() {
     wishIds,
     toggleOwned,
     toggleWish,
-    isOwned,
-    isWished,
+    isOwned: isOwnedRaw,
+    isWished: isWishedRaw,
     posts,
     replaceOwnedIds,
     replaceWishIds,
@@ -39,7 +40,38 @@ export function useProductCollection() {
     migratedRef.current = true;
     if (!idsEqual(nextOwned, ownedIds)) replaceOwnedIds(nextOwned);
     if (!idsEqual(nextWish, wishIds)) replaceWishIds(nextWish);
-  }, [products, posts, ownedIds, wishIds, replaceOwnedIds, replaceWishIds]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- 僅在圖鑑載入後遷移一次
+  }, [products, posts, replaceOwnedIds, replaceWishIds]);
+
+  const toCanonical = useCallback(
+    (productId: string) => canonicalProductId(productId, products),
+    [products]
+  );
+
+  const resolveStoredId = useCallback(
+    (productId: string, storedIds: string[]) => {
+      if (storedIds.includes(productId)) return productId;
+      const canonical = toCanonical(productId);
+      if (storedIds.includes(canonical)) return canonical;
+      for (const stored of storedIds) {
+        if (toCanonical(stored) === canonical) return stored;
+      }
+      return canonical;
+    },
+    [toCanonical]
+  );
+
+  const isWished = useCallback(
+    (productId: string) =>
+      isProductInCollection(wishIds, productId, products) || isWishedRaw(productId),
+    [wishIds, products, isWishedRaw]
+  );
+
+  const isOwned = useCallback(
+    (productId: string) =>
+      isProductInCollection(ownedIds, productId, products) || isOwnedRaw(productId),
+    [ownedIds, products, isOwnedRaw]
+  );
 
   const resolveFromListing = useCallback(
     (listing: ListingLike) => resolveProductIdFromListing(listing, products),
@@ -51,72 +83,69 @@ export function useProductCollection() {
     [products]
   );
 
-  const addWishFromListing = useCallback(
-    (listing: ListingLike & { image?: string }) => {
-      const draft = catalogProductFromListing(listing, products);
-      const pid = resolveStorableWishProductId(draft, products, listing);
-      if (!pid) return;
-      addWishWithDefaultSettings(pid, draft.title);
-    },
-    [products, addWishWithDefaultSettings]
+  const resolveStorableId = useCallback(
+    (listing: ListingLike & { image?: string }) => resolveCollectionId(listing, products),
+    [products]
   );
 
   const toggleWishFromListing = useCallback(
     (listing: ListingLike & { image?: string }) => {
-      const pid = resolveProductIdFromListing(listing, products);
-      if (pid && isWished(pid)) {
-        toggleWish(pid);
-        return;
-      }
-      addWishFromListing(listing);
+      toggleWish(resolveCollectionId(listing, products));
     },
-    [products, isWished, toggleWish, addWishFromListing]
+    [products, toggleWish]
   );
 
   const requestWishProduct = useCallback(
     (productId: string) => {
+      const canonical = toCanonical(productId);
       if (isWished(productId)) {
-        toggleWish(productId);
-        return;
+        toggleWish(resolveStoredId(productId, wishIds));
+      } else {
+        toggleWish(canonical);
       }
-      const product = products.find((p) => p.id === productId);
-      if (product) addWishWithDefaultSettings(productId, product.title);
     },
-    [isWished, toggleWish, addWishWithDefaultSettings, products]
+    [toCanonical, isWished, toggleWish, resolveStoredId, wishIds]
   );
 
   const toggleOwnedFromListing = useCallback(
-    (listing: ListingLike) => {
-      const pid = resolveProductIdFromListing(listing, products);
-      if (pid) toggleOwned(pid);
+    (listing: ListingLike & { image?: string }) => {
+      toggleOwned(resolveCollectionId(listing, products));
     },
     [products, toggleOwned]
   );
 
-  const isListingWished = useCallback(
-    (listing: ListingLike) => {
-      const pid = resolveProductIdFromListing(listing, products);
-      return pid ? isWished(pid) : false;
+  const toggleProductOwned = useCallback(
+    (productId: string) => {
+      const canonical = toCanonical(productId);
+      if (isOwned(productId)) {
+        toggleOwned(resolveStoredId(productId, ownedIds));
+      } else {
+        toggleOwned(canonical);
+      }
     },
+    [toCanonical, isOwned, toggleOwned, resolveStoredId, ownedIds]
+  );
+
+  const isListingWished = useCallback(
+    (listing: ListingLike & { image?: string }) =>
+      isWished(resolveCollectionId(listing, products)),
     [products, isWished]
   );
 
   const isListingOwned = useCallback(
-    (listing: ListingLike) => {
-      const pid = resolveProductIdFromListing(listing, products);
-      return pid ? isOwned(pid) : false;
-    },
+    (listing: ListingLike & { image?: string }) =>
+      isOwned(resolveCollectionId(listing, products)),
     [products, isOwned]
   );
 
   const wishedProducts = useMemo(
-    () => products.filter((p) => wishIds.includes(p.id)),
-    [products, wishIds]
+    () => products.filter((p) => isWished(p.id)),
+    [products, isWished]
   );
 
   const ownedProducts = useMemo(
-    () => products.filter((p) => ownedIds.includes(p.id)),
-    [products, ownedIds]
+    () => products.filter((p) => isOwned(p.id)),
+    [products, isOwned]
   );
 
   const collectionHierarchy = useMemo(
@@ -127,38 +156,45 @@ export function useProductCollection() {
   const toggleWishForProductIds = useCallback(
     (productIds: string[]) => {
       if (!productIds.length) return;
-      const allOn = productIds.every((id) => isWished(id));
-      for (const id of productIds) {
-        if (allOn && isWished(id)) toggleWish(id);
-        else if (!allOn && !isWished(id)) {
-          const p = products.find((x) => x.id === id);
-          if (p) addWishWithDefaultSettings(id, p.title);
+      const canonicalIds = productIds.map(toCanonical);
+      const allOn = canonicalIds.every((id) => isWished(id));
+      for (const id of canonicalIds) {
+        if (allOn) {
+          if (isWished(id)) toggleWish(id);
+        } else if (!isWished(id)) {
+          toggleWish(id);
         }
       }
     },
-    [isWished, toggleWish, addWishWithDefaultSettings, products]
+    [isWished, toggleWish, toCanonical]
   );
 
   const toggleOwnedForProductIds = useCallback(
     (productIds: string[]) => {
       if (!productIds.length) return;
-      const allOn = productIds.every((id) => isOwned(id));
-      for (const id of productIds) {
-        if (allOn && isOwned(id)) toggleOwned(id);
-        else if (!allOn && !isOwned(id)) toggleOwned(id);
+      const canonicalIds = productIds.map(toCanonical);
+      const allOn = canonicalIds.every((id) => isOwned(id));
+      for (const id of canonicalIds) {
+        if (allOn) {
+          if (isOwned(id)) toggleOwned(id);
+        } else if (!isOwned(id)) {
+          toggleOwned(id);
+        }
       }
     },
-    [isOwned, toggleOwned]
+    [isOwned, toggleOwned, toCanonical]
   );
 
   const isAllWished = useCallback(
-    (productIds: string[]) => productIds.length > 0 && productIds.every((id) => isWished(id)),
-    [isWished]
+    (productIds: string[]) =>
+      productIds.length > 0 && productIds.map(toCanonical).every((id) => isWished(id)),
+    [isWished, toCanonical]
   );
 
   const isAllOwned = useCallback(
-    (productIds: string[]) => productIds.length > 0 && productIds.every((id) => isOwned(id)),
-    [isOwned]
+    (productIds: string[]) =>
+      productIds.length > 0 && productIds.map(toCanonical).every((id) => isOwned(id)),
+    [isOwned, toCanonical]
   );
 
   return {
@@ -173,6 +209,7 @@ export function useProductCollection() {
     toggleWishFromListing,
     requestWishProduct,
     toggleOwnedFromListing,
+    toggleProductOwned,
     isListingWished,
     isListingOwned,
     toggleWish,

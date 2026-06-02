@@ -1,7 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
+import CatalogFigurineTile from '@/frontend/presentation/components/catalog/CatalogFigurineTile';
 import { cn } from '@/frontend/shared/utils/cn';
+import { useProductCollection } from '@/frontend/presentation/hooks/useProductCollection';
 import {
   deriveBrandLabel,
   useCatalogBrands,
@@ -16,6 +18,7 @@ export default function Explore() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const mock = isMockDataEnabled();
+  const { requestWishProduct, toggleProductOwned, isWished, isOwned } = useProductCollection();
 
   const activeQuery = (searchParams.get('q') ?? '').trim();
   const [draft, setDraft] = useState(activeQuery);
@@ -280,29 +283,24 @@ export default function Explore() {
             {searchResult && searchResult.products.length > 0 && (
               <div>
                 <p className="text-[10px] font-black text-secondary tracking-wider uppercase mb-3">盲盒</p>
-                <div className="grid grid-cols-2 gap-grid-gutter">
+                <div className="grid grid-cols-3 gap-x-3 gap-y-5">
                   {searchResult.products.map((p) => (
-                    <button
+                    <CatalogFigurineTile
                       key={p.id}
-                      type="button"
-                      onClick={() => navigate(`/product/${p.id}?src=catalog`)}
-                      className="glass-card rounded-2xl overflow-hidden text-left active:scale-[0.98] transition-transform"
-                    >
-                      <div className="aspect-square bg-neutral-100">
-                        {p.image ? (
-                          <img src={p.image} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                        ) : null}
-                      </div>
-                      <div className="p-3">
-                        {(p.brandName || p.seriesName) && (
-                          <p className="text-[10px] font-semibold text-primary mb-0.5 line-clamp-1">
-                            {[p.brandName, p.seriesName].filter(Boolean).join(' · ')}
-                          </p>
-                        )}
-                        <p className="text-xs font-bold text-on-surface line-clamp-2 leading-snug">{p.title}</p>
-                        {p.price && <p className="text-[11px] text-on-surface-variant mt-1">{p.price}</p>}
-                      </div>
-                    </button>
+                      title={p.title}
+                      image={p.image}
+                      isWished={isWished(p.id)}
+                      isOwned={isOwned(p.id)}
+                      onClick={() => navigate(`/catalog/${p.id}`)}
+                      onToggleWish={(e) => {
+                        e.stopPropagation();
+                        requestWishProduct(p.id);
+                      }}
+                      onToggleOwned={(e) => {
+                        e.stopPropagation();
+                        toggleProductOwned(p.id);
+                      }}
+                    />
                   ))}
                 </div>
               </div>

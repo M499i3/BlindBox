@@ -7,12 +7,13 @@ import {
   normalizeWishAlertSettings,
   type WishAlertSettings,
 } from '@/frontend/domain/entities/wishAlert';
+import CollectionActionButton from '@/frontend/presentation/components/CollectionActionButton';
 import WishNotificationForm from '@/frontend/presentation/components/WishNotificationForm';
 import type { ProductCollectionApi } from '@/frontend/presentation/hooks/useProductCollection';
 import { APP_MAX_WIDTH } from '@/frontend/presentation/constants/layout';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
 import { getLowestMarketPriceForTitle } from '@/frontend/shared/utils/marketPrice';
-import { buildShopSearchUrl } from '@/frontend/shared/utils/shopNavigation';
+import { buildMarketplaceSearchUrl } from '@/frontend/shared/utils/shopNavigation';
 type Props = {
   open: boolean;
   onClose: () => void;
@@ -53,9 +54,9 @@ export default function WantProductsModal({ open, onClose, collection }: Props) 
     setForm(normalizeWishAlertSettings(getWishAlert(settingsProduct.id), lowestMarketPrice));
   }, [open, settingsProduct?.id, lowestMarketPrice, getWishAlert]);
 
-  const goToShopSearch = (title: string) => {
+  const goToSearch = (title: string) => {
     onClose();
-    navigate(buildShopSearchUrl(title));
+    navigate(buildMarketplaceSearchUrl(title));
   };
 
   const handleSaveSettings = () => {
@@ -144,64 +145,52 @@ export default function WantProductsModal({ open, onClose, collection }: Props) 
                 {wishedProducts.map((p) => (
                   <div
                     key={p.id}
-                    className="glass-card overflow-hidden rounded-2xl text-left shadow-[4px_4px_0_#111]"
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => goToSearch(p.title)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        goToSearch(p.title);
+                      }
+                    }}
+                    className="glass-card cursor-pointer overflow-hidden rounded-2xl text-left shadow-[4px_4px_0_#111] active:opacity-95"
                   >
-                    <div className="relative aspect-square cursor-pointer bg-neutral-100">
+                    <div className="relative aspect-square bg-neutral-100">
                       <img
                         src={p.image}
                         alt=""
                         className="h-full w-full object-cover"
                         referrerPolicy="no-referrer"
-                        onClick={() => goToShopSearch(p.title)}
                       />
                       <div className="absolute top-2 right-2 flex flex-col gap-2">
-                        <button
-                          type="button"
+                        <CollectionActionButton
+                          kind="wish"
+                          active
                           onClick={(e) => {
-                            e.stopPropagation();
                             toggleWish(p.id);
                             if (settingsProduct?.id === p.id) setSettingsProduct(null);
                           }}
-                          className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-black/45 backdrop-blur-md active:scale-90"
-                          aria-label="從想要移除"
-                        >
-                          <span
-                            className="material-symbols-outlined text-[20px] text-white"
-                            style={{ fontVariationSettings: "'FILL' 1" }}
-                          >
-                            favorite
-                          </span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleOwned(p.id);
-                          }}
-                          className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-black/45 backdrop-blur-md active:scale-90"
-                          aria-label={isOwned(p.id) ? '從收藏冊移除' : '加入收藏冊'}
-                        >
-                          <span
-                            className="material-symbols-outlined text-[20px] text-white"
-                            style={{ fontVariationSettings: isOwned(p.id) ? "'FILL' 1" : "'FILL' 0" }}
-                          >
-                            check_circle
-                          </span>
-                        </button>
+                          label="從想要移除"
+                        />
+                        <CollectionActionButton
+                          kind="owned"
+                          active={isOwned(p.id)}
+                          onClick={() => toggleOwned(p.id)}
+                        />
                       </div>
                     </div>
                     <div className="space-y-2 p-3">
-                      <button
-                        type="button"
-                        onClick={() => goToShopSearch(p.title)}
-                        className="w-full text-left active:opacity-70"
-                      >
+                      <div className="w-full text-left">
                         <p className="line-clamp-2 text-xs font-bold leading-snug text-on-surface">{p.title}</p>
-                        <p className="mt-1 text-[10px] text-on-surface-variant">到商城搜尋</p>
-                      </button>
+                        <p className="mt-1 text-[10px] text-on-surface-variant">搜尋此盲盒</p>
+                      </div>
                       <button
                         type="button"
-                        onClick={() => setSettingsProduct(p)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSettingsProduct(p);
+                        }}
                         className="flex w-full items-center justify-center gap-1 rounded-full border-2 border-outline bg-white py-2 text-[11px] font-bold text-on-surface shadow-[2px_2px_0_#111] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
                       >
                         <span className="material-symbols-outlined text-base">notifications</span>

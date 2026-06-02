@@ -1,16 +1,16 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate, useSearchParams } from 'react-router-dom';
+import AppScrollEffects from '@/frontend/presentation/components/AppScrollEffects';
 import Layout from '@/frontend/presentation/components/Layout';
 import RequireAuth from '@/frontend/presentation/components/RequireAuth';
 import ScrollLayout from '@/frontend/presentation/components/ScrollLayout';
 import Marketplace from '@/frontend/presentation/pages/Marketplace';
-import Shop from '@/frontend/presentation/pages/Shop';
 import Explore from '@/frontend/presentation/pages/Explore';
 import Chat from '@/frontend/presentation/pages/Chat';
 import ChatDetail from '@/frontend/presentation/pages/ChatDetail';
 import Profile from '@/frontend/presentation/pages/Profile';
-import ProductDetail from '@/frontend/presentation/pages/ProductDetail';
 import BrandDetail from '@/frontend/presentation/pages/BrandDetail';
+import CatalogProductDetail from '@/frontend/presentation/pages/CatalogProductDetail';
 import SeriesDetail from '@/frontend/presentation/pages/SeriesDetail';
 import SubseriesDetail from '@/frontend/presentation/pages/SubseriesDetail';
 import PurchaseHistory from '@/frontend/presentation/pages/PurchaseHistory';
@@ -24,9 +24,16 @@ import ListingDetail from '@/frontend/presentation/pages/ListingDetail';
 import CartPage from '@/frontend/presentation/pages/CartPage';
 import Login from '@/frontend/presentation/pages/Login';
 
+function ShopRedirect() {
+  const [searchParams] = useSearchParams();
+  const qs = searchParams.toString();
+  return <Navigate to={qs ? `/?${qs}` : '/'} replace />;
+}
+
 export default function AppRouter() {
   return (
     <div className="h-full min-h-0 w-full min-w-0">
+      <AppScrollEffects />
       <Routes>
         <Route path="/login" element={<Login />} />
 
@@ -34,7 +41,7 @@ export default function AppRouter() {
           <Route element={<Layout />}>
             <Route path="/" element={<Marketplace />} />
             <Route path="/explore" element={<Explore />} />
-            <Route path="/shop" element={<Shop />} />
+            <Route path="/shop" element={<ShopRedirect />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/edit" element={<ProfileEdit />} />
@@ -48,7 +55,7 @@ export default function AppRouter() {
           </Route>
 
           <Route element={<ScrollLayout />}>
-            <Route path="/product/:id" element={<ProductDetail />} />
+            <Route path="/catalog/:id" element={<CatalogProductDetail />} />
             <Route path="/listing/:id" element={<ListingDetail />} />
             <Route path="/brand/:id" element={<BrandDetail />} />
             <Route path="/series/:id" element={<SeriesDetail />} />

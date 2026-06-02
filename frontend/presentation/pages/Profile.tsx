@@ -1,31 +1,42 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CollectionTreeModal from '@/frontend/presentation/components/CollectionTreeModal';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import UserAvatar from '@/frontend/presentation/components/UserAvatar';
+import { getMyOrders } from '@/frontend/infrastructure/api/ordersApi';
 import { useProductCollection } from '@/frontend/presentation/hooks/useProductCollection';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
 import { useAuth } from '@/frontend/presentation/providers/AuthProvider';
 
 export default function Profile() {
   const navigate = useNavigate();
-  const { avatarDataUrl, displayName, displayId, ratingAvg, ratingCount, transactionCount, listings, openWantModal } = useAppState();
+  const { avatarDataUrl, displayName, displayId, ratingAvg, ratingCount, transactionCount, listings, openWantModal } =
+    useAppState();
   const collection = useProductCollection();
-  const { wishCount, ownedCount } = collection;
   const { logout, user } = useAuth();
   const [activeModal, setActiveModal] = useState<null | 'collection'>(null);
+  const [purchaseCount, setPurchaseCount] = useState(0);
+  const [sellCount, setSellCount] = useState(0);
+
+  useEffect(() => {
+    Promise.all([getMyOrders('buyer'), getMyOrders('seller')])
+      .then(([buyerOrders, sellerOrders]) => {
+        setPurchaseCount(buyerOrders.length);
+        setSellCount(sellerOrders.length);
+      })
+      .catch(console.error);
+  }, []);
 
   const stats = [
-    { label: '收藏數', value: String(ownedCount).padStart(2, '0') },
-    { label: '想要', value: String(wishCount).padStart(2, '0') },
-    { label: '上架中', value: String(listings.length).padStart(2, '0') },
-    { label: '已完成', value: String(transactionCount).padStart(2, '0') },
+    { label: '上架中', value: String(listings.length).padStart(2, '0'), to: '/profile/listings' },
+    { label: '購買數', value: String(purchaseCount).padStart(2, '0'), to: '/purchase-history' },
+    { label: '出售數', value: String(sellCount).padStart(2, '0'), to: '/profile/selling' },
   ];
 
   const menuItems = [
-    { label: '購買記錄', icon: 'shopping_bag', to: '/purchase-history' },
+    { label: '購買紀錄', icon: 'shopping_bag', to: '/purchase-history' },
     { label: '出售紀錄', icon: 'sell', to: '/profile/selling' },
-    { label: '我的商品 listing', icon: 'list_alt', to: '/profile/listings' },
+    { label: '上架中', icon: 'list_alt', to: '/profile/listings' },
   ];
 
   return (
@@ -90,17 +101,20 @@ export default function Profile() {
           </div>
         </section>
 
-        <section className="grid grid-cols-4 gap-3">
+        <section className="grid grid-cols-3 gap-3">
           {stats.map((stat) => (
-            <div
+            <button
               key={stat.label}
-              className="rounded-full border-2 border-outline bg-white p-4 flex flex-col items-center justify-center text-center shadow-none"
+              type="button"
+              onClick={() => navigate(stat.to)}
+              className="rounded-full border-2 border-outline bg-white p-4 flex flex-col items-center justify-center text-center shadow-none transition-transform active:scale-[0.98] active:bg-black/[0.02]"
+              aria-label={`查看${stat.label}`}
             >
               <span className="text-2xl font-bold text-primary">{stat.value}</span>
               <span className="text-[10px] text-on-surface-variant mt-1 uppercase font-bold tracking-tighter">
                 {stat.label}
               </span>
-            </div>
+            </button>
           ))}
         </section>
 
@@ -148,7 +162,7 @@ export default function Profile() {
 
         <section className="space-y-4">
           <div className="rounded-3xl overflow-hidden border-2 border-outline bg-white shadow-none">
-            {menuItems.slice(0, 3).map((item) => (
+            {menuItems.map((item) => (
               <button
                 key={item.label}
                 type="button"

@@ -95,7 +95,7 @@ export default function ChatDetail() {
             </div>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0 ml-2">
-            {ctx?.listingId && !ctx?.orderId && (
+            {ctx?.listingId && !ctx?.orderId && ctx?.status !== 'swapping' && (
               <button
                 type="button"
                 disabled={ordering}
@@ -127,6 +127,15 @@ export default function ChatDetail() {
               <span className="text-[10px] text-on-surface-variant bg-white/80 px-3 py-1 rounded-full uppercase tracking-widest font-bold border border-black/[0.06]">
                 {msg.content}
               </span>
+            </div>
+          ) : msg.type === 'swap_proposal' ? (
+            <div key={msg.id} className="flex justify-center">
+              <div className="max-w-[90%] rounded-2xl border-2 border-outline bg-white p-4 text-center shadow-none">
+                <span className="material-symbols-outlined text-primary">swap_horiz</span>
+                <p className="mt-2 text-sm font-bold text-on-surface">交換提案</p>
+                <p className="mt-1 text-xs text-on-surface-variant">{msg.content}</p>
+                <span className="mt-2 block text-[10px] text-on-surface-variant">{msg.timeLabel}</span>
+              </div>
             </div>
           ) : msg.isMine ? (
             <div key={msg.id} className="flex flex-col gap-1 items-end max-w-[85%] self-end">

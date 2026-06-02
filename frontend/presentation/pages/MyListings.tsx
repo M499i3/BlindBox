@@ -1,70 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
+import ListingImageCarousel from '@/frontend/presentation/components/ListingImageCarousel';
+import CollectionOverlayActions from '@/frontend/presentation/components/CollectionOverlayActions';
 import { useProductCollection } from '@/frontend/presentation/hooks/useProductCollection';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
-import { cn } from '@/frontend/shared/utils/cn';
-
-function ListingImageCarousel({
-  images,
-  title,
-}: {
-  images: string[];
-  title: string;
-}) {
-  const [index, setIndex] = useState(0);
-  const total = images.length;
-  const current = images[index] ?? images[0] ?? '';
-
-  useEffect(() => {
-    setIndex(0);
-  }, [images]);
-
-  if (!current) return <div className="w-full h-full bg-neutral-100" />;
-
-  if (total <= 1) {
-    return <img src={current} alt={title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />;
-  }
-
-  return (
-    <>
-      <img src={current} alt={title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-      <button
-        type="button"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setIndex((prev) => (prev - 1 + total) % total);
-        }}
-        className="absolute left-2 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-black/55 text-white"
-        aria-label="上一張照片"
-      >
-        <span className="material-symbols-outlined text-base">chevron_left</span>
-      </button>
-      <button
-        type="button"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setIndex((prev) => (prev + 1) % total);
-        }}
-        className="absolute right-2 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-black/55 text-white"
-        aria-label="下一張照片"
-      >
-        <span className="material-symbols-outlined text-base">chevron_right</span>
-      </button>
-      <div className="absolute bottom-2 left-1/2 z-10 flex -translate-x-1/2 gap-1 rounded-full bg-black/40 px-2 py-1">
-        {images.map((_, dotIdx) => (
-          <span
-            key={`${title}-dot-${dotIdx}`}
-            className={cn('h-1.5 w-1.5 rounded-full', dotIdx === index ? 'bg-white' : 'bg-white/45')}
-          />
-        ))}
-      </div>
-    </>
-  );
-}
 
 export default function MyListings() {
   const navigate = useNavigate();
@@ -80,7 +21,7 @@ export default function MyListings() {
   return (
     <div className="animate-in fade-in duration-500 pb-28">
       <TopBar
-        title="我的上架"
+        title="上架中"
         showBack
         rightElement={
           <button
@@ -109,43 +50,17 @@ export default function MyListings() {
           >
             <div className="aspect-square bg-neutral-100 relative">
               <ListingImageCarousel
-                images={p.images?.length ? p.images : [p.image].filter(Boolean)}
+                images={p.images}
+                fallbackImage={p.image}
                 title={p.title}
               />
-              <div className="absolute top-2 left-2 flex flex-col gap-2">
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleWishFromListing(p);
-                  }}
-                  className="w-9 h-9 rounded-full bg-black/45 backdrop-blur-md flex items-center justify-center border border-white/15 active:scale-90 transition-transform"
-                  aria-label={isListingWished(p) ? '從想要移除' : '加入想要'}
-                >
-                  <span
-                    className="material-symbols-outlined text-white text-[20px]"
-                    style={{ fontVariationSettings: isListingWished(p) ? "'FILL' 1" : "'FILL' 0" }}
-                  >
-                    favorite
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleOwnedFromListing(p);
-                  }}
-                  className="w-9 h-9 rounded-full bg-black/45 backdrop-blur-md flex items-center justify-center border border-white/15 active:scale-90 transition-transform"
-                  aria-label={isListingOwned(p) ? '從收藏冊移除' : '加入收藏冊'}
-                >
-                  <span
-                    className="material-symbols-outlined text-white text-[20px]"
-                    style={{ fontVariationSettings: isListingOwned(p) ? "'FILL' 1" : "'FILL' 0" }}
-                  >
-                    check_circle
-                  </span>
-                </button>
-              </div>
+              <CollectionOverlayActions
+                className="left-2 right-auto"
+                isWished={isListingWished(p)}
+                isOwned={isListingOwned(p)}
+                onToggleWish={() => toggleWishFromListing(p)}
+                onToggleOwned={() => toggleOwnedFromListing(p)}
+              />
               <span className="absolute top-2 right-2 text-[8px] font-bold bg-black/55 text-white px-2 py-0.5 rounded">
                 上架中
               </span>

@@ -31,6 +31,11 @@ export async function getProfile(): Promise<UserProfile> {
   return toFrontend(p);
 }
 
+export async function getUserProfileById(userId: string): Promise<UserProfile> {
+  const p = await apiFetch<ApiProfile>(`/api/profile/users/${encodeURIComponent(userId)}`);
+  return toFrontend(p);
+}
+
 export async function updateProfile(data: Partial<UserProfile>): Promise<UserProfile> {
   const body: Record<string, string | null> = {};
   if (data.displayName !== undefined) body['display_name'] = data.displayName;

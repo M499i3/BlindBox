@@ -34,7 +34,6 @@ export default function AddListing() {
   const [styleOptions, setStyleOptions] = useState<StyleRow[]>([]);
   const [condition, setCondition] = useState('全新未拆');
   const [tradeMode, setTradeMode] = useState('我要賣');
-  const [allowSwap, setAllowSwap] = useState(true);
   const [allowBargain, setAllowBargain] = useState(false);
   const [shipping, setShipping] = useState('7-11 店到店');
   const [query, setQuery] = useState('');
@@ -156,7 +155,7 @@ export default function AddListing() {
         condition,
         tradeMode,
         shipping,
-        allowSwap,
+        allowSwap: tradeMode === '我想換',
         allowBargain,
         image: uploadedImages[0] ?? '',
         images: uploadedImages,
@@ -464,29 +463,6 @@ export default function AddListing() {
           <p className={SECTION_TITLE}>交易選項</p>
           <div className="flex items-center justify-between rounded-2xl border-2 border-black bg-white p-4">
             <div className="flex items-center gap-3">
-              <span className="material-symbols-outlined text-black">swap_horiz</span>
-              <span className="text-sm font-bold uppercase tracking-wider text-black">開放交換</span>
-            </div>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={allowSwap}
-              onClick={() => setAllowSwap((v) => !v)}
-              className={cn(
-                'flex h-7 w-12 items-center rounded-full border-2 border-black px-0.5 transition-colors',
-                allowSwap ? 'bg-black' : 'bg-neutral-200'
-              )}
-            >
-              <span
-                className={cn(
-                  'h-5 w-5 rounded-full bg-white transition-transform',
-                  allowSwap ? 'translate-x-5' : 'translate-x-0'
-                )}
-              />
-            </button>
-          </div>
-          <div className="flex items-center justify-between rounded-2xl border-2 border-black bg-white p-4">
-            <div className="flex items-center gap-3">
               <span className="material-symbols-outlined text-black">payments</span>
               <span className="text-sm font-bold uppercase tracking-wider text-black">允許議價</span>
             </div>
@@ -541,7 +517,7 @@ export default function AddListing() {
             onClick={submit}
             className="rounded-full border-2 border-black bg-black py-4 text-xs font-black uppercase tracking-widest text-white active:scale-95 disabled:opacity-60"
           >
-            {submitting ? '上傳中…' : '發布 listing'}
+            {submitting ? '上傳中…' : '確認上架'}
           </motion.button>
         </div>
       </main>

@@ -31,17 +31,17 @@ DEMO_PRODUCT_EXTERNAL_IDS: list[str] = [
 # (seller_email, external_id, trade_mode, condition, allow_swap, price_twd_cents)
 LISTING_SPECS: list[tuple[str, str, str, str, bool, int]] = [
     ("user1@test.com", "2084", "sell", "sealed", False, 89000),
-    ("user1@test.com", "2085", "sell", "sealed", True, 120000),
+    ("user1@test.com", "2085", "swap", "sealed", True, 120000),
     ("user1@test.com", "2086", "swap", "opened", True, 0),
     ("user1@test.com", "2087", "sell", "opened", False, 65000),
-    ("user1@test.com", "2088", "sell", "sealed", True, 99000),
+    ("user1@test.com", "2088", "swap", "sealed", True, 99000),
     ("user1@test.com", "2089", "swap", "sealed", True, 0),
     ("user2@test.com", "2090", "sell", "sealed", False, 78000),
-    ("user2@test.com", "1961", "sell", "opened", True, 55000),
+    ("user2@test.com", "1961", "swap", "opened", True, 55000),
     ("user2@test.com", "2057", "swap", "sealed", True, 0),
     ("user2@test.com", "2083", "sell", "sealed", False, 82000),
     ("user2@test.com", "2075", "sell", "opened", False, 48000),
-    ("user3@test.com", "2067", "sell", "sealed", True, 71000),
+    ("user3@test.com", "2067", "swap", "sealed", True, 71000),
     ("user3@test.com", "2072", "swap", "opened", True, 0),
     ("user3@test.com", "2065", "sell", "sealed", False, 105000),
 ]

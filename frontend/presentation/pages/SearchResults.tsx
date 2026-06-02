@@ -1,30 +1,30 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { motion } from 'motion/react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
-import { useCatalogProducts } from '@/frontend/presentation/hooks/useCatalog';
+import ListingProductCard from '@/frontend/presentation/components/ListingProductCard';
 import { useProductCollection } from '@/frontend/presentation/hooks/useProductCollection';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
-import { cn } from '@/frontend/shared/utils/cn';
 import { filterListingsByFuzzyQuery } from '@/frontend/shared/utils/searchListings';
+import { isOwnListing } from '@/frontend/shared/utils/listingOwnership';
+import { isSwapListing } from '@/frontend/shared/utils/tradeMode';
+import type { Listing } from '@/frontend/domain/entities/listing';
+
+function openListingPath(item: Listing) {
+  return `/listing/${item.id}`;
+}
 
 export default function SearchResults() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const initialQ = searchParams.get('q') ?? '';
   const [draft, setDraft] = useState(initialQ);
-  const { posts, addToCart, isInCart } = useAppState();
+  const { posts, addToCart, isInCart, userId } = useAppState();
   const {
     toggleWishFromListing,
     toggleOwnedFromListing,
     isListingWished,
     isListingOwned,
-    requestWishProduct,
-    toggleOwned,
-    isWished,
-    isOwned,
   } = useProductCollection();
-  const { products: catalogHot } = useCatalogProducts();
 
   useEffect(() => {
     setDraft(initialQ);
@@ -35,11 +35,55 @@ export default function SearchResults() {
     [posts, initialQ]
   );
 
+  const recommendations = useMemo(() => {
+    let pool = posts;
+    if (userId) {
+      pool = pool.filter((item) => !isOwnListing(item, userId));
+    }
+    return pool.slice(0, 12);
+  }, [posts, userId]);
+
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     const q = draft.trim();
     setSearchParams(q ? { q } : {});
   };
+
+  const renderListingCard = (item: Listing) => (
+    <ListingProductCard
+      key={item.id}
+      title={item.title}
+      price={isSwapListing(item) ? '可交換' : item.price || '—'}
+      image={item.image}
+      images={item.images}
+      fallbackImage={item.image}
+      badge={item.tradeMode ?? null}
+      badgeClassName={
+        isSwapListing(item)
+          ? 'border-primary/50 text-primary'
+          : 'border-primary-fixed-dim text-primary-fixed-dim'
+      }
+      onClick={() => navigate(openListingPath(item))}
+      isWished={isListingWished(item)}
+      isOwned={isListingOwned(item)}
+      onToggleWish={(e) => {
+        e.stopPropagation();
+        toggleWishFromListing(item);
+      }}
+      onToggleOwned={(e) => {
+        e.stopPropagation();
+        toggleOwnedFromListing(item);
+      }}
+      showCart={!isOwnListing(item, userId) && !isSwapListing(item)}
+      isInCart={isInCart(item.id)}
+      cartDisabled={isInCart(item.id) || !item.price}
+      onAddToCart={(e) => {
+        e.stopPropagation();
+        if (isInCart(item.id) || !item.price) return;
+        addToCart(item.id);
+      }}
+    />
+  );
 
   return (
     <div className="animate-in fade-in duration-500 pb-28">
@@ -63,101 +107,8 @@ export default function SearchResults() {
               貼文結果
               <span className="ml-2 text-on-surface-variant font-semibold">({listingResults.length})</span>
             </h2>
-            <div className="grid grid-cols-2 gap-grid-gutter">
-              {listingResults.map((item) => (
-                <motion.div
-                  key={item.id}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => {
-                    if (item.isSeeded) {
-                      const productId = item.id.replace(/^pm_/, '');
-                      navigate(`/product/${productId}`);
-                      return;
-                    }
-                    navigate(`/listing/${item.id}`);
-                  }}
-                  className="glass-card cursor-pointer overflow-hidden rounded-2xl"
-                >
-                  <div className="relative aspect-square bg-neutral-100">
-                    <img
-                      src={item.image}
-                      alt=""
-                      className="h-full w-full object-cover"
-                      referrerPolicy="no-referrer"
-                    />
-                    <div className="absolute top-2 right-2 flex flex-col gap-2">
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleWishFromListing(item);
-                        }}
-                        className="w-9 h-9 rounded-full bg-black/45 backdrop-blur-md flex items-center justify-center border border-white/15 active:scale-90 transition-transform"
-                        aria-label={isListingWished(item) ? '從想要移除' : '加入想要'}
-                      >
-                        <span
-                          className="material-symbols-outlined text-white text-[20px]"
-                          style={{ fontVariationSettings: isListingWished(item) ? "'FILL' 1" : "'FILL' 0" }}
-                        >
-                          favorite
-                        </span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleOwnedFromListing(item);
-                        }}
-                        className="w-9 h-9 rounded-full bg-black/45 backdrop-blur-md flex items-center justify-center border border-white/15 active:scale-90 transition-transform"
-                        aria-label={isListingOwned(item) ? '從收藏冊移除' : '加入收藏冊'}
-                      >
-                        <span
-                          className="material-symbols-outlined text-white text-[20px]"
-                          style={{ fontVariationSettings: isListingOwned(item) ? "'FILL' 1" : "'FILL' 0" }}
-                        >
-                          check_circle
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-                  <div className="p-3">
-                    {item.tradeMode ? (
-                      <div className="mb-2 flex gap-2">
-                        <span className="rounded border border-primary/50 px-2 py-0.5 text-[10px] text-primary">
-                          {item.tradeMode}
-                        </span>
-                      </div>
-                    ) : null}
-                    <p className="mb-1 line-clamp-2 text-sm font-semibold leading-snug text-on-surface">
-                      {item.title}
-                    </p>
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="shrink-0 whitespace-nowrap font-bold text-primary">{item.price || '—'}</p>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (isInCart(item.id)) return;
-                          if (!item.price) return;
-                          addToCart(item.id);
-                        }}
-                        disabled={isInCart(item.id) || !item.price}
-                        className={cn(
-                          'h-11 min-w-11 shrink-0 rounded-full border-2 border-outline px-3 text-xs font-extrabold shadow-[3px_3px_0_#111] transition-transform active:translate-x-0.5 active:translate-y-0.5 active:shadow-none',
-                          isInCart(item.id)
-                            ? 'bg-secondary text-on-secondary opacity-90'
-                            : !item.price
-                              ? 'bg-black/[0.06] text-on-surface-variant opacity-80'
-                              : 'bg-white text-on-background hover:bg-secondary/10'
-                        )}
-                        aria-label={isInCart(item.id) ? '已加入購物車' : '加入購物車'}
-                      >
-                        {isInCart(item.id) ? '已加入' : '加入購物車'}
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
+            <div className="grid grid-cols-2 items-stretch gap-grid-gutter">
+              {listingResults.map((item) => renderListingCard(item))}
             </div>
             {listingResults.length === 0 && (
               <p className="py-12 text-center text-sm text-on-surface-variant">
@@ -167,88 +118,16 @@ export default function SearchResults() {
           </section>
         ) : (
           <section className="space-y-3">
-            <h2 className="text-sm font-bold text-on-surface">熱門（官網新品）</h2>
-            <div className="grid grid-cols-2 gap-3">
-              {catalogHot.slice(0, 8).map((p) => (
-                <motion.div
-                  key={p.id}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => navigate(`/product/${p.id}`)}
-                  className="glass-card cursor-pointer overflow-hidden rounded-2xl text-left"
-                >
-                  <div className="relative aspect-square bg-neutral-100">
-                    <img
-                      src={p.image}
-                      alt=""
-                      className="h-full w-full object-cover"
-                      referrerPolicy="no-referrer"
-                    />
-                    <div className="absolute top-2 right-2 flex flex-col gap-2">
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          requestWishProduct(p.id);
-                        }}
-                        className="w-9 h-9 rounded-full bg-black/45 backdrop-blur-md flex items-center justify-center border border-white/15 active:scale-90 transition-transform"
-                        aria-label={isWished(p.id) ? '從想要移除' : '加入想要'}
-                      >
-                        <span
-                          className="material-symbols-outlined text-white text-[20px]"
-                          style={{ fontVariationSettings: isWished(p.id) ? "'FILL' 1" : "'FILL' 0" }}
-                        >
-                          favorite
-                        </span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleOwned(p.id);
-                        }}
-                        className="w-9 h-9 rounded-full bg-black/45 backdrop-blur-md flex items-center justify-center border border-white/15 active:scale-90 transition-transform"
-                        aria-label={isOwned(p.id) ? '從收藏冊移除' : '加入收藏冊'}
-                      >
-                        <span
-                          className="material-symbols-outlined text-white text-[20px]"
-                          style={{ fontVariationSettings: isOwned(p.id) ? "'FILL' 1" : "'FILL' 0" }}
-                        >
-                          check_circle
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-                  <div className="p-3">
-                    <p className="line-clamp-2 text-sm font-semibold leading-snug text-on-surface">{p.title}</p>
-                    <div className="mt-1 flex items-center justify-between gap-2">
-                      <p className="shrink-0 whitespace-nowrap font-bold text-primary">{p.price || '—'}</p>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          const cartId = `pm_${p.id}`;
-                          if (isInCart(cartId)) return;
-                          if (!p.price) return;
-                          addToCart(cartId);
-                        }}
-                        disabled={isInCart(`pm_${p.id}`) || !p.price}
-                        className={cn(
-                          'h-11 min-w-0 shrink-0 rounded-full border-2 border-outline px-2.5 text-[11px] font-extrabold whitespace-nowrap shadow-[3px_3px_0_#111] transition-transform active:translate-x-0.5 active:translate-y-0.5 active:shadow-none',
-                          isInCart(`pm_${p.id}`)
-                            ? 'bg-secondary text-on-secondary opacity-90'
-                            : !p.price
-                              ? 'bg-black/[0.06] text-on-surface-variant opacity-80'
-                              : 'bg-white text-on-background hover:bg-secondary/10'
-                        )}
-                        aria-label={isInCart(`pm_${p.id}`) ? '已加入購物車' : '加入購物車'}
-                      >
-                        {isInCart(`pm_${p.id}`) ? '已加入' : '加入購物車'}
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+            <h2 className="text-sm font-bold text-on-surface">為你推薦</h2>
+            {recommendations.length > 0 ? (
+              <div className="grid grid-cols-2 items-stretch gap-grid-gutter">
+                {recommendations.map((item) => renderListingCard(item))}
+              </div>
+            ) : (
+              <p className="py-12 text-center text-sm text-on-surface-variant">
+                目前沒有推薦貼文，試試搜尋關鍵字或到商城逛逛。
+              </p>
+            )}
           </section>
         )}
       </main>

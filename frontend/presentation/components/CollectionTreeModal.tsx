@@ -1,13 +1,14 @@
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { ProductCollectionApi } from '@/frontend/presentation/hooks/useProductCollection';
+import CollectionActionButton from '@/frontend/presentation/components/CollectionActionButton';
 import {
   formatProgress,
   type BrandNode,
   type IpNode,
   type SeriesNode,
 } from '@/frontend/shared/utils/catalogHierarchy';
-import { buildShopSearchUrl } from '@/frontend/shared/utils/shopNavigation';
+import { buildMarketplaceSearchUrl } from '@/frontend/shared/utils/shopNavigation';
 type Path =
   | { level: 'brand' }
   | { level: 'ip'; brand: string }
@@ -74,9 +75,9 @@ export default function CollectionTreeModal({ open, onClose, collection }: Props
     onClose();
   };
 
-  const goToShopSearch = (title: string) => {
+  const goToSearch = (title: string) => {
     resetAndClose();
-    navigate(buildShopSearchUrl(title));
+    navigate(buildMarketplaceSearchUrl(title));
   };
 
   const breadcrumb = useMemo(() => {
@@ -165,47 +166,32 @@ export default function CollectionTreeModal({ open, onClose, collection }: Props
         {leaves.map((p) => (
           <div
             key={p.id}
-            className="glass-card overflow-hidden rounded-2xl text-left shadow-[4px_4px_0_#111]"
+            role="button"
+            tabIndex={0}
+            onClick={() => goToSearch(p.title)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                goToSearch(p.title);
+              }
+            }}
+            className="glass-card cursor-pointer overflow-hidden rounded-2xl text-left shadow-[4px_4px_0_#111] active:opacity-95"
+            aria-label={`搜尋 ${p.title}`}
           >
-            <div
-              className="relative aspect-square cursor-pointer bg-neutral-100"
-              onClick={() => goToShopSearch(p.title)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  goToShopSearch(p.title);
-                }
-              }}
-              role="link"
-              tabIndex={0}
-              aria-label={`到商城搜尋 ${p.title}`}
-            >
+            <div className="relative aspect-square bg-neutral-100">
               <img src={p.image} alt="" className="h-full w-full object-cover" referrerPolicy="no-referrer" />
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleOwned(p.id);
-                }}
-                className="absolute top-2 right-2 flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-black/45 backdrop-blur-md active:scale-90"
-                aria-label={isOwned(p.id) ? '從收藏冊移除' : '加入收藏冊'}
-              >
-                <span
-                  className="material-symbols-outlined text-[20px] text-white"
-                  style={{ fontVariationSettings: isOwned(p.id) ? "'FILL' 1" : "'FILL' 0" }}
-                >
-                  check_circle
-                </span>
-              </button>
+              <div className="absolute top-2 right-2">
+                <CollectionActionButton
+                  kind="owned"
+                  active={isOwned(p.id)}
+                  onClick={() => toggleOwned(p.id)}
+                />
+              </div>
             </div>
-            <button
-              type="button"
-              onClick={() => goToShopSearch(p.title)}
-              className="w-full p-3 text-left active:bg-black/[0.02]"
-            >
+            <div className="w-full p-3 text-left">
               <p className="line-clamp-2 text-xs font-bold leading-snug text-on-surface">{p.title}</p>
-              <p className="mt-1 text-[10px] font-semibold text-primary">到商城搜尋</p>
-            </button>
+              <p className="mt-1 text-[10px] font-semibold text-primary">搜尋此盲盒</p>
+            </div>
           </div>
         ))}
       </div>

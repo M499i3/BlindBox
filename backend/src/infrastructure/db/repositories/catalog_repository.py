@@ -58,7 +58,7 @@ _SERIES_BY_BRAND = """
 """
 
 _STYLES_BY_BRAND_SERIES = """
-    SELECT cp.id, cp.title, cp.image_url
+    SELECT cp.id, cp.external_id, cp.title, cp.image_url
     FROM catalog_products cp
     JOIN series s ON s.id = cp.series_id
     JOIN brands b ON b.id = s.brand_id
@@ -232,6 +232,10 @@ def get_styles_by_brand_series_slug(
         cur.execute(_STYLES_BY_BRAND_SERIES, (brand_slug, series_slug))
         rows = cur.fetchall()
     return [
-        {"id": str(r["id"]), "name": r["title"], "image": r.get("image_url") or ""}
+        {
+            "id": str(r["external_id"] or r["id"]),
+            "name": r["title"],
+            "image": r.get("image_url") or "",
+        }
         for r in rows
     ]

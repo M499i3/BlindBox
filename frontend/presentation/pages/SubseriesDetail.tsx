@@ -1,9 +1,10 @@
-import React from 'react';
-import { motion } from 'motion/react';
+import React, { useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
+import CatalogHero from '@/frontend/presentation/components/catalog/CatalogHero';
+import CatalogFigurineTile from '@/frontend/presentation/components/catalog/CatalogFigurineTile';
+import CatalogSectionHeading from '@/frontend/presentation/components/catalog/CatalogSectionHeading';
 import { useProductCollection } from '@/frontend/presentation/hooks/useProductCollection';
-import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
 import {
   deriveBrandLabel,
   useCatalogProducts,
@@ -24,8 +25,7 @@ export default function SubseriesDetail() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const mock = isMockDataEnabled();
-  const { toggleOwned, isOwned } = useAppState();
-  const { requestWishProduct, isWished } = useProductCollection();
+  const { requestWishProduct, toggleProductOwned, isWished, isOwned } = useProductCollection();
 
   const brandSlug = params.get('brand') ?? '';
   const seriesSlug = params.get('series') ?? '';
@@ -58,103 +58,82 @@ export default function SubseriesDetail() {
     products[0]?.image ??
     'https://global-static.popmart.com/globalAdmin/1776844373939____pc____.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp';
 
+  const ownedCount = useMemo(
+    () => products.filter((p) => isOwned(p.id)).length,
+    [products, isOwned]
+  );
+
+  const breadcrumb = useMemo(() => {
+    const parts = ['圖鑑'];
+    if (mock && ip) parts.push(ip);
+    else if (brandSlug) parts.push(brandSlug.replace(/-/g, ' '));
+    if (name) parts.push(name);
+    return parts;
+  }, [mock, ip, brandSlug, name]);
+
   return (
     <div className="w-full min-w-0 max-w-full overflow-x-hidden animate-in fade-in duration-500 min-h-full pb-32">
       <TopBar title={name || '系列'} showBack rightElement={<></>} />
 
-      <main className="pt-topbar-content px-5 space-y-10 w-full min-w-0 max-w-full mx-auto">
-        <section>
-          <div className="relative w-full aspect-[21/9] rounded-2xl overflow-hidden mb-6">
-            <img className="w-full h-full object-cover" src={hero} referrerPolicy="no-referrer" alt="" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-          </div>
+      <main className="mx-auto w-full min-w-0 max-w-full space-y-8 px-container-margin pt-topbar-content">
+        <CatalogHero
+          title={name || '系列'}
+          subtitle="收錄款式圖鑑，點選查看詳情或標記收藏。"
+          breadcrumb={breadcrumb}
+          coverImage={hero}
+          stats={[
+            { label: '款式', value: products.length },
+            { label: '已收藏', value: ownedCount },
+          ]}
+        />
 
-          <div className="space-y-4">
-            <h2 className="text-3xl font-bold text-on-surface">{name || '系列'}</h2>
-            <p className="text-on-surface-variant leading-relaxed text-sm">
-              {mock && ip ? `IP：${ip}。` : ''} 依層級瀏覽：品牌 → 系列 → 盲盒。
-            </p>
-
-            <div className="flex gap-10 mt-2">
-              <div className="flex flex-col">
-                <span className="text-2xl font-bold text-primary">{products.length}</span>
-                <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mt-1">
-                  盲盒
-                </span>
-              </div>
+        {products.length > 0 && (
+          <div className="rounded-2xl border-2 border-outline bg-white p-3 shadow-[3px_3px_0_#111]">
+            <div className="mb-1.5 flex items-center justify-between text-[10px] font-bold">
+              <span className="text-on-surface-variant">收藏進度</span>
+              <span className="text-on-surface">
+                {ownedCount} / {products.length}
+              </span>
+            </div>
+            <div className="h-2 overflow-hidden rounded-full bg-neutral-100">
+              <div
+                className="h-full rounded-full bg-accent-sky transition-all duration-300"
+                style={{ width: `${products.length ? (ownedCount / products.length) * 100 : 0}%` }}
+              />
             </div>
           </div>
-        </section>
+        )}
 
         <section>
-          <div className="flex justify-between items-end mb-6">
-            <h3 className="text-xl font-bold text-secondary">盲盒</h3>
-          </div>
+          <CatalogSectionHeading label="Figurines" title="款式圖鑑" count={products.length} />
 
-          <div className="grid grid-cols-2 gap-grid-gutter">
+          <div className="grid grid-cols-3 gap-x-3 gap-y-5">
             {products.slice(0, 60).map((p) => (
-              <motion.button
+              <CatalogFigurineTile
                 key={p.id}
-                type="button"
-                whileTap={{ scale: 0.98 }}
-                onClick={() => navigate(`/product/${p.id}?src=catalog`)}
-                className="glass-card rounded-2xl overflow-hidden text-left"
-              >
-                <div className="relative aspect-square bg-neutral-100">
-                  <img className="w-full h-full object-cover" src={p.image} referrerPolicy="no-referrer" alt="" />
-
-                  <div className="absolute top-2 right-2 flex flex-col gap-2">
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        requestWishProduct(p.id);
-                      }}
-                      className="w-9 h-9 rounded-full bg-black/45 backdrop-blur-md flex items-center justify-center border border-white/15 active:scale-90 transition-transform"
-                      aria-label="加入想要"
-                    >
-                      <span
-                        className="material-symbols-outlined text-white text-[20px]"
-                        style={{ fontVariationSettings: isWished(p.id) ? "'FILL' 1" : "'FILL' 0" }}
-                      >
-                        favorite
-                      </span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleOwned(p.id);
-                      }}
-                      className="w-9 h-9 rounded-full bg-black/45 backdrop-blur-md flex items-center justify-center border border-white/15 active:scale-90 transition-transform"
-                      aria-label="加入收藏冊"
-                    >
-                      <span
-                        className="material-symbols-outlined text-white text-[20px]"
-                        style={{ fontVariationSettings: isOwned(p.id) ? "'FILL' 1" : "'FILL' 0" }}
-                      >
-                        check_circle
-                      </span>
-                    </button>
-                  </div>
-                </div>
-
-                <div className="p-3">
-                  {!mock && brandSlug && (
-                    <p className="text-[10px] font-semibold text-primary mb-0.5">{brandSlug}</p>
-                  )}
-                  {mock && ip && <p className="text-[10px] font-semibold text-primary mb-0.5">{ip}</p>}
-                  <p className="text-xs font-bold text-on-surface line-clamp-2 leading-snug">{p.title}</p>
-                </div>
-              </motion.button>
+                title={p.title}
+                image={p.image}
+                isWished={isWished(p.id)}
+                isOwned={isOwned(p.id)}
+                onClick={() => navigate(`/catalog/${p.id}`)}
+                onToggleWish={(e) => {
+                  e.stopPropagation();
+                  requestWishProduct(p.id);
+                }}
+                onToggleOwned={(e) => {
+                  e.stopPropagation();
+                  toggleProductOwned(p.id);
+                }}
+              />
             ))}
-
-            {products.length === 0 && (
-              <div className="col-span-2 text-center py-10 text-sm text-on-surface-variant">
-                沒有找到符合的盲盒。
-              </div>
-            )}
           </div>
+
+          {products.length === 0 && (
+            <div className="rounded-2xl border-2 border-dashed border-outline/40 bg-neutral-50 py-12 text-center">
+              <span className="material-symbols-outlined mb-2 text-3xl text-on-surface-variant">inventory_2</span>
+              <p className="text-sm text-on-surface-variant">沒有找到符合的盲盒款式。</p>
+            </div>
+          )}
         </section>
       </main>
     </div>

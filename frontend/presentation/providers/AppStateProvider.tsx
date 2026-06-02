@@ -27,6 +27,7 @@ import { useAuth } from '@/frontend/presentation/providers/AuthProvider';
 import { createDefaultWishAlertSettings, type WishAlertSettings } from '@/frontend/domain/entities/wishAlert';
 import { getLowestMarketPriceForTitle } from '@/frontend/shared/utils/marketPrice';
 import { isMockDataEnabled, popmartShowcase } from '@/frontend/lib/popmartShowcase';
+import { isLocalOnlyCollectionId, mergeServerCollectionIds } from '@/frontend/shared/utils/productCollection';
 export type { Listing, CreateListingInput };
 export type { WishAlertSettings };
 
@@ -89,7 +90,7 @@ function buildSeededPosts(): Listing[] {
     condition: idx % 2 === 0 ? '全新未拆' : '已拆盒',
     tradeMode: idx % 3 === 0 ? '我想換' : idx % 3 === 1 ? '我要拆' : '我要賣',
     shipping: '7-11 店到店',
-    allowSwap: true,
+    allowSwap: idx % 3 === 0,
     allowBargain: idx % 2 === 0,
     quantity: 1,
     image: p.image,
@@ -199,8 +200,12 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     setListings(mine);
     setCartItems(cart);
     applyProfile(profile);
-    setOwnedIds(collections.collected);
-    setWishIds(collections.wishlist);
+    setOwnedIds((prev) =>
+      mergeServerCollectionIds(collections.collected, prev.filter(isLocalOnlyCollectionId))
+    );
+    setWishIds((prev) =>
+      mergeServerCollectionIds(collections.wishlist, prev.filter(isLocalOnlyCollectionId))
+    );
   }, [applyProfile]);
 
   useEffect(() => {
@@ -231,8 +236,18 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       const data = currentlyOn
         ? await removeCollectionItem(productId, type)
         : await addCollectionItem(productId, type);
-      setOwnedIds(data.collected);
-      setWishIds(data.wishlist);
+      setOwnedIds((prev) =>
+        mergeServerCollectionIds(
+          data.collected,
+          prev.filter(isLocalOnlyCollectionId)
+        )
+      );
+      setWishIds((prev) =>
+        mergeServerCollectionIds(
+          data.wishlist,
+          prev.filter(isLocalOnlyCollectionId)
+        )
+      );
     },
     []
   );
@@ -317,29 +332,43 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
 
   const toggleOwned = useCallback(
     (id: string) => {
-      const currentlyOn = ownedIds.includes(id);
-      if (mock) {
-        setOwnedIds((prev) => (currentlyOn ? prev.filter((x) => x !== id) : [...prev, id]));
-        return;
-      }
-      syncCollectionToggle(id, 'collected', currentlyOn).catch(console.error);
+      setOwnedIds((prev) => {
+        const currentlyOn = prev.includes(id);
+        const next = currentlyOn ? prev.filter((x) => x !== id) : [...prev, id];
+        if (!mock && !isLocalOnlyCollectionId(id)) {
+          syncCollectionToggle(id, 'collected', currentlyOn).catch((err) => {
+            console.error(err);
+            setOwnedIds((rollback) =>
+              currentlyOn ? [...rollback, id] : rollback.filter((x) => x !== id)
+            );
+          });
+        }
+        return next;
+      });
     },
-    [mock, ownedIds, syncCollectionToggle]
+    [mock, syncCollectionToggle]
   );
-
-  const isOwned = useCallback((id: string) => ownedIds.includes(id), [ownedIds]);
 
   const toggleWish = useCallback(
     (id: string) => {
-      const currentlyOn = wishIds.includes(id);
-      if (mock) {
-        setWishIds((prev) => (currentlyOn ? prev.filter((x) => x !== id) : [...prev, id]));
-        return;
-      }
-      syncCollectionToggle(id, 'wishlist', currentlyOn).catch(console.error);
+      setWishIds((prev) => {
+        const currentlyOn = prev.includes(id);
+        const next = currentlyOn ? prev.filter((x) => x !== id) : [...prev, id];
+        if (!mock && !isLocalOnlyCollectionId(id)) {
+          syncCollectionToggle(id, 'wishlist', currentlyOn).catch((err) => {
+            console.error(err);
+            setWishIds((rollback) =>
+              currentlyOn ? [...rollback, id] : rollback.filter((x) => x !== id)
+            );
+          });
+        }
+        return next;
+      });
     },
-    [mock, wishIds, syncCollectionToggle]
+    [mock, syncCollectionToggle]
   );
+
+  const isOwned = useCallback((id: string) => ownedIds.includes(id), [ownedIds]);
 
   const isWished = useCallback((id: string) => wishIds.includes(id), [wishIds]);
 
@@ -367,8 +396,12 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       } else {
         addCollectionItem(productId, 'wishlist')
           .then((data) => {
-            setOwnedIds(data.collected);
-            setWishIds(data.wishlist);
+            setOwnedIds((prev) =>
+              mergeServerCollectionIds(data.collected, prev.filter(isLocalOnlyCollectionId))
+            );
+            setWishIds((prev) =>
+              mergeServerCollectionIds(data.wishlist, prev.filter(isLocalOnlyCollectionId))
+            );
           })
           .catch(console.error);
       }
@@ -390,8 +423,12 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       } else {
         addCollectionItem(productId, 'wishlist')
           .then((data) => {
-            setOwnedIds(data.collected);
-            setWishIds(data.wishlist);
+            setOwnedIds((prev) =>
+              mergeServerCollectionIds(data.collected, prev.filter(isLocalOnlyCollectionId))
+            );
+            setWishIds((prev) =>
+              mergeServerCollectionIds(data.wishlist, prev.filter(isLocalOnlyCollectionId))
+            );
           })
           .catch(console.error);
       }
