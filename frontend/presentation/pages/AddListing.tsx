@@ -52,10 +52,16 @@ export default function AddListing() {
   };
 
   const submit = async () => {
+    const numericPrice = Number(price);
+
+    if (!numericPrice || numericPrice <= 0) {
+      alert('價格必須大於 0 元');
+      return;
+    }
     const listingId = await createListing({
       title: title.trim() || itemName.trim() || '未命名貼文',
       itemName: itemName.trim() || title.trim() || '未命名商品',
-      price: price.trim() ? `NT$ ${price.trim()}` : 'NT$ 0',
+      price: `NT$ ${numericPrice}`,
       quantity,
       description: description.trim() || '無補充說明',
       brand,
@@ -265,7 +271,7 @@ export default function AddListing() {
                 className={cn(FIELD, 'pl-14 text-xl font-black')}
                 placeholder="0"
                 type="number"
-                min={0}
+                min={1}
               />
             </div>
           </div>

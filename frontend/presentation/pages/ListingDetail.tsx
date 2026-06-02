@@ -13,27 +13,26 @@ import { pickBestTitleMatch } from '@/frontend/shared/utils/searchListings';
 export default function ListingDetail() {
   const navigate = useNavigate();
   const { id = '' } = useParams();
-  const { getPostById, addToCart, removeFromCart, isInCart, avatarDataUrl, listings } = useAppState();
-  const cached = getPostById(id);
-  const [listing, setListing] = useState<Listing | undefined | null>(cached ?? null);
-  const [loading, setLoading] = useState(!cached && !!id);
+  const { addToCart, removeFromCart, isInCart, avatarDataUrl, userId } = useAppState();
+  const [listing, setListing] = useState<Listing | undefined | null>(null);
+  const [loading, setLoading] = useState(!!id);
   const { products: catalogProducts } = useCatalogProducts();
   const [contacting, setContacting] = useState(false);
-  const isOwnListing = listings.some((l) => l.id === id);
+ 
 
   useEffect(() => {
-    if (cached) {
+    /*if (cached) {
       setListing(cached);
       setLoading(false);
       return;
-    }
+    }*/
     if (!id) return;
     setLoading(true);
     getListing(id)
       .then((item) => setListing(item))
       .catch(() => setListing(undefined))
       .finally(() => setLoading(false));
-  }, [id, cached]);
+  }, [id]);
 
   const matchedCatalog = useMemo(() => {
     if (!listing) return null;
@@ -62,7 +61,11 @@ export default function ListingDetail() {
   }
 
   const inCart = isInCart(listing.id);
-
+  const isOwnListing = listing.sellerId === userId;
+  console.log('listing', listing);
+  console.log('listing.sellerId', listing.sellerId);
+  console.log('userId', userId);
+  console.log('isOwnListing', isOwnListing);
   return (
     <div className="animate-in fade-in duration-500 pb-28">
       <TopBar showBack title="貼文詳情" />
@@ -130,10 +133,24 @@ export default function ListingDetail() {
           </button>
           <button
             type="button"
-            onClick={() => (inCart ? removeFromCart(listing.id) : addToCart(listing.id))}
-            className={`w-full py-4 rounded-full text-sm font-bold ${inCart ? 'bg-white border border-black/[0.12] text-on-surface' : 'premium-gradient text-white'}`}
+            disabled={isOwnListing}
+            onClick={() => {
+              if (isOwnListing) return;
+              inCart ? removeFromCart(listing.id) : addToCart(listing.id);
+            }}
+            className={`w-full py-4 rounded-full text-sm font-bold ${
+              isOwnListing
+                ? 'bg-white border border-black/[0.12] text-on-surface opacity-50'
+                : inCart
+                  ? 'bg-white border border-black/[0.12] text-on-surface'
+                  : 'premium-gradient text-white'
+            }`}
           >
-            {inCart ? '已加入購物車（點我移除）' : '加入購物車'}
+            {isOwnListing
+              ? '這是你的貼文，無法加入購物車'
+              : inCart
+                ? '已加入購物車（點我移除）'
+                : '加入購物車'}
           </button>
         </div>
       </main>

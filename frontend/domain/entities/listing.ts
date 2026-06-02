@@ -15,6 +15,7 @@ export type Listing = {
   quantity: number; 
   image: string;
   createdAt: string;
+  sellerId?: string;
   sellerName: string;
   isSeeded?: boolean;
 };

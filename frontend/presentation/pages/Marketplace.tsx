@@ -53,10 +53,14 @@ export default function Marketplace() {
   }, [rankings, products]);
 
   const newReleases = useMemo(() => {
-    const pool = [...posts, ...listings];
+    const pool = Array.from(
+      new Map([...posts, ...listings].map((item) => [item.id, item])).values()
+    );
+  
     const sorted = pool
       .slice()
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  
     return sorted.slice(0, 8).map((p) => ({
       id: p.id,
       title: p.title,

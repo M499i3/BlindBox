@@ -18,9 +18,12 @@ type ApiListing = {
   image: string;
   created_at: string;
   seller_name: string;
+  seller_id?: string;
+  quantity: number;
 };
 
 function toFrontend(l: ApiListing): Listing {
+  console.log('API seller_id =', l.seller_id);
   return {
     id: l.id,
     title: l.title,
@@ -37,6 +40,8 @@ function toFrontend(l: ApiListing): Listing {
     image: l.image,
     createdAt: l.created_at,
     sellerName: l.seller_name,
+    quantity: l.quantity ?? 1,
+    sellerId: l.seller_id,
   };
 }
 
@@ -54,6 +59,7 @@ function toApi(input: CreateListingInput): Record<string, unknown> {
     allow_swap: input.allowSwap,
     allow_bargain: input.allowBargain,
     image: input.image,
+    quantity: input.quantity,
   };
 }
 
