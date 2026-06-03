@@ -382,7 +382,10 @@ export default function Marketplace() {
                 key={item.id}
                 type="button"
                 whileTap={{ scale: 0.98 }}
-                onClick={() => navigate(`/search?q=${encodeURIComponent(item.title)}`)}
+                onClick={() => {
+                  saveHomeScroll();
+                  navigate(`/catalog/${item.id}`);
+                }}
                 className="min-w-[160px] flex flex-col gap-stack-md text-left"
               >
                 <div className="relative aspect-square rounded-2xl overflow-hidden">
