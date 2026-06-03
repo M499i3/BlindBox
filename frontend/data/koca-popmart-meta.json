@@ -1,0 +1,187 @@
+{
+  "scrapedAt": "2026-05-30T02:17:41.047Z",
+  "sourceUrl": "https://koca.shop/zh-TW/planets/popmart",
+  "ips": [
+    {
+      "id": "popmart_molly",
+      "name": "MOLLY",
+      "displayIp": "Molly",
+      "url": "https://koca.shop/planets/popmart_molly",
+      "itemCount": 227,
+      "apiTotal": 227,
+      "withMarketPrice": 40
+    },
+    {
+      "id": "popmart_baby_molly",
+      "name": "Baby Molly",
+      "displayIp": "Baby Molly",
+      "url": "https://koca.shop/planets/popmart_baby_molly",
+      "itemCount": 104,
+      "apiTotal": 104,
+      "withMarketPrice": 26
+    },
+    {
+      "id": "popmart_dimoo",
+      "name": "DIMOO",
+      "displayIp": "Dimoo",
+      "url": "https://koca.shop/planets/popmart_dimoo",
+      "itemCount": 628,
+      "apiTotal": 628,
+      "withMarketPrice": 168
+    },
+    {
+      "id": "popmart_labubu",
+      "name": "LABUBU",
+      "displayIp": "LABUBU",
+      "url": "https://koca.shop/planets/popmart_labubu",
+      "itemCount": 224,
+      "apiTotal": 224,
+      "withMarketPrice": 119
+    },
+    {
+      "id": "popmart_skullpanda",
+      "name": "SKULLPANDA",
+      "displayIp": "SKULLPANDA",
+      "url": "https://koca.shop/planets/popmart_skullpanda",
+      "itemCount": 465,
+      "apiTotal": 465,
+      "withMarketPrice": 52
+    },
+    {
+      "id": "popmart_crybaby",
+      "name": "CRYBABY",
+      "displayIp": "CRYBABY",
+      "url": "https://koca.shop/planets/popmart_crybaby",
+      "itemCount": 373,
+      "apiTotal": 373,
+      "withMarketPrice": 73
+    },
+    {
+      "id": "popmart_pucky",
+      "name": "PUCKY",
+      "displayIp": "PUCKY",
+      "url": "https://koca.shop/planets/popmart_pucky",
+      "itemCount": 87,
+      "apiTotal": 87,
+      "withMarketPrice": 23
+    },
+    {
+      "id": "popmart_sweetbean",
+      "name": "小甜豆",
+      "displayIp": "小甜豆",
+      "url": "https://koca.shop/planets/popmart_sweetbean",
+      "itemCount": 90,
+      "apiTotal": 90,
+      "withMarketPrice": 20
+    },
+    {
+      "id": "popmart_hirono",
+      "name": "HIRONO",
+      "displayIp": "Hirono",
+      "url": "https://koca.shop/planets/popmart_hirono",
+      "itemCount": 296,
+      "apiTotal": 296,
+      "withMarketPrice": 31
+    },
+    {
+      "id": "popmart_hacipupu",
+      "name": "HACIPUPU",
+      "displayIp": "HACIPUPU",
+      "url": "https://koca.shop/planets/popmart_hacipupu",
+      "itemCount": 126,
+      "apiTotal": 126,
+      "withMarketPrice": 35
+    },
+    {
+      "id": "popmart_disney",
+      "name": "迪士尼",
+      "displayIp": "迪士尼",
+      "url": "https://koca.shop/planets/popmart_disney",
+      "itemCount": 72,
+      "apiTotal": 72,
+      "withMarketPrice": 17
+    },
+    {
+      "id": "popmart_kubo",
+      "name": "KUBO",
+      "displayIp": "KUBO",
+      "url": "https://koca.shop/planets/popmart_kubo",
+      "itemCount": 110,
+      "apiTotal": 110,
+      "withMarketPrice": 35
+    },
+    {
+      "id": "popmart_twinkle_twinkle",
+      "name": "Twinkle Twinkle",
+      "displayIp": "星星人",
+      "url": "https://koca.shop/planets/popmart_twinkle_twinkle",
+      "itemCount": 231,
+      "apiTotal": 231,
+      "withMarketPrice": 107
+    },
+    {
+      "id": "popmart_pino_jelly",
+      "name": "PINO JELLY",
+      "displayIp": "PINO JELLY",
+      "url": "https://koca.shop/planets/popmart_pino_jelly",
+      "itemCount": 174,
+      "apiTotal": 174,
+      "withMarketPrice": 37
+    },
+    {
+      "id": "popmart_spongebob",
+      "name": "SpongeBob",
+      "displayIp": "SpongeBob",
+      "url": "https://koca.shop/planets/popmart_spongebob",
+      "itemCount": 142,
+      "apiTotal": 142,
+      "withMarketPrice": 30
+    },
+    {
+      "id": "popmart_zsiga",
+      "name": "Zsiga",
+      "displayIp": "Zsiga",
+      "url": "https://koca.shop/planets/popmart_zsiga",
+      "itemCount": 115,
+      "apiTotal": 115,
+      "withMarketPrice": 25
+    },
+    {
+      "id": "popmart_chaka",
+      "name": "CHAKA",
+      "displayIp": "CHAKA",
+      "url": "https://koca.shop/planets/popmart_chaka",
+      "itemCount": 73,
+      "apiTotal": 73,
+      "withMarketPrice": 20
+    },
+    {
+      "id": "popmart_polar",
+      "name": "POLAR",
+      "displayIp": "POLAR",
+      "url": "https://koca.shop/planets/popmart_polar",
+      "itemCount": 65,
+      "apiTotal": 65,
+      "withMarketPrice": 19
+    },
+    {
+      "id": "popmart_others",
+      "name": "其他 IP",
+      "displayIp": "其他 IP",
+      "url": "https://koca.shop/planets/popmart_others",
+      "itemCount": 418,
+      "apiTotal": 418,
+      "withMarketPrice": 55
+    }
+  ],
+  "stats": {
+    "uniqueProducts": 2863,
+    "withMarketPrice": 589,
+    "marketplaceListings": 691
+  },
+  "notes": [
+    "ip assigned from KOCA sub-planet pages",
+    "price = average resale (TWD) from KOCA marketplace listings matched by 系列 name",
+    "Run npm run db:seed after replacing or pointing seed at this file"
+  ]
+}

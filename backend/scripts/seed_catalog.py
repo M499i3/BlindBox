@@ -30,6 +30,7 @@ from catalog_seed_lib import (  # noqa: E402
 )
 
 DEFAULT_JSON = REPO_ROOT / "frontend" / "data" / "popmart-hk-showcase.json"
+KOCA_JSON = REPO_ROOT / "frontend" / "data" / "koca-popmart-showcase.json"
 DEV_USER_EMAIL = "user1@test.com"
 DEV_USER_NAME = "Yu"
 
@@ -252,6 +253,11 @@ def main() -> None:
         help=f"showcase JSON 路徑（預設 {DEFAULT_JSON.relative_to(REPO_ROOT)}）",
     )
     parser.add_argument(
+        "--koca",
+        action="store_true",
+        help=f"使用 KOCA 圖鑑（{KOCA_JSON.relative_to(REPO_ROOT)}）",
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="只解析統計，不寫入資料庫",
@@ -263,11 +269,12 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    if not args.json.is_file():
-        raise SystemExit(f"找不到 JSON：{args.json}")
+    json_path = KOCA_JSON if args.koca else args.json
+    if not json_path.is_file():
+        raise SystemExit(f"找不到 JSON：{json_path}")
 
     run_seed(
-        args.json,
+        json_path,
         dry_run=args.dry_run,
         seed_user=not args.no_dev_user,
     )
