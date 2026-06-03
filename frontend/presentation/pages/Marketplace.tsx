@@ -237,7 +237,12 @@ export default function Marketplace() {
 
         {/* Hero Banner */}
         <section className="mb-section-gap">
-          <div className="flex h-[200px] flex-col overflow-hidden rounded-2xl border-[2.5px] border-outline bg-white shadow-[6px_6px_0_#111]">
+          <button
+            type="button"
+            onClick={() => navigate('/search')}
+            className="flex h-[200px] w-full flex-col overflow-hidden rounded-2xl border-[2.5px] border-outline bg-white text-left shadow-[6px_6px_0_#111] transition-transform active:scale-[0.99] active:shadow-[4px_4px_0_#111]"
+            aria-label="前往搜尋"
+          >
             <div className="relative min-h-0 flex-1 overflow-hidden">
               <img
                 className="absolute left-1/2 -top-24 h-full w-full max-w-none -translate-x-1/2 -translate-y-2 origin-top scale-180 object-contain"
@@ -252,7 +257,7 @@ export default function Marketplace() {
                 交換、拆盒、購買，一次完成你的收藏
               </p>
             </div>
-          </div>
+          </button>
         </section>
 
         {trendingTags.length > 0 && (
