@@ -1,5 +1,5 @@
 import type { CatalogProduct } from '@/frontend/domain/entities/catalog';
-import { deriveBrandLabel } from '@/frontend/presentation/hooks/useCatalog';
+import { deriveBrandLabel, FALLBACK_IP } from '@/frontend/shared/utils/deriveIp';
 
 /** 圖鑑層級：品牌 → IP → 系列 → 盲盒商品 */
 export type CollectionProgress = {
@@ -56,7 +56,6 @@ export type CatalogHierarchy = {
 const POP_MART = 'Pop Mart';
 const JELLYCAT = 'Jellycat';
 const FALLBACK_SERIES = '未分系列';
-const FALLBACK_IP = '其他 IP';
 
 export function deriveSeriesName(title: string): string {
   const cleaned = title
@@ -74,8 +73,7 @@ export function productBrandName(title: string): string {
 
 export function productIpName(title: string, brand: string): string {
   if (brand !== POP_MART) return brand;
-  const ip = deriveBrandLabel(title);
-  return ip === POP_MART ? FALLBACK_IP : ip;
+  return deriveBrandLabel(title);
 }
 
 function seriesKey(brand: string, ip: string, series: string) {

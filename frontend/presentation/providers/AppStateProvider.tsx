@@ -82,7 +82,7 @@ function buildSeededPosts(): Listing[] {
     id: `pm_${p.id}`,
     title: p.title,
     itemName: p.title,
-    price: p.price || 'HK$ 0.00',
+    price: p.price || 'NT$0',
     description: '來自官方圖鑑資料的示意貼文（可直接查看詳情）。',
     brand: 'Pop Mart',
     series: 'Official',

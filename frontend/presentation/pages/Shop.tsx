@@ -119,7 +119,7 @@ export default function Shop() {
       id: `pm_${p.id}`,
       title: p.title,
       itemName: p.title,
-      price: p.price || 'HK$ 0.00',
+      price: p.price || 'NT$0',
       description: '',
       brand: 'Pop Mart',
       series: '',

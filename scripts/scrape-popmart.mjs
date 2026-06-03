@@ -141,10 +141,31 @@ function mergeUniqueBanners(chunks) {
 
 function deriveIpHints(products) {
   const hints = new Set();
+  const rules = [
+    ['THE MONSTERS', 'LABUBU'],
+    ['SKULLPANDA', 'SKULLPANDA'],
+    ['CRYBABY', 'CRYBABY'],
+    ['星星人', '星星人'],
+    ['歡迎來到月球表面', '星星人'],
+    ['HIRONO', 'Hirono'],
+    ['ZSIGA', 'Zsiga'],
+    ['PINO JELLY', 'PINO JELLY'],
+    ['LABUBU', 'LABUBU'],
+    ['HACIPUPU', 'HACIPUPU'],
+    ['PUCKY', 'PUCKY'],
+    ['DIMOO', 'Dimoo'],
+    ['MOLLY', 'Molly'],
+    ['CHAKA', 'CHAKA'],
+  ];
   for (const p of products) {
-    const t = p.title.toUpperCase();
-    for (const token of ['SKULLPANDA', 'PUCKY', 'DIMOO', 'MOLLY', 'LABUBU', 'HIRONO', 'CHAKA']) {
-      if (t.includes(token)) hints.add(token);
+    const t = p.title || '';
+    const u = t.toUpperCase();
+    for (const [key, ip] of rules) {
+      if (key === '星星人' || key === '歡迎來到月球表面') {
+        if (t.includes(key)) hints.add(ip);
+      } else if (u.includes(key)) {
+        hints.add(ip);
+      }
     }
   }
   return [...hints];

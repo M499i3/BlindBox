@@ -37,6 +37,7 @@ app.add_middleware(
         "http://localhost:3002",
         "http://127.0.0.1:3002",
     ],
+    allow_origin_regex=r"http://(192\.168|10|172\.(?:1[6-9]|2\d|3[01]))\.\d{1,3}\.\d{1,3}:(3001|3002)",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

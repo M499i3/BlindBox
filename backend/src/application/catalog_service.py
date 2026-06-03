@@ -5,30 +5,11 @@ import re
 import psycopg2.extensions
 
 from domain.entities import CatalogProduct
+from domain.ip_rules import derive_brand_label
 from infrastructure.db.repositories.catalog_repository import (
     get_all_products,
     get_product_by_id,
 )
-
-_BRAND_RULES: list[tuple[str, str]] = [
-    ("SKULLPANDA", "SKULLPANDA"),
-    ("PUCKY", "PUCKY"),
-    ("DIMOO", "Dimoo"),
-    ("MOLLY", "Molly"),
-    ("LABUBU", "LABUBU"),
-    ("CHAKA", "CHAKA"),
-]
-
-
-def derive_brand_label(title: str) -> str:
-    u = title.upper()
-    for keyword, label in _BRAND_RULES:
-        if keyword in u:
-            return label
-    if "泡泡" in title:
-        return "Pop Mart"
-    return "Pop Mart"
-
 
 def list_products(
     conn: psycopg2.extensions.connection,

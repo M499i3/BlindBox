@@ -37,7 +37,7 @@ export default function WishNotificationForm({ value, onChange, lowestMarketHint
             <p className="mt-0.5 text-[10px] leading-snug text-on-surface-variant">
               市集有上架且價格低於指定金額時通知
               {lowestMarketHint != null ? (
-                <span className="block text-primary">目前最低售價 HK$ {lowestMarketHint}</span>
+                <span className="block text-primary">目前最低售價 NT$ {lowestMarketHint}</span>
               ) : null}
             </p>
           </div>
@@ -53,7 +53,7 @@ export default function WishNotificationForm({ value, onChange, lowestMarketHint
             !value.priceDropEnabled && 'opacity-50'
           )}
         >
-          <span className="shrink-0 text-xs font-bold text-on-surface-variant">HK$</span>
+          <span className="shrink-0 text-xs font-bold text-on-surface-variant">NT$</span>
           <input
             type="number"
             min={0}

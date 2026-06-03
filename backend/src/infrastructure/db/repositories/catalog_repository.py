@@ -35,9 +35,9 @@ _PRODUCT_BY_EXTERNAL_ID = """
 
 def _format_price(amount: int | None, currency: str | None) -> str:
     if amount is None or amount == 0:
-        return "HK$ 0.00"
+        return "NT$0"
     major = amount / 100
-    symbol = {"HKD": "HK$", "TWD": "NT$", "CNY": "¥"}.get(currency or "HKD", "HK$")
+    symbol = {"HKD": "HK$", "TWD": "NT$", "CNY": "¥"}.get(currency or "TWD", "NT$")
     if currency == "HKD":
         return f"{symbol} {major:.2f}"
     return f"{symbol} {int(major) if major == int(major) else major}"

@@ -44,7 +44,13 @@ BRAND_SLUGS: dict[str, tuple[str, str]] = {
     "PUCKY": ("pucky", "PUCKY"),
     "Dimoo": ("dimoo", "Dimoo"),
     "Molly": ("molly", "Molly"),
+    "Baby Molly": ("baby-molly", "Baby Molly"),
     "CHAKA": ("chaka", "CHAKA"),
+    "小甜豆": ("sweet-bean", "小甜豆"),
+    "迪士尼": ("disney", "迪士尼"),
+    "KUBO": ("kubo", "KUBO"),
+    "SpongeBob": ("spongebob", "SpongeBob"),
+    "POLAR": ("polar", "POLAR"),
     "其他 IP": ("other-ip", "其他 IP"),
 }
 
@@ -99,7 +105,7 @@ def build_seed_products(showcase: dict[str, Any]) -> list[SeedProduct]:
         if not title or not external_id:
             continue
 
-        brand_label = derive_brand_label(title)
+        brand_label = str(raw.get("ip") or "").strip() or derive_brand_label(title)
         brand_slug, brand_name = brand_slug_and_name(brand_label)
         series_name = extract_series_name(title, brand_label)
         series_slug = stable_series_slug(brand_slug, series_name)

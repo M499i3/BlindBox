@@ -1,22 +1,13 @@
 import type { BrandRow, CatalogProduct, CatalogShowcase } from '@/frontend/domain/entities/catalog';
 import showcaseJson from '@/frontend/data/popmart-hk-showcase.json';
+import { deriveBrandLabel } from '@/frontend/shared/utils/deriveIp';
+
+export { deriveBrandLabel } from '@/frontend/shared/utils/deriveIp';
 
 export const popmartShowcase = showcaseJson as CatalogShowcase;
 
 export function isMockDataEnabled(): boolean {
   return import.meta.env.VITE_USE_MOCK_DATA === 'true';
-}
-
-export function deriveBrandLabel(title: string): string {
-  const u = title.toUpperCase();
-  if (u.includes('SKULLPANDA')) return 'SKULLPANDA';
-  if (u.includes('PUCKY')) return 'PUCKY';
-  if (u.includes('DIMOO')) return 'Dimoo';
-  if (u.includes('MOLLY')) return 'Molly';
-  if (u.includes('LABUBU')) return 'LABUBU';
-  if (u.includes('CHAKA')) return 'CHAKA';
-  if (title.includes('泡泡')) return 'Pop Mart';
-  return 'Pop Mart';
 }
 
 export function buildBrandRow(products: CatalogProduct[], max = 4): BrandRow[] {

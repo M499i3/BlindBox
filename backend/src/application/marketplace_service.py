@@ -61,8 +61,8 @@ def get_rankings(conn: psycopg2.extensions.connection) -> list[MarketplaceRankin
     rank_labels = ["No.1", "No.2", "No.3", "No.4", "No.5", "No.6", "No.7", "No.8", "No.9", "No.10"]
     for i, row in enumerate(rows):
         amount = row.get("official_price_amount") or 0
-        currency = row.get("official_price_currency") or "HKD"
-        symbol = {"HKD": "HK$", "TWD": "NT$", "CNY": "¥"}.get(currency, "HK$")
+        currency = row.get("official_price_currency") or "TWD"
+        symbol = {"HKD": "HK$", "TWD": "NT$", "CNY": "¥"}.get(currency, "NT$")
         price = f"{symbol} {amount / 100:.2f}"
         result.append(
             MarketplaceRankingItem(
