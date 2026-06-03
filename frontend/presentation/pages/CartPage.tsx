@@ -12,7 +12,7 @@ function isSeededListingId(id: string): boolean {
 
 export default function CartPage() {
   const navigate = useNavigate();
-  const { cartItems, removeFromCart } = useAppState();
+  const { cartItems, removeFromCart, refreshOrderCounts } = useAppState();
   const [checkingOut, setCheckingOut] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const mock = isMockDataEnabled();
@@ -64,6 +64,7 @@ export default function CartPage() {
         await createOrder(item.id);
         await removeFromCart(item.id);
       }
+      await refreshOrderCounts();
       setSelectedIds((prev) => prev.filter((id) => !selectedItems.some((item) => item.id === id)));
       alert('結帳成功！');
       navigate('/purchase-history');

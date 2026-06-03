@@ -11,10 +11,12 @@ import {
   type ChatMessage,
 } from '@/frontend/infrastructure/api/chatsApi';
 import { createOrder } from '@/frontend/infrastructure/api/ordersApi';
+import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
 
 export default function ChatDetail() {
   const { id: chatId = '' } = useParams();
   const navigate = useNavigate();
+  const { refreshOrderCounts } = useAppState();
   const [ctx, setCtx] = useState<ChatContext | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(true);
@@ -56,6 +58,7 @@ export default function ChatDetail() {
     setOrdering(true);
     try {
       const order = await createOrder(ctx.listingId);
+      await refreshOrderCounts();
       if (order.chatId) {
         await load();
       }

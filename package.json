@@ -19,6 +19,7 @@
     "db:seed": "node scripts/run-backend-python.mjs backend/scripts/seed_catalog.py",
     "db:seed:demo": "node scripts/run-backend-python.mjs backend/scripts/seed_dev_demo.py",
     "db:seed:all": "npm run db:seed && npm run db:seed:demo",
+    "db:reset:seed": "node scripts/run-backend-python.mjs backend/scripts/reset_and_seed_all.py",
     "db:seed:dry": "node scripts/run-backend-python.mjs backend/scripts/seed_catalog.py --dry-run",
     "db:downgrade": "cd backend && python -m alembic downgrade -1",
     "db:revision": "cd backend && python -m alembic revision --autogenerate",

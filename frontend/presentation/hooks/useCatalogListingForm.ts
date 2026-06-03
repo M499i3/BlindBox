@@ -1,5 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { getCatalogBrands, getCatalogSeries, getCatalogStyles } from '@/frontend/infrastructure/api/catalogApi';
+import { fetchCached } from '@/frontend/shared/utils/fetchCache';
+import {
+  CATALOG_BRANDS_KEY,
+  catalogSeriesKey,
+  catalogStylesKey,
+} from '@/frontend/shared/utils/catalogCacheKeys';
 import { uploadImageToStorage } from '@/frontend/infrastructure/storage/supabaseStorage';
 import type { BrandRow, SeriesRow, StyleRow } from '@/frontend/domain/entities/catalog';
 
@@ -28,7 +34,7 @@ export function useCatalogListingForm() {
   }, [styleOptions, query, itemName]);
 
   useEffect(() => {
-    getCatalogBrands()
+    fetchCached(CATALOG_BRANDS_KEY, getCatalogBrands)
       .then((rows) => {
         if (!rows.length) return;
         setBrandOptions(rows);
@@ -51,7 +57,7 @@ export function useCatalogListingForm() {
 
   useEffect(() => {
     if (!brandSlug) return;
-    getCatalogSeries(brandSlug)
+    fetchCached(catalogSeriesKey(brandSlug), () => getCatalogSeries(brandSlug))
       .then((rows) => {
         setSeriesOptions(rows);
         const first = rows[0];
@@ -72,7 +78,9 @@ export function useCatalogListingForm() {
       setStyleOptions([]);
       return;
     }
-    getCatalogStyles(brandSlug, seriesSlug)
+    fetchCached(catalogStylesKey(brandSlug, seriesSlug), () =>
+      getCatalogStyles(brandSlug, seriesSlug)
+    )
       .then((rows) => setStyleOptions(rows))
       .catch(() => setStyleOptions([]));
   }, [brandSlug, seriesSlug]);

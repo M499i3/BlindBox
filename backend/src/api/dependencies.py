@@ -33,12 +33,23 @@ def get_current_user_id(
 
 
 def get_db() -> Generator[psycopg2.extensions.connection, None, None]:
-    """每個請求建立一個 psycopg2 連線，結束後關閉。"""
+    """每個請求建立一個 psycopg2 連線，結束後關閉。
+
+    讀取 API 也必須 commit/rollback，否則在 Supavisor pooler 上會留下
+    idle in transaction 並鎖住 catalog_products 等表。
+    """
     conn = psycopg2.connect(
         get_database_url().replace("postgresql+psycopg2://", "postgresql://", 1),
         cursor_factory=psycopg2.extras.RealDictCursor,
     )
     try:
         yield conn
+        if not conn.closed:
+            conn.commit()
+    except Exception:
+        if not conn.closed:
+            conn.rollback()
+        raise
     finally:
-        conn.close()
+        if not conn.closed:
+            conn.close()

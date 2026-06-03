@@ -17,6 +17,7 @@ import {
   getListings,
   getMyListings,
 } from '@/frontend/infrastructure/api/listingsApi';
+import { getMyOrders } from '@/frontend/infrastructure/api/ordersApi';
 import {
   addCollectionItem,
   getCollections,
@@ -41,6 +42,10 @@ type AppStateValue = {
   ratingAvg: number;
   ratingCount: number;
   transactionCount: number;
+  /** null = 尚未從 API 載入（避免誤顯示 0） */
+  purchaseCount: number | null;
+  sellCount: number | null;
+  refreshOrderCounts: () => Promise<void>;
   setAvatarDataUrl: (v: string | null) => void | Promise<void>;
   listings: Listing[];
   posts: Listing[];
@@ -111,6 +116,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const [ratingAvg, setRatingAvg] = useState(0);
   const [ratingCount, setRatingCount] = useState(0);
   const [transactionCount, setTransactionCount] = useState(0);
+  const [purchaseCount, setPurchaseCount] = useState<number | null>(null);
+  const [sellCount, setSellCount] = useState<number | null>(null);
 
   const [listings, setListings] = useState<Listing[]>([]);
   const [posts, setPosts] = useState<Listing[]>([]);
@@ -182,6 +189,20 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     setTransactionCount(profile.transactionCount);
   }, []);
 
+  const refreshOrderCounts = useCallback(async () => {
+    if (mock) return;
+    try {
+      const [buyerOrders, sellerOrders] = await Promise.all([
+        getMyOrders('buyer'),
+        getMyOrders('seller'),
+      ]);
+      setPurchaseCount(buyerOrders.length);
+      setSellCount(sellerOrders.length);
+    } catch (err) {
+      console.error(err);
+    }
+  }, [mock]);
+
   const loadUserProfile = useCallback(async () => {
     const profile = await getProfile();
     applyProfile(profile);
@@ -189,17 +210,22 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
 
   // Load marketplace data when authenticated (non-mock mode)
   const loadUserData = useCallback(async () => {
-    const [postsData, mine, cart, profile, collections] = await Promise.all([
-      getListings(),
-      getMyListings(),
-      getCart(),
-      getProfile(),
-      getCollections(),
-    ]);
+    const [postsData, mine, cart, profile, collections, buyerOrders, sellerOrders] =
+      await Promise.all([
+        getListings(),
+        getMyListings(),
+        getCart(),
+        getProfile(),
+        getCollections(),
+        getMyOrders('buyer'),
+        getMyOrders('seller'),
+      ]);
     setPosts(postsData);
     setListings(mine);
     setCartItems(cart);
     applyProfile(profile);
+    setPurchaseCount(buyerOrders.length);
+    setSellCount(sellerOrders.length);
     setOwnedIds((prev) =>
       mergeServerCollectionIds(collections.collected, prev.filter(isLocalOnlyCollectionId))
     );
@@ -221,6 +247,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       setRatingAvg(0);
       setRatingCount(0);
       setTransactionCount(0);
+      setPurchaseCount(null);
+      setSellCount(null);
       return;
     }
     if (user?.displayName) setDisplayName(user.displayName);
@@ -469,6 +497,9 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       ratingAvg,
       ratingCount,
       transactionCount,
+      purchaseCount,
+      sellCount,
+      refreshOrderCounts,
       setAvatarDataUrl,
       listings,
       posts: allPosts,
@@ -506,6 +537,9 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       ratingAvg,
       ratingCount,
       transactionCount,
+      purchaseCount,
+      sellCount,
+      refreshOrderCounts,
       setAvatarDataUrl,
       listings,
       allPosts,

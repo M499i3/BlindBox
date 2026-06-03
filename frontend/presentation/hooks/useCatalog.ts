@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import type { BrandRow, CatalogProduct } from '@/frontend/domain/entities/catalog';
+import type { BrandRow, CatalogProduct, CatalogSearchResult } from '@/frontend/domain/entities/catalog';
 import {
   getCatalogBrands,
   getCatalogProducts,
   getCatalogProductById,
+  getCatalogSearch,
   getCatalogSeries,
   getCatalogStyles,
 } from '@/frontend/infrastructure/api/catalogApi';
@@ -14,7 +15,18 @@ import {
   getMockBrands,
   getProductById,
   isMockDataEnabled,
+  buildMockCatalogSearch,
 } from '@/frontend/lib/popmartShowcase';
+import { fetchCached, peekCache, useCachedFetch } from '@/frontend/shared/utils/fetchCache';
+import {
+  CATALOG_BRANDS_KEY,
+  catalogProductKey,
+  catalogProductsKey,
+  catalogSearchKey,
+  catalogSeriesKey,
+  catalogStylesKey,
+  mergeProductIntoCatalogCache,
+} from '@/frontend/shared/utils/catalogCacheKeys';
 
 export { deriveBrandLabelFromMock as deriveBrandLabel };
 
@@ -28,46 +40,30 @@ export function buildBrandRow(products: CatalogProduct[], limit = 6): BrandRow[]
   return Array.from(seen, ([name, image]) => ({ name, image }));
 }
 
-let _cache: CatalogProduct[] | null = null;
-
 export function useCatalogProducts(opts?: { q?: string; brand?: string; series?: string }) {
   const mock = isMockDataEnabled();
-  const hasFilter = Boolean(opts?.q || opts?.brand || opts?.series);
+  const cacheKey = mock ? null : catalogProductsKey(opts);
+
   const mockProducts = useMemo(
     () => (mock ? filterMockProducts(opts) : []),
     [mock, opts?.q, opts?.brand, opts?.series]
   );
 
-  const [products, setProducts] = useState<CatalogProduct[]>(mock ? mockProducts : _cache ?? []);
-  const [loading, setLoading] = useState(!mock && !_cache && !hasFilter);
-
-  useEffect(() => {
-    if (mock) {
-      setProducts(mockProducts);
-      setLoading(false);
-      return;
+  const { data, loading } = useCachedFetch(
+    cacheKey,
+    () => getCatalogProducts(opts).catch(() => filterMockProducts(opts)),
+    [opts?.q, opts?.brand, opts?.series],
+    {
+      enabled: !mock,
+      initial: mock ? mockProducts : [],
     }
-    if (_cache && !hasFilter) {
-      setProducts(_cache);
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
-    getCatalogProducts(opts)
-      .then((ps) => {
-        if (!hasFilter) _cache = ps;
-        setProducts(ps);
-      })
-      .catch(() => {
-        const fallback = filterMockProducts(opts);
-        if (!hasFilter) _cache = fallback;
-        setProducts(fallback);
-      })
-      .finally(() => setLoading(false));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mock, mockProducts, opts?.q, opts?.brand, opts?.series, hasFilter]);
+  );
 
-  return { products, loading };
+  if (mock) {
+    return { products: mockProducts, loading: false };
+  }
+
+  return { products: data ?? [], loading };
 }
 
 export function useCatalogProduct(id: string | undefined) {
@@ -77,8 +73,13 @@ export function useCatalogProduct(id: string | undefined) {
     [mock, id]
   );
 
-  const [product, setProduct] = useState<CatalogProduct | null>(mock ? mockProduct : null);
-  const [loading, setLoading] = useState(!mock && !!id);
+  const allProducts = peekCache<CatalogProduct[]>(catalogProductsKey());
+  const fromList = id && allProducts ? allProducts.find((p) => p.id === id) : undefined;
+
+  const [product, setProduct] = useState<CatalogProduct | null>(
+    mock ? mockProduct : fromList ?? null
+  );
+  const [loading, setLoading] = useState(!mock && !!id && !fromList);
 
   useEffect(() => {
     if (!id) return;
@@ -87,17 +88,28 @@ export function useCatalogProduct(id: string | undefined) {
       setLoading(false);
       return;
     }
-    if (_cache) {
-      const found = _cache.find((p) => p.id === id);
-      if (found) {
-        setProduct(found);
-        setLoading(false);
-        return;
-      }
+
+    const cachedList = peekCache<CatalogProduct[]>(catalogProductsKey());
+    const inList = cachedList?.find((p) => p.id === id);
+    if (inList) {
+      setProduct(inList);
+      setLoading(false);
+      return;
     }
+
+    const cachedOne = peekCache<CatalogProduct>(catalogProductKey(id));
+    if (cachedOne) {
+      setProduct(cachedOne);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
-    getCatalogProductById(id)
-      .then(setProduct)
+    fetchCached(catalogProductKey(id), () => getCatalogProductById(id))
+      .then((p) => {
+        mergeProductIntoCatalogCache(p);
+        setProduct(p);
+      })
       .catch(() => setProduct(getProductById(id) ?? null))
       .finally(() => setLoading(false));
   }, [mock, id]);
@@ -107,69 +119,75 @@ export function useCatalogProduct(id: string | undefined) {
 
 export function useCatalogBrands() {
   const mock = isMockDataEnabled();
-  const [brands, setBrands] = useState<BrandRow[]>(mock ? getMockBrands() : []);
 
-  useEffect(() => {
-    if (mock) {
-      setBrands(getMockBrands());
-      return;
-    }
-    getCatalogBrands()
-      .then(setBrands)
-      .catch(() => setBrands(getMockBrands()));
-  }, [mock]);
+  const { data } = useCachedFetch(
+    mock ? null : CATALOG_BRANDS_KEY,
+    () => getCatalogBrands().catch(() => getMockBrands()),
+    [mock],
+    { enabled: !mock, initial: [] as BrandRow[] }
+  );
 
-  return brands;
+  if (mock) return getMockBrands();
+  return data ?? [];
 }
 
 export function useCatalogSeries(brandSlug: string | undefined) {
   const mock = isMockDataEnabled();
-  const [series, setSeries] = useState<SeriesRow[]>([]);
-  const [loading, setLoading] = useState(!mock && !!brandSlug);
+  const key = mock || !brandSlug ? null : catalogSeriesKey(brandSlug);
 
-  useEffect(() => {
-    if (!brandSlug) {
-      setSeries([]);
-      setLoading(false);
-      return;
-    }
-    if (mock) {
-      setSeries([]);
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
-    getCatalogSeries(brandSlug)
-      .then(setSeries)
-      .catch(() => setSeries([]))
-      .finally(() => setLoading(false));
-  }, [mock, brandSlug]);
+  const { data, loading } = useCachedFetch(
+    key,
+    () => getCatalogSeries(brandSlug!).catch(() => [] as SeriesRow[]),
+    [brandSlug],
+    { enabled: !mock && !!brandSlug, initial: [] as SeriesRow[] }
+  );
 
-  return { series, loading };
+  if (mock || !brandSlug) {
+    return { series: [] as SeriesRow[], loading: false };
+  }
+
+  return { series: data ?? [], loading };
 }
 
 export function useCatalogStyles(brandSlug: string | undefined, seriesSlug: string | undefined) {
   const mock = isMockDataEnabled();
-  const [styles, setStyles] = useState<StyleRow[]>([]);
-  const [loading, setLoading] = useState(!mock && !!brandSlug && !!seriesSlug);
+  const key =
+    mock || !brandSlug || !seriesSlug ? null : catalogStylesKey(brandSlug, seriesSlug);
 
-  useEffect(() => {
-    if (!brandSlug || !seriesSlug) {
-      setStyles([]);
-      setLoading(false);
-      return;
-    }
-    if (mock) {
-      setStyles([]);
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
-    getCatalogStyles(brandSlug, seriesSlug)
-      .then(setStyles)
-      .catch(() => setStyles([]))
-      .finally(() => setLoading(false));
-  }, [mock, brandSlug, seriesSlug]);
+  const { data, loading } = useCachedFetch(
+    key,
+    () => getCatalogStyles(brandSlug!, seriesSlug!).catch(() => [] as StyleRow[]),
+    [brandSlug, seriesSlug],
+    { enabled: !mock && !!brandSlug && !!seriesSlug, initial: [] as StyleRow[] }
+  );
 
-  return { styles, loading };
+  if (mock || !brandSlug || !seriesSlug) {
+    return { styles: [] as StyleRow[], loading: false };
+  }
+
+  return { styles: data ?? [], loading };
+}
+
+export function useCatalogSearch(query: string) {
+  const mock = isMockDataEnabled();
+  const trimmed = query.trim();
+  const key = mock || !trimmed ? null : catalogSearchKey(trimmed);
+
+  const { data, loading } = useCachedFetch(
+    key,
+    () =>
+      getCatalogSearch(trimmed).catch(() => buildMockCatalogSearch(trimmed)),
+    [trimmed],
+    { enabled: !mock && trimmed.length > 0 }
+  );
+
+  if (!trimmed) {
+    return { result: null as CatalogSearchResult | null, loading: false };
+  }
+
+  if (mock) {
+    return { result: buildMockCatalogSearch(trimmed), loading: false };
+  }
+
+  return { result: data ?? null, loading };
 }

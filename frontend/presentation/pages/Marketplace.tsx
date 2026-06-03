@@ -11,6 +11,7 @@ import { useProductCollection } from '@/frontend/presentation/hooks/useProductCo
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
 import { getRankings, getTrendingTags } from '@/frontend/infrastructure/api/marketplaceApi';
 import { listSplitBoxes } from '@/frontend/infrastructure/api/splitBoxApi';
+import { fetchCached, peekCache } from '@/frontend/shared/utils/fetchCache';
 import type { SplitBoxGroupSummary } from '@/frontend/domain/entities/splitBox';
 import { SPLIT_BOX_STATUS_LABEL } from '@/frontend/domain/entities/splitBox';
 import type { MarketplaceRankingItem } from '@/frontend/infrastructure/api/marketplaceApi';
@@ -86,22 +87,34 @@ export default function Marketplace() {
     [setSearchParams]
   );
 
-  const [rankings, setRankings] = useState<MarketplaceRankingItem[]>([]);
-  const [trendingTags, setTrendingTags] = useState<string[]>([]);
-  const [splitBoxes, setSplitBoxes] = useState<SplitBoxGroupSummary[]>([]);
+  const [rankings, setRankings] = useState<MarketplaceRankingItem[]>(
+    () => peekCache<MarketplaceRankingItem[]>('marketplace:rankings') ?? []
+  );
+  const [trendingTags, setTrendingTags] = useState<string[]>(
+    () => peekCache<string[]>('marketplace:trending-tags') ?? []
+  );
+  const [splitBoxes, setSplitBoxes] = useState<SplitBoxGroupSummary[]>(
+    () => peekCache<SplitBoxGroupSummary[]>('marketplace:split-boxes') ?? []
+  );
 
   useEffect(() => {
     restoreHomeScroll();
   }, []);
 
   useEffect(() => {
-    getRankings().then(setRankings).catch(console.error);
-    getTrendingTags().then(setTrendingTags).catch(console.error);
+    fetchCached('marketplace:rankings', getRankings, 3 * 60 * 1000)
+      .then(setRankings)
+      .catch(console.error);
+    fetchCached('marketplace:trending-tags', getTrendingTags, 3 * 60 * 1000)
+      .then(setTrendingTags)
+      .catch(console.error);
   }, []);
 
   useEffect(() => {
     if (mode !== 'unbox') return;
-    listSplitBoxes().then(setSplitBoxes).catch(() => setSplitBoxes([]));
+    fetchCached('marketplace:split-boxes', listSplitBoxes, 3 * 60 * 1000)
+      .then(setSplitBoxes)
+      .catch(() => setSplitBoxes([]));
   }, [mode]);
 
   const listingPool = useMemo(() => {

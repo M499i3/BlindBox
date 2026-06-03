@@ -1,36 +1,39 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CollectionTreeModal from '@/frontend/presentation/components/CollectionTreeModal';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import UserAvatar from '@/frontend/presentation/components/UserAvatar';
-import { getMyOrders } from '@/frontend/infrastructure/api/ordersApi';
 import { useProductCollection } from '@/frontend/presentation/hooks/useProductCollection';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
 import { useAuth } from '@/frontend/presentation/providers/AuthProvider';
 
+function formatStatCount(n: number | null): string {
+  if (n === null) return '—';
+  return String(n).padStart(2, '0');
+}
+
 export default function Profile() {
   const navigate = useNavigate();
-  const { avatarDataUrl, displayName, displayId, ratingAvg, ratingCount, transactionCount, listings, openWantModal } =
-    useAppState();
+  const {
+    avatarDataUrl,
+    displayName,
+    displayId,
+    ratingAvg,
+    ratingCount,
+    transactionCount,
+    listings,
+    purchaseCount,
+    sellCount,
+    openWantModal,
+  } = useAppState();
   const collection = useProductCollection();
   const { logout, user } = useAuth();
   const [activeModal, setActiveModal] = useState<null | 'collection'>(null);
-  const [purchaseCount, setPurchaseCount] = useState(0);
-  const [sellCount, setSellCount] = useState(0);
-
-  useEffect(() => {
-    Promise.all([getMyOrders('buyer'), getMyOrders('seller')])
-      .then(([buyerOrders, sellerOrders]) => {
-        setPurchaseCount(buyerOrders.length);
-        setSellCount(sellerOrders.length);
-      })
-      .catch(console.error);
-  }, []);
 
   const stats = [
     { label: '上架中', value: String(listings.length).padStart(2, '0'), to: '/profile/listings' },
-    { label: '購買數', value: String(purchaseCount).padStart(2, '0'), to: '/purchase-history' },
-    { label: '出售數', value: String(sellCount).padStart(2, '0'), to: '/profile/selling' },
+    { label: '購買數', value: formatStatCount(purchaseCount), to: '/purchase-history' },
+    { label: '出售數', value: formatStatCount(sellCount), to: '/profile/selling' },
   ];
 
   const menuItems = [

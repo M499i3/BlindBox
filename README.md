@@ -36,14 +36,22 @@ JWT_EXPIRE_DAYS=7
 
 ### 2. 資料庫初始化
 
+**首次或要整庫重置**（推薦）：
+
 ```bash
-npm run db:migrate      # Alembic → head（含 chats.buyer_id / seller_id 等）
-npm run db:seed:all     # 圖鑑 + 3 位測試使用者與 demo 資料
+npm run db:migrate       # 僅第一次或 schema 有變更時
+npm run db:reset:seed    # 清空 18 張表 → 圖鑑 JSON + 5 使用者全表種子
 ```
 
-亦可先在 Supabase SQL Editor 執行 [`scripts/schema.sql`](scripts/schema.sql)，再 `npm run db:stamp` 與 seed。
+**僅追加、不清空**（舊流程，可能與既有資料衝突）：
 
-**Demo 假資料**（`seed_dev_demo`）包含：`[demo]` 上架、購物車、訂單、2 間聊天室與訊息、通知、評價等；圖鑑來自 `frontend/data/popmart-hk-showcase.json`。
+```bash
+npm run db:seed:all      # 圖鑑 upsert + demo 標記資料
+```
+
+亦可先在 Supabase SQL Editor 執行 [`scripts/schema.sql`](scripts/schema.sql)，再 `npm run db:stamp` 與 `db:reset:seed`。
+
+圖鑑來自 `frontend/data/popmart-hk-showcase.json`（爬蟲 showcase）；其餘表由 `reset_and_seed_all.py` 寫入（含 **4 個拆盒團**、`split_box_groups` / `split_box_slots` 與對應 `group_buy` 上架）。
 
 ### 3. 啟動後端
 
@@ -79,19 +87,24 @@ npm run lint              # TypeScript 型別檢查
 
 npm run db:migrate        # alembic upgrade head
 npm run db:current        # 查看 migration 版本
-npm run db:seed           # 圖鑑 + user1@test.com
-npm run db:seed:demo      # 3 使用者 + 上架/訂單/聊天/通知 demo（需先 db:seed）
-npm run db:seed:all       # 上述兩者連跑
+npm run db:reset:seed     # 清空並植入全表種子（推薦）
+npm run db:seed           # 僅圖鑑 upsert + user1
+npm run db:seed:demo      # 舊 demo 種子（需先 db:seed）
+npm run db:seed:all       # db:seed + db:seed:demo
 npm run db:seed:dry       # 預覽圖鑑種子，不寫入
 ```
 
 ## 測試帳號（密碼皆 `password`）
 
+`db:reset:seed` 後可用 **5 位**使用者；每位至少 **4 筆上架**、**3 筆購物車**、**4 筆訂單**（買家）。
+
 | Email | 顯示名稱 | 建議用途 |
 |-------|----------|----------|
 | `user1@test.com` | Yu | 賣家、上架、與 user2 聊天 |
 | `user2@test.com` | Mina_Lab | 買家、購物車、多筆訂單 |
-| `user3@test.com` | 潮流收藏家_Ken | 次要交易、第二聊天室 |
+| `user3@test.com` | 潮流收藏家_Ken | 買賣兼修、團購主辦 |
+| `user4@test.com` | Luna_Collect | 收藏向、交換提案 |
+| `user5@test.com` | Alex_Trade | 交換與多筆訂單 |
 
 切換帳號：個人檔案 → **登出**，再以另一組 email 登入。
 

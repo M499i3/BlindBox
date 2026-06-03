@@ -2,6 +2,12 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import { getCatalogBrands, getCatalogSeries, getCatalogStyles } from '@/frontend/infrastructure/api/catalogApi';
+import { fetchCached } from '@/frontend/shared/utils/fetchCache';
+import {
+  CATALOG_BRANDS_KEY,
+  catalogSeriesKey,
+  catalogStylesKey,
+} from '@/frontend/shared/utils/catalogCacheKeys';
 import { createSplitBox } from '@/frontend/infrastructure/api/splitBoxApi';
 import type { BrandRow, SeriesRow, StyleRow } from '@/frontend/domain/entities/catalog';
 import ListingWizardSteps from '@/frontend/presentation/components/listing/ListingWizardSteps';
@@ -38,7 +44,7 @@ export default function CreateSplitBox({ embedded = false, onBack }: Props) {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    getCatalogBrands()
+    fetchCached(CATALOG_BRANDS_KEY, getCatalogBrands)
       .then((rows) => {
         if (!rows.length) return;
         setBrandOptions(rows);
@@ -52,7 +58,7 @@ export default function CreateSplitBox({ embedded = false, onBack }: Props) {
 
   useEffect(() => {
     if (!brandSlug) return;
-    getCatalogSeries(brandSlug)
+    fetchCached(catalogSeriesKey(brandSlug), () => getCatalogSeries(brandSlug))
       .then(setSeriesOptions)
       .catch(() => setSeriesOptions([]));
   }, [brandSlug]);
@@ -62,7 +68,9 @@ export default function CreateSplitBox({ embedded = false, onBack }: Props) {
       setStyles([]);
       return;
     }
-    getCatalogStyles(brandSlug, seriesSlug)
+    fetchCached(catalogStylesKey(brandSlug, seriesSlug), () =>
+      getCatalogStyles(brandSlug, seriesSlug)
+    )
       .then(setStyles)
       .catch(() => setStyles([]));
   }, [brandSlug, seriesSlug]);

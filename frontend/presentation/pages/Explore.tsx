@@ -8,11 +8,10 @@ import {
   deriveBrandLabel,
   useCatalogBrands,
   useCatalogProducts,
+  useCatalogSearch,
   useCatalogSeries,
 } from '@/frontend/presentation/hooks/useCatalog';
-import { getCatalogSearch } from '@/frontend/infrastructure/api/catalogApi';
-import type { CatalogSearchResult } from '@/frontend/domain/entities/catalog';
-import { buildMockCatalogSearch, isMockDataEnabled } from '@/frontend/lib/popmartShowcase';
+import { isMockDataEnabled } from '@/frontend/lib/popmartShowcase';
 
 export default function Explore() {
   const navigate = useNavigate();
@@ -24,10 +23,8 @@ export default function Explore() {
   const [draft, setDraft] = useState(activeQuery);
   const [selectedBrandSlug, setSelectedBrandSlug] = useState('');
   const [selectedIp, setSelectedIp] = useState<string>('');
-  const [searchResult, setSearchResult] = useState<CatalogSearchResult | null>(null);
-  const [searchLoading, setSearchLoading] = useState(false);
-
   const isSearching = activeQuery.length > 0;
+  const { result: searchResult, loading: searchLoading } = useCatalogSearch(activeQuery);
 
   const dbBrands = useCatalogBrands();
   const { products } = useCatalogProducts();
@@ -36,22 +33,6 @@ export default function Explore() {
   useEffect(() => {
     setDraft(activeQuery);
   }, [activeQuery]);
-
-  useEffect(() => {
-    if (!activeQuery) {
-      setSearchResult(null);
-      setSearchLoading(false);
-      return;
-    }
-    setSearchLoading(true);
-    const run = mock
-      ? Promise.resolve(buildMockCatalogSearch(activeQuery))
-      : getCatalogSearch(activeQuery);
-    run
-      .then(setSearchResult)
-      .catch(() => setSearchResult(buildMockCatalogSearch(activeQuery)))
-      .finally(() => setSearchLoading(false));
-  }, [activeQuery, mock]);
 
   const deriveSeriesName = (title: string) => {
     const cleaned = title
