@@ -48,9 +48,14 @@ function HierarchyCard({
       onClick={onClick}
       className="glass-card flex w-full items-center gap-3 rounded-2xl p-3 text-left shadow-[4px_4px_0_#111] active:bg-black/[0.02]"
     >
-      <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-neutral-100">
+      <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-neutral-100">
         {image ? (
-          <img src={image} alt="" className="h-full w-full object-cover" referrerPolicy="no-referrer" />
+          <img
+            src={image}
+            alt=""
+            className="h-full w-full object-contain p-1"
+            referrerPolicy="no-referrer"
+          />
         ) : null}
       </div>
       <div className="min-w-0 flex-1">

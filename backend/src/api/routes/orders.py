@@ -27,7 +27,7 @@ def create_order_route(
     user_id: str = Depends(get_current_user_id),
     conn: psycopg2.extensions.connection = Depends(get_db),
 ) -> OrderCreated:
-    return place_order(conn, user_id, body.listing_id)
+    return place_order(conn, user_id, body.listing_id, shipping_ui=body.shipping)
 
 
 @router.patch("/{order_id}/status", response_model=OrderCreated)

@@ -11,10 +11,12 @@ import {
   type ChatMessage,
 } from '@/frontend/infrastructure/api/chatsApi';
 import { createOrder } from '@/frontend/infrastructure/api/ordersApi';
+import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
 
 export default function ChatDetail() {
   const { id: chatId = '' } = useParams();
   const navigate = useNavigate();
+  const { addToCart, isInCart } = useAppState();
   const [ctx, setCtx] = useState<ChatContext | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(true);
@@ -66,6 +68,21 @@ export default function ChatDetail() {
     }
   };
 
+  const openListing = () => {
+    if (ctx?.listingId) navigate(`/listing/${ctx.listingId}`);
+  };
+
+  const openSplitGroup = () => {
+    if (ctx?.splitBoxGroupId) navigate(`/split-box/${ctx.splitBoxGroupId}`);
+  };
+
+  const handleAddToCart = () => {
+    if (!ctx?.listingId || isInCart(ctx.listingId)) return;
+    addToCart(ctx.listingId);
+  };
+
+  const inCart = ctx?.listingId ? isInCart(ctx.listingId) : false;
+  const tradeKind = ctx?.listingTradeKind ?? 'sell';
 
   return (
     <div className="flex h-full min-h-0 w-full min-w-0 max-w-full flex-col overflow-hidden">
@@ -80,40 +97,95 @@ export default function ChatDetail() {
       />
 
       <section className="shrink-0 px-container-margin pt-topbar-content pb-stack-md">
-        <div className="rounded-xl border-2 border-outline bg-white shadow-none p-3 flex items-center justify-between">
+        <button
+          type="button"
+          onClick={openListing}
+          disabled={!ctx?.listingId}
+          className="w-full rounded-xl border-2 border-outline bg-white shadow-none p-3 flex items-center justify-between text-left disabled:opacity-60"
+        >
           <div className="flex items-center gap-3 overflow-hidden min-w-0 flex-1">
             <div className="w-12 h-12 rounded-lg overflow-hidden bg-neutral-100 flex-shrink-0 border border-black/[0.08]">
-              {ctx?.listingImage && (
+              {ctx?.listingImage ? (
                 <img className="w-full h-full object-cover" src={ctx.listingImage} referrerPolicy="no-referrer" alt="" />
-              )}
+              ) : null}
             </div>
             <div className="flex flex-col overflow-hidden text-sm min-w-0">
               <span className="font-bold text-on-surface truncate">{ctx?.listingTitle ?? '商品'}</span>
-              {ctx?.statusLabel && (
+              {ctx?.statusLabel ? (
                 <span className="text-[10px] font-bold text-primary">{ctx.statusLabel}</span>
-              )}
+              ) : null}
             </div>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0 ml-2">
-            {ctx?.listingId && !ctx?.orderId && ctx?.status !== 'swapping' && (
-              <button
-                type="button"
-                disabled={ordering}
-                onClick={handleCreateOrder}
-                className="text-[10px] font-bold text-primary px-2 py-1 rounded-lg border border-primary/30"
+            {tradeKind === 'sell' && ctx?.listingId && !ctx?.orderId && ctx?.status !== 'swapping' ? (
+              <span
+                role="button"
+                tabIndex={0}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCreateOrder();
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleCreateOrder();
+                  }
+                }}
+                className={`text-[10px] font-bold text-primary px-2 py-1 rounded-lg border border-primary/30 ${
+                  ordering ? 'opacity-50' : ''
+                }`}
               >
                 {ordering ? '處理中…' : '下單'}
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={() => ctx?.listingId && navigate(`/listing/${ctx.listingId}`)}
-              className="doodle-press premium-gradient text-white px-4 py-2 rounded-full text-[10px] font-bold transition-transform whitespace-nowrap"
-            >
-              查看商品
-            </button>
+              </span>
+            ) : null}
+            {tradeKind === 'split' && ctx?.splitBoxGroupId ? (
+              <span
+                role="button"
+                tabIndex={0}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openSplitGroup();
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openSplitGroup();
+                  }
+                }}
+                className="text-[10px] font-bold text-primary px-2 py-1 rounded-lg border border-primary/30"
+              >
+                前往拆盒團
+              </span>
+            ) : null}
+            {tradeKind === 'swap' && ctx?.listingId ? (
+              <span
+                role="button"
+                tabIndex={0}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleAddToCart();
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleAddToCart();
+                  }
+                }}
+                className={`text-[10px] font-bold px-2 py-1 rounded-lg border ${
+                  inCart
+                    ? 'border-black/20 text-on-surface-variant'
+                    : 'border-primary/30 text-primary'
+                }`}
+              >
+                {inCart ? '已在購物車' : '加入購物車'}
+              </span>
+            ) : null}
+            <span className="material-symbols-outlined text-on-surface-variant text-lg">chevron_right</span>
           </div>
-        </div>
+        </button>
       </section>
 
       <main className="app-scroll min-h-0 flex-1 overflow-y-auto no-scrollbar px-container-margin pb-4 flex flex-col gap-6">
@@ -161,20 +233,16 @@ export default function ChatDetail() {
         )}
       </main>
 
-
-
-      
       <footer className="shrink-0 z-50 w-full min-w-0 border-t border-black/[0.08] bg-white/95 px-4 pb-8 pt-4 backdrop-blur-md">
-  <div className="mx-auto flex w-full min-w-0 max-w-full items-center gap-3 text-sm">
-    <button
-      type="button"
-      className="doodle-press w-10 h-10 flex items-center justify-center rounded-full bg-white border-2 border-outline text-on-surface-variant shadow-[2px_2px_0_#111] transition-transform"
-    >
-      <span className="material-symbols-outlined">add</span>
-    </button>
+        <div className="mx-auto flex w-full min-w-0 max-w-full items-center gap-3 text-sm">
+          <button
+            type="button"
+            className="doodle-press w-10 h-10 flex items-center justify-center rounded-full bg-white border-2 border-outline text-on-surface-variant shadow-[2px_2px_0_#111] transition-transform"
+          >
+            <span className="material-symbols-outlined">add</span>
+          </button>
           <div className="flex-1 relative group">
             <input
-              
               className="w-full bg-white border border-black/[0.08] rounded-2xl px-4 py-3 text-on-surface placeholder:text-on-surface-variant focus:ring-1 focus:ring-primary/40 transition-all"
               placeholder="輸入訊息..."
               type="text"
@@ -190,11 +258,9 @@ export default function ChatDetail() {
           </div>
           <button
             type="button"
-
             disabled={sending || !draft.trim()}
             onClick={handleSend}
             className="doodle-press w-10 h-10 flex items-center justify-center rounded-full premium-gradient text-white shadow-[2px_2px_0_#111] transition-transform disabled:opacity-50"
-
           >
             <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
               send

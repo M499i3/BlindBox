@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import CatalogFieldsSection from '@/frontend/presentation/components/listing/CatalogFieldsSection';
-import CatalogPickerSection from '@/frontend/presentation/components/listing/CatalogPickerSection';
 import ListingConditionPicker from '@/frontend/presentation/components/listing/ListingConditionPicker';
 import ListingPhotoUpload from '@/frontend/presentation/components/listing/ListingPhotoUpload';
 import ListingWizardSteps from '@/frontend/presentation/components/listing/ListingWizardSteps';
@@ -30,7 +29,7 @@ export default function AddListingSellWizard({ onBack }: Props) {
   const [quantity, setQuantity] = useState(1);
   const [description, setDescription] = useState('');
   const [allowBargain, setAllowBargain] = useState(false);
-  const [shipping, setShipping] = useState('7-11 店到店');
+  const [shippingMethods, setShippingMethods] = useState<string[]>(['7-11 店到店']);
   const [submitting, setSubmitting] = useState(false);
 
   const submit = async () => {
@@ -38,6 +37,10 @@ export default function AddListingSellWizard({ onBack }: Props) {
     const numericPrice = Number(price);
     if (!numericPrice || numericPrice <= 0) {
       alert('價格必須大於 0 元');
+      return;
+    }
+    if (!catalog.hasRequiredStyle) {
+      alert('請選擇款式');
       return;
     }
     try {
@@ -50,10 +53,11 @@ export default function AddListingSellWizard({ onBack }: Props) {
         quantity,
         description: description.trim() || '無補充說明',
         brand: catalog.brand,
-        series: catalog.series,
+        series: catalog.ip,
         condition,
         tradeMode: '我要賣',
-        shipping,
+        shipping: shippingMethods[0],
+        shippingMethods,
         allowSwap: false,
         allowBargain,
         image: uploadedImages[0] ?? '',
@@ -80,23 +84,37 @@ export default function AddListingSellWizard({ onBack }: Props) {
         <>
           <CatalogFieldsSection
             brand={catalog.brand}
-            series={catalog.series}
-            itemName={catalog.itemName}
+            ip={catalog.ip}
+            productLine={catalog.productLine}
+            catalogProductId={catalog.catalogProductId}
             brandOptions={catalog.brandOptions}
-            seriesOptions={catalog.seriesOptions}
+            ipOptions={catalog.ipOptions}
+            productLineOptions={catalog.productLineOptions}
             styleOptions={catalog.styleOptions}
+            productsLoading={catalog.productsLoading}
             onBrandChange={(name, slug) => {
               catalog.setBrand(name);
               catalog.setBrandSlug(slug);
             }}
-            onSeriesChange={(name, slug) => {
-              catalog.setSeries(name);
-              catalog.setSeriesSlug(slug);
+            onIpChange={(name, slug) => {
+              catalog.setIp(name);
+              catalog.setIpSlug(slug);
             }}
-            onItemNameChange={catalog.setItemName}
+            onProductLineChange={catalog.setProductLine}
+            onStyleChange={catalog.applyCatalogStyle}
           />
           <ListingConditionPicker value={condition} onChange={setCondition} />
-          <WizardNav onBack={onBack} onNext={() => setStep(2)} nextLabel="下一步" />
+          <WizardNav
+            onBack={onBack}
+            onNext={() => {
+              if (!catalog.hasRequiredStyle) {
+                alert('請選擇款式');
+                return;
+              }
+              setStep(2);
+            }}
+            nextLabel="下一步"
+          />
         </>
       ) : null}
 
@@ -106,12 +124,6 @@ export default function AddListingSellWizard({ onBack }: Props) {
             images={catalog.images}
             onUpload={catalog.onUploadImage}
             onRemove={catalog.removeImage}
-          />
-          <CatalogPickerSection
-            query={catalog.query}
-            onQueryChange={catalog.setQuery}
-            styles={catalog.filteredStyles}
-            onSelect={catalog.applyCatalogStyle}
           />
           <section className="space-y-5 rounded-3xl border-2 border-black bg-neutral-50 p-5">
             <p className={LISTING_SECTION}>貼文內容</p>
@@ -142,7 +154,17 @@ export default function AddListingSellWizard({ onBack }: Props) {
               />
             </div>
           </section>
-          <WizardNav onBack={() => setStep(1)} onNext={() => setStep(3)} nextLabel="下一步" />
+          <WizardNav
+            onBack={() => setStep(1)}
+            onNext={() => {
+              if (!catalog.images.length) {
+                alert('請使用推薦圖或上傳至少一張照片');
+                return;
+              }
+              setStep(3);
+            }}
+            nextLabel="下一步"
+          />
         </>
       ) : null}
 
@@ -204,7 +226,7 @@ export default function AddListingSellWizard({ onBack }: Props) {
               </button>
             </div>
           </section>
-          <ShippingPicker value={shipping} onChange={setShipping} />
+          <ShippingPicker value={shippingMethods} onChange={setShippingMethods} />
           <WizardNav
             onBack={() => setStep(2)}
             onNext={submit}

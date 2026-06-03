@@ -11,6 +11,7 @@ export type ChatInboxItem = {
   unreadCount: number;
   listingImage: string;
   listingTitle: string;
+  listingTradeKind: 'sell' | 'split' | 'swap';
   online: boolean;
 };
 
@@ -20,6 +21,8 @@ export type ChatContext = {
   listingTitle: string;
   listingId: string | null;
   listingImage: string;
+  listingTradeKind: 'sell' | 'split' | 'swap';
+  splitBoxGroupId: string | null;
   status: string;
   statusLabel: string;
   orderId: string | null;
@@ -55,6 +58,8 @@ type ApiChatContext = {
   listing_title: string;
   listing_id: string | null;
   listing_image: string;
+  listing_trade_kind: string;
+  split_box_group_id: string | null;
   status: string;
   status_label: string;
   order_id: string | null;
@@ -82,6 +87,7 @@ function inboxToFrontend(c: ApiChatInbox): ChatInboxItem {
     unreadCount: c.unread_count,
     listingImage: c.listing_image,
     listingTitle: c.listing_title,
+    listingTradeKind: (c.listing_trade_kind as ChatInboxItem['listingTradeKind']) || 'sell',
     online: c.online,
   };
 }
@@ -93,6 +99,8 @@ function contextToFrontend(c: ApiChatContext): ChatContext {
     listingTitle: c.listing_title,
     listingId: c.listing_id,
     listingImage: c.listing_image,
+    listingTradeKind: (c.listing_trade_kind as ChatContext['listingTradeKind']) || 'sell',
+    splitBoxGroupId: c.split_box_group_id ?? null,
     status: c.status,
     statusLabel: c.status_label,
     orderId: c.order_id,

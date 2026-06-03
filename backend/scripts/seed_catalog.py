@@ -13,6 +13,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -28,10 +29,25 @@ from catalog_seed_lib import (  # noqa: E402
     build_seed_products,
     load_showcase,
 )
+from marketplace_purge_lib import purge_catalog_and_marketplace  # noqa: E402
 
 DEFAULT_JSON = REPO_ROOT / "frontend" / "data" / "popmart-hk-showcase.json"
 KOCA_JSON = REPO_ROOT / "frontend" / "data" / "koca-popmart-showcase.json"
+IP_IMAGES_JSON = REPO_ROOT / "frontend" / "data" / "popmart-hk-ip-images.json"
 DEV_USER_EMAIL = "user1@test.com"
+
+
+def load_ip_cover_by_slug() -> dict[str, str]:
+    if not IP_IMAGES_JSON.is_file():
+        return {}
+    data = json.loads(IP_IMAGES_JSON.read_text(encoding="utf-8"))
+    out: dict[str, str] = {}
+    for ip in data.get("ips", []):
+        slug = str(ip.get("slug") or "").strip()
+        image = str(ip.get("image") or "").strip()
+        if slug and image:
+            out[slug] = image
+    return out
 DEV_USER_NAME = "Yu"
 
 
@@ -166,14 +182,18 @@ def run_seed(
     if not products:
         raise SystemExit(f"找不到商品資料：{json_path}")
 
+    ip_covers = load_ip_cover_by_slug()
     brand_logos: dict[str, str | None] = {}
     series_covers: dict[tuple[str, str], str | None] = {}
     for p in products:
         if p.brand_slug not in brand_logos and p.image_url:
             brand_logos[p.brand_slug] = p.image_url
         key = (p.brand_slug, p.series_slug)
-        if key not in series_covers and p.image_url:
-            series_covers[key] = p.image_url
+        if key not in series_covers:
+            series_covers[key] = ip_covers.get(p.series_slug) or p.image_url
+    brand_logos["pop-mart"] = (
+        "https://www.rosedalecenter.com/media/v1/595/2024/12/POP-MART-LOGO.png"
+    )
 
     brands_meta: dict[str, tuple[str, str]] = {}
     series_meta: dict[tuple[str, str], tuple[str, str, str]] = {}
@@ -189,6 +209,7 @@ def run_seed(
     print(
         f"將匯入 {len(products)} 筆商品、"
         f"{len(brands_meta)} 個品牌、{len(series_meta)} 個系列"
+        + (f"（{len(ip_covers)} 個 IP 官圖）" if ip_covers else "")
     )
 
     if dry_run:
@@ -208,6 +229,9 @@ def run_seed(
     try:
         with conn:
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                if getattr(run_seed, "_replace_catalog", False):
+                    purge_catalog_and_marketplace(cur)
+
                 brand_ids: dict[str, str] = {}
                 for slug, (_, name) in brands_meta.items():
                     brand_ids[slug] = upsert_brand(
@@ -267,12 +291,18 @@ def main() -> None:
         action="store_true",
         help="不建立開發用使用者 (Yu)",
     )
+    parser.add_argument(
+        "--replace",
+        action="store_true",
+        help="先刪除圖鑑與市集資料（保留 users），再匯入",
+    )
     args = parser.parse_args()
 
     json_path = KOCA_JSON if args.koca else args.json
     if not json_path.is_file():
         raise SystemExit(f"找不到 JSON：{json_path}")
 
+    run_seed._replace_catalog = args.replace  # type: ignore[attr-defined]
     run_seed(
         json_path,
         dry_run=args.dry_run,

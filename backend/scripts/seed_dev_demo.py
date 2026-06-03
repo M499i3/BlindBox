@@ -18,19 +18,20 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 BACKEND_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = BACKEND_ROOT.parent
 SCRIPTS_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPTS_DIR))
 
 from auth_util import hash_password  # noqa: E402
 from demo_seed_lib import (  # noqa: E402
-    CHAT_SPECS,
-    COLLECTION_SPECS,
+    CHAT_SPECS as LEGACY_CHAT_SPECS,
+    COLLECTION_SPECS as LEGACY_COLLECTION_SPECS,
     DEMO_MARKER,
-    DEMO_USERS,
-    LISTING_SPECS,
+    DEMO_USERS as LEGACY_DEMO_USERS,
+    LISTING_SPECS as LEGACY_LISTING_SPECS,
     MESSAGE_SPECS,
     NOTIFICATION_SPECS,
-    ORDER_STATUS_SPECS,
+    ORDER_STATUS_SPECS as LEGACY_ORDER_STATUS_SPECS,
 )
 
 
@@ -45,10 +46,13 @@ def _now() -> datetime:
     return datetime.now(timezone.utc)
 
 
-def upsert_users(cur) -> dict[str, str]:
+def upsert_users(
+    cur, demo_users: list[tuple[str, str]] | None = None
+) -> dict[str, str]:
     ids: dict[str, str] = {}
     pw = hash_password()
-    for email, name in DEMO_USERS:
+    users = demo_users or LEGACY_DEMO_USERS
+    for email, name in users:
         cur.execute(
             """
             INSERT INTO users (display_name, email, password_hash)
@@ -162,10 +166,12 @@ def fetch_catalog(cur, external_id: str) -> dict | None:
     return dict(row) if row else None
 
 
-def seed_listings(cur, user_ids: dict[str, str]) -> dict[str, str]:
+def seed_listings(
+    cur, user_ids: dict[str, str], listing_specs: list[tuple[str, str, str, str, bool, int]]
+) -> dict[str, str]:
     """Returns map external_id -> listing_id for seller's listing."""
     listing_by_ext: dict[str, str] = {}
-    for seller_email, ext_id, trade_mode, condition, allow_swap, price_cents in LISTING_SPECS:
+    for seller_email, ext_id, trade_mode, condition, allow_swap, price_cents in listing_specs:
         cat = fetch_catalog(cur, ext_id)
         if not cat:
             print(f"⚠️  略過 listing：找不到 catalog external_id={ext_id}")
@@ -230,12 +236,16 @@ def resolve_listing(
     return listing_map.get(f"{seller_email}:{ext_id}") or listing_map.get(ext_id)
 
 
-def seed_cart(cur, user_ids: dict[str, str], listing_map: dict[str, str]) -> None:
-    buyer = user_ids["user2@test.com"]
-    for seller_email, ext_id in [
-        ("user1@test.com", "2084"),
-        ("user3@test.com", "2067"),
-    ]:
+def seed_cart(
+    cur,
+    user_ids: dict[str, str],
+    listing_map: dict[str, str],
+    cart_specs: list[tuple[str, str, str]],
+) -> None:
+    for buyer_email, seller_email, ext_id in cart_specs:
+        buyer = user_ids.get(buyer_email)
+        if not buyer:
+            continue
         lid = resolve_listing(listing_map, seller_email, ext_id)
         if not lid:
             continue
@@ -250,11 +260,14 @@ def seed_cart(cur, user_ids: dict[str, str], listing_map: dict[str, str]) -> Non
 
 
 def seed_orders(
-    cur, user_ids: dict[str, str], listing_map: dict[str, str]
+    cur,
+    user_ids: dict[str, str],
+    listing_map: dict[str, str],
+    order_specs: list[tuple[str, str, str, str]],
 ) -> list[str]:
     completed_ids: list[str] = []
     base = _now()
-    for i, (buyer_email, seller_email, ext_id, status) in enumerate(ORDER_STATUS_SPECS):
+    for i, (buyer_email, seller_email, ext_id, status) in enumerate(order_specs):
         lid = resolve_listing(listing_map, seller_email, ext_id)
         if not lid:
             continue
@@ -302,11 +315,14 @@ def seed_orders(
 
 
 def seed_chats_and_messages(
-    cur, user_ids: dict[str, str], listing_map: dict[str, str]
+    cur,
+    user_ids: dict[str, str],
+    listing_map: dict[str, str],
+    chat_specs: list[tuple[str, str, str, str, str]],
 ) -> None:
     base = _now()
     chat_ids: list[str] = []
-    for p1_email, p2_email, seller_email, ext_id, chat_status in CHAT_SPECS:
+    for p1_email, p2_email, seller_email, ext_id, chat_status in chat_specs:
         lid = resolve_listing(listing_map, seller_email, ext_id)
         if not lid:
             continue
@@ -372,8 +388,10 @@ def seed_notifications(cur, user_ids: dict[str, str]) -> None:
         )
 
 
-def seed_collections(cur, user_ids: dict[str, str]) -> None:
-    for email, ext_id, ctype in COLLECTION_SPECS:
+def seed_collections(
+    cur, user_ids: dict[str, str], collection_specs: list[tuple[str, str, str]]
+) -> None:
+    for email, ext_id, ctype in collection_specs:
         cat = fetch_catalog(cur, ext_id)
         if not cat:
             continue
@@ -414,7 +432,30 @@ def seed_ratings(cur, user_ids: dict[str, str], completed_order_ids: list[str]) 
         )
 
 
-def run_seed(*, dry_run: bool) -> None:
+def run_seed(
+    *,
+    dry_run: bool,
+    koca_bundle: dict | None = None,
+) -> None:
+    if koca_bundle:
+        from koca_demo_lib import DEMO_USERS
+
+        demo_users = DEMO_USERS
+        listing_specs = koca_bundle["listing_specs"]
+        order_specs = koca_bundle["order_specs"]
+        cart_specs = koca_bundle["cart_specs"]
+        chat_specs = koca_bundle["chat_specs"]
+        collection_specs = koca_bundle["collection_specs"]
+    else:
+        demo_users = LEGACY_DEMO_USERS
+        listing_specs = LEGACY_LISTING_SPECS
+        order_specs = LEGACY_ORDER_STATUS_SPECS
+        cart_specs = [
+            ("user2@test.com", "user1@test.com", "2084"),
+            ("user2@test.com", "user3@test.com", "2067"),
+        ]
+        chat_specs = LEGACY_CHAT_SPECS
+        collection_specs = LEGACY_COLLECTION_SPECS
     try:
         import psycopg2
         from psycopg2.extras import RealDictCursor
@@ -433,19 +474,21 @@ def run_seed(*, dry_run: bool) -> None:
                 if (cur.fetchone() or {}).get("n", 0) == 0:
                     raise SystemExit("catalog_products 為空，請先執行 npm run db:seed")
 
-                user_ids = upsert_users(cur)
-                purge_demo(cur, user_ids)
-                listing_map = seed_listings(cur, user_ids)
-                seed_cart(cur, user_ids, listing_map)
-                completed = seed_orders(cur, user_ids, listing_map)
-                seed_chats_and_messages(cur, user_ids, listing_map)
+                user_ids = upsert_users(cur, demo_users)
+                if not koca_bundle:
+                    purge_demo(cur, user_ids)
+                listing_map = seed_listings(cur, user_ids, listing_specs)
+                print(f"   上架 {len(listing_specs)} 筆（含 [demo] 標記）")
+                seed_cart(cur, user_ids, listing_map, cart_specs)
+                completed = seed_orders(cur, user_ids, listing_map, order_specs)
+                seed_chats_and_messages(cur, user_ids, listing_map, chat_specs)
                 seed_notifications(cur, user_ids)
-                seed_collections(cur, user_ids)
+                seed_collections(cur, user_ids, collection_specs)
                 seed_ratings(cur, user_ids, completed)
 
         print("✅ demo seed 完成")
         print("   測試帳號（密碼皆為 password）：")
-        for email, name in DEMO_USERS:
+        for email, name in demo_users:
             print(f"   - {email} ({name}) → {user_ids[email]}")
         print(f"   建議 .env：VITE_DEV_USER_ID={user_ids['user1@test.com']}")
     finally:
@@ -455,8 +498,21 @@ def run_seed(*, dry_run: bool) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description="BlindBox dev demo seed")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument(
+        "--koca",
+        action="store_true",
+        help="使用 KOCA 圖鑑產生 200 筆 demo 上架（需先 db:seed:koca）",
+    )
     args = parser.parse_args()
-    run_seed(dry_run=args.dry_run)
+    koca_bundle = None
+    if args.koca:
+        from koca_demo_lib import build_koca_demo_bundle
+
+        koca_json = REPO_ROOT / "frontend" / "data" / "koca-popmart-showcase.json"
+        if not koca_json.is_file():
+            raise SystemExit(f"找不到 {koca_json}")
+        koca_bundle = build_koca_demo_bundle(koca_json)
+    run_seed(dry_run=args.dry_run, koca_bundle=koca_bundle)
 
 
 if __name__ == "__main__":

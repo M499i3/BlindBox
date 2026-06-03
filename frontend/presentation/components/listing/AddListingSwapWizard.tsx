@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import CatalogFieldsSection from '@/frontend/presentation/components/listing/CatalogFieldsSection';
-import CatalogPickerSection from '@/frontend/presentation/components/listing/CatalogPickerSection';
 import ListingConditionPicker from '@/frontend/presentation/components/listing/ListingConditionPicker';
 import ListingPhotoUpload from '@/frontend/presentation/components/listing/ListingPhotoUpload';
 import ListingWizardSteps from '@/frontend/presentation/components/listing/ListingWizardSteps';
@@ -28,13 +27,17 @@ export default function AddListingSwapWizard({ onBack }: Props) {
   const [condition, setCondition] = useState('全新未拆');
   const [idealSwap, setIdealSwap] = useState('');
   const [description, setDescription] = useState('');
-  const [shipping, setShipping] = useState('7-11 店到店');
+  const [shippingMethods, setShippingMethods] = useState<string[]>(['7-11 店到店']);
   const [submitting, setSubmitting] = useState(false);
 
   const submit = async () => {
     if (submitting) return;
+    if (!catalog.hasRequiredStyle) {
+      alert('請選擇款式');
+      return;
+    }
     if (!catalog.images.length) {
-      alert('請至少上傳一張照片');
+      alert('請使用推薦圖或上傳至少一張照片');
       return;
     }
     try {
@@ -52,10 +55,11 @@ export default function AddListingSwapWizard({ onBack }: Props) {
         quantity: 1,
         description: body,
         brand: catalog.brand,
-        series: catalog.series,
+        series: catalog.ip,
         condition,
         tradeMode: '我想換',
-        shipping,
+        shipping: shippingMethods[0],
+        shippingMethods,
         allowSwap: true,
         allowBargain: false,
         image: uploadedImages[0] ?? '',
@@ -82,22 +86,27 @@ export default function AddListingSwapWizard({ onBack }: Props) {
         <>
           <CatalogFieldsSection
             brand={catalog.brand}
-            series={catalog.series}
-            itemName={catalog.itemName}
+            ip={catalog.ip}
+            productLine={catalog.productLine}
+            catalogProductId={catalog.catalogProductId}
             brandOptions={catalog.brandOptions}
-            seriesOptions={catalog.seriesOptions}
+            ipOptions={catalog.ipOptions}
+            productLineOptions={catalog.productLineOptions}
             styleOptions={catalog.styleOptions}
+            productsLoading={catalog.productsLoading}
             onBrandChange={(name, slug) => {
               catalog.setBrand(name);
               catalog.setBrandSlug(slug);
             }}
-            onSeriesChange={(name, slug) => {
-              catalog.setSeries(name);
-              catalog.setSeriesSlug(slug);
+            onIpChange={(name, slug) => {
+              catalog.setIp(name);
+              catalog.setIpSlug(slug);
             }}
-            onItemNameChange={(name) => {
-              catalog.setItemName(name);
-              if (!catalog.title) catalog.setTitle(name ? `想換 ${name}` : '');
+            onProductLineChange={catalog.setProductLine}
+            onStyleChange={(id) => {
+              catalog.applyCatalogStyle(id);
+              const style = catalog.styleOptions.find((s) => s.id === id);
+              if (style && !catalog.title) catalog.setTitle(`想換 ${style.name}`);
             }}
           />
           <ListingConditionPicker value={condition} onChange={setCondition} />
@@ -106,13 +115,21 @@ export default function AddListingSwapWizard({ onBack }: Props) {
             onUpload={catalog.onUploadImage}
             onRemove={catalog.removeImage}
           />
-          <CatalogPickerSection
-            query={catalog.query}
-            onQueryChange={catalog.setQuery}
-            styles={catalog.filteredStyles}
-            onSelect={catalog.applyCatalogStyle}
+          <WizardNav
+            onBack={onBack}
+            onNext={() => {
+              if (!catalog.hasRequiredStyle) {
+                alert('請選擇款式');
+                return;
+              }
+              if (!catalog.images.length) {
+                alert('請使用推薦圖或上傳至少一張照片');
+                return;
+              }
+              setStep(2);
+            }}
+            nextLabel="下一步"
           />
-          <WizardNav onBack={onBack} onNext={() => setStep(2)} nextLabel="下一步" />
         </>
       ) : null}
 
@@ -172,7 +189,7 @@ export default function AddListingSwapWizard({ onBack }: Props) {
               交換貼文不顯示售價，買家需提出交換申請後由你審核。
             </p>
           </section>
-          <ShippingPicker value={shipping} onChange={setShipping} />
+          <ShippingPicker value={shippingMethods} onChange={setShippingMethods} />
           <WizardNav
             onBack={() => setStep(2)}
             onNext={submit}

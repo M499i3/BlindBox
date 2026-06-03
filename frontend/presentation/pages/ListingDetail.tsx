@@ -6,6 +6,7 @@ import SellerInfoModal from '@/frontend/presentation/components/SellerInfoModal'
 import SwapOfferSection from '@/frontend/presentation/components/SwapOfferSection';
 import { createChat } from '@/frontend/infrastructure/api/chatsApi';
 import { getListing } from '@/frontend/infrastructure/api/listingsApi';
+import { listingShippingOptions } from '@/frontend/shared/utils/listingShipping';
 import { getProfile, getUserProfileById } from '@/frontend/infrastructure/api/profileApi';
 import {
   getMySwapProposalForListing,
@@ -23,7 +24,12 @@ import {
   resolveListingImages,
 } from '@/frontend/shared/utils/listingImage';
 import { isOwnListing } from '@/frontend/shared/utils/listingOwnership';
-import { isSwapListing } from '@/frontend/shared/utils/tradeMode';
+import { getSplitBox } from '@/frontend/infrastructure/api/splitBoxApi';
+import {
+  SPLIT_BOX_STATUS_LABEL,
+  type SplitBoxGroupDetail,
+} from '@/frontend/domain/entities/splitBox';
+import { isSplitBoxListing, isSwapListing, listingTradeKind } from '@/frontend/shared/utils/tradeMode';
 import { cn } from '@/frontend/shared/utils/cn';
 
 export default function ListingDetail() {
@@ -40,6 +46,8 @@ export default function ListingDetail() {
   const [sellerProfileLoading, setSellerProfileLoading] = useState(false);
   const [myProposal, setMyProposal] = useState<SwapProposal | null>(null);
   const [incomingProposals, setIncomingProposals] = useState<SwapProposal[]>([]);
+  const [splitGroup, setSplitGroup] = useState<SplitBoxGroupDetail | null>(null);
+  const [splitGroupLoading, setSplitGroupLoading] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -71,7 +79,11 @@ export default function ListingDetail() {
   }, [id, listing?.id]);
 
   const isOwnListingPost = listing ? isOwnListing(listing, userId) : false;
-  const isSwapPost = listing ? isSwapListing(listing) : false;
+  const postKind = listing ? listingTradeKind(listing) : 'sell';
+  const isSwapPost = postKind === 'swap';
+  const isSplitPost = postKind === 'split';
+  const isSellPost = postKind === 'sell';
+  const splitGroupId = listing?.splitBoxGroupId ?? null;
   const canContactSwap = myProposal?.status === 'accepted';
 
   const sellerListingCount = useMemo(() => {
@@ -103,6 +115,28 @@ export default function ListingDetail() {
   useEffect(() => {
     void refreshSwapData();
   }, [refreshSwapData]);
+
+  useEffect(() => {
+    if (!isSplitPost || !splitGroupId) {
+      setSplitGroup(null);
+      return;
+    }
+    let cancelled = false;
+    setSplitGroupLoading(true);
+    getSplitBox(splitGroupId)
+      .then((group) => {
+        if (!cancelled) setSplitGroup(group);
+      })
+      .catch(() => {
+        if (!cancelled) setSplitGroup(null);
+      })
+      .finally(() => {
+        if (!cancelled) setSplitGroupLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [isSplitPost, splitGroupId]);
 
   useEffect(() => {
     if (!listing?.sellerId) {
@@ -152,6 +186,23 @@ export default function ListingDetail() {
 
   const contactBlockedBySwap = isSwapPost && !isOwnListingPost && !canContactSwap;
 
+  const shippingDisplay = listing
+    ? listingShippingOptions(listing).join('、')
+    : '';
+
+  const handleBuyNow = () => {
+    if (!listing) return;
+    navigate(`/checkout?listingId=${encodeURIComponent(listing.id)}`);
+  };
+
+  const handleClaimSlot = () => {
+    if (!listing || !splitGroupId) return;
+    const params = new URLSearchParams();
+    if (listing.splitBoxSlotId) params.set('slotId', listing.splitBoxSlotId);
+    params.set('listingId', listing.id);
+    navigate(`/split-box/${splitGroupId}/apply?${params.toString()}`);
+  };
+
   const handleContactSeller = async () => {
     if (!listing || isOwnListingPost || contactBlockedBySwap) return;
     setContacting(true);
@@ -187,13 +238,23 @@ export default function ListingDetail() {
   }
 
   const inCart = isInCart(listing.id);
+
   const contactLabel = isOwnListingPost
     ? '這是你的貼文'
     : contacting
       ? '開啟中…'
       : contactBlockedBySwap
         ? '需通過交換申請後才能聯絡'
-        : '聯絡賣家';
+        : isSplitPost
+          ? '聯絡買家'
+          : '聯絡賣家';
+
+  const cartButtonClass = inCart
+    ? 'bg-white border border-black/[0.12] text-on-surface'
+    : 'border-2 border-outline bg-white text-on-surface';
+
+  const contactButtonClass =
+    'w-full py-4 rounded-full border-2 border-outline bg-white text-sm font-bold text-on-surface shadow-[4px_4px_0_#111] transition-transform active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-50';
 
   return (
     <div className="animate-in fade-in duration-500 pb-28">
@@ -263,7 +324,7 @@ export default function ListingDetail() {
           <p className="text-sm text-on-surface"><span className="text-on-surface-variant">系列：</span>{listing.series}</p>
           <p className="text-sm text-on-surface"><span className="text-on-surface-variant">狀態：</span>{listing.condition}</p>
           <p className="text-sm text-on-surface"><span className="text-on-surface-variant">交易方式：</span>{listing.tradeMode}</p>
-          <p className="text-sm text-on-surface"><span className="text-on-surface-variant">出貨方式：</span>{listing.shipping}</p>
+          <p className="text-sm text-on-surface"><span className="text-on-surface-variant">出貨方式：</span>{shippingDisplay}</p>
           <p className="text-sm text-on-surface"><span className="text-on-surface-variant">允許議價：</span>{listing.allowBargain ? '是' : '否'}</p>
           <p className="text-sm text-on-surface"><span className="text-on-surface-variant">商品描述：</span>{listing.description}</p>
         </section>
@@ -279,22 +340,125 @@ export default function ListingDetail() {
           />
         ) : null}
 
-        <section className="rounded-2xl border-2 border-outline bg-white shadow-none p-5">
-          <h2 className="text-sm font-bold text-on-surface uppercase tracking-wider mb-3">賣家資訊</h2>
-          <button
-            type="button"
+        {isSplitPost && splitGroupId ? (
+          <section className="w-full min-w-0 rounded-2xl border-2 border-outline bg-white shadow-none overflow-hidden">
+            <div className="w-full border-b border-black/[0.06] px-5 py-3">
+              <h2 className="text-sm font-bold text-on-surface uppercase tracking-wider">所屬拆盒團</h2>
+              <p className="mt-1 text-xs text-on-surface-variant">
+                查看招募進度、其他款式認領狀況與團規則
+              </p>
+            </div>
+            {splitGroupLoading && !splitGroup ? (
+              <p className="w-full px-5 py-8 text-center text-sm text-on-surface-variant">載入拆盒團資訊…</p>
+            ) : (
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => navigate(`/split-box/${splitGroupId}`)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    navigate(`/split-box/${splitGroupId}`);
+                  }
+                }}
+                className="block w-full min-w-0 max-w-full cursor-pointer text-left transition-colors active:bg-black/[0.03]"
+              >
+                {splitGroup ? (
+                  <>
+                    <div className="flex w-full min-w-0 items-center gap-4 p-4">
+                      <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-neutral-100">
+                        {splitGroup.coverImage ? (
+                          <img
+                            src={splitGroup.coverImage}
+                            alt=""
+                            className="h-full w-full object-contain p-2"
+                            referrerPolicy="no-referrer"
+                          />
+                        ) : (
+                          <img src="/split-box.svg" alt="" className="h-full w-full object-contain p-2 opacity-70" />
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-secondary">
+                          {SPLIT_BOX_STATUS_LABEL[splitGroup.status] ?? splitGroup.status}
+                        </p>
+                        <p className="mt-1 text-base font-extrabold leading-snug text-on-surface line-clamp-2">
+                          {splitGroup.title}
+                        </p>
+                        <p className="mt-1 text-xs text-on-surface-variant">
+                          {[splitGroup.brand, splitGroup.series].filter(Boolean).join(' · ')}
+                        </p>
+                        <p className="mt-1 text-xs font-semibold text-on-surface">
+                          團主：{splitGroup.organizerName}
+                        </p>
+                      </div>
+                      <span className="material-symbols-outlined shrink-0 text-on-surface-variant">chevron_right</span>
+                    </div>
+                    <div className="w-full border-t border-black/10 px-5 pb-4 pt-3">
+                      <div className="mb-1.5 flex justify-between text-[10px] font-bold">
+                        <span className="text-on-surface-variant">認領進度</span>
+                        <span>
+                          {splitGroup.claimedCount} / {splitGroup.targetCount - splitGroup.reservedCount}
+                        </span>
+                      </div>
+                      <div className="h-2 w-full overflow-hidden rounded-full bg-neutral-100">
+                        <div
+                          className="h-full rounded-full bg-accent-sky transition-all"
+                          style={{
+                            width: `${Math.round(
+                              (splitGroup.claimedCount /
+                                Math.max(1, splitGroup.targetCount - splitGroup.reservedCount)) *
+                                100
+                            )}%`,
+                          }}
+                        />
+                      </div>
+                      <div className="mt-3 flex flex-wrap gap-3 text-xs text-on-surface-variant">
+                        <span>整盒 {splitGroup.totalPrice}</span>
+                        <span>每款 {splitGroup.pricePerSlot}</span>
+                        <span>{splitGroup.shipping}</span>
+                      </div>
+                      <p className="mt-3 text-xs font-bold text-primary">查看拆盒團動態與款式認領 →</p>
+                    </div>
+                  </>
+                ) : (
+                  <div className="w-full px-5 py-6 text-center">
+                    <p className="text-sm text-on-surface-variant">無法載入拆盒團資訊</p>
+                    <p className="mt-2 text-xs font-bold text-primary">仍要前往拆盒團頁面 →</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </section>
+        ) : null}
+
+        <section className="w-full min-w-0 rounded-2xl border-2 border-outline bg-white shadow-none overflow-hidden">
+          <div className="w-full px-5 pt-5">
+            <h2 className="text-sm font-bold text-on-surface uppercase tracking-wider">
+              {isSplitPost ? '團主資訊' : '賣家資訊'}
+            </h2>
+          </div>
+          <div
+            role="button"
+            tabIndex={0}
             onClick={() => setSellerModalOpen(true)}
-            className="flex w-full items-center gap-3 rounded-xl text-left transition-colors active:bg-black/[0.03]"
-            aria-label={`查看 ${listing.sellerName} 的賣家資訊`}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setSellerModalOpen(true);
+              }
+            }}
+            className="flex w-full min-w-0 max-w-full cursor-pointer items-center gap-3 px-5 pb-5 pt-3 text-left transition-colors active:bg-black/[0.03]"
+            aria-label={`查看 ${listing.sellerName} 的${isSplitPost ? '團主' : '賣家'}資訊`}
           >
             {sellerPreviewAvatar ? (
               <img
                 src={sellerPreviewAvatar}
                 alt=""
-                className="h-12 w-12 rounded-full border border-black/[0.1] object-cover"
+                className="h-12 w-12 shrink-0 rounded-full border border-black/[0.1] object-cover"
               />
             ) : (
-              <UserAvatar size="md" />
+              <UserAvatar size="md" className="shrink-0" />
             )}
             <div className="min-w-0 flex-1">
               <p className="text-sm font-bold text-on-surface">{listing.sellerName}</p>
@@ -303,7 +467,7 @@ export default function ListingDetail() {
               </p>
             </div>
             <span className="material-symbols-outlined shrink-0 text-on-surface-variant">chevron_right</span>
-          </button>
+          </div>
         </section>
 
         <SellerInfoModal
@@ -314,37 +478,100 @@ export default function ListingDetail() {
           fallbackName={listing.sellerName}
           listingCreatedAt={listing.createdAt}
           activeListingCount={sellerListingCount}
-          showContact={!isOwnListingPost && !contactBlockedBySwap}
+          onActiveListingsClick={
+            listing.sellerId && sellerListingCount > 0
+              ? () => {
+                  setSellerModalOpen(false);
+                  navigate(`/search?seller=${encodeURIComponent(listing.sellerId!)}`);
+                }
+              : undefined
+          }
+          showContact={!isOwnListingPost && !contactBlockedBySwap && !isSwapPost}
           onContact={handleContactSeller}
           contactDisabled={contacting || contactBlockedBySwap}
           contacting={contacting}
+          contactLabel={isSplitPost ? '聯絡買家' : '聯絡賣家'}
         />
 
         <div className="flex flex-col gap-3">
-          <button
-            type="button"
-            disabled={contacting || isOwnListingPost || contactBlockedBySwap}
-            onClick={handleContactSeller}
-            className="w-full py-4 rounded-full border-2 border-outline bg-white text-sm font-bold text-on-surface shadow-[4px_4px_0_#111] transition-transform active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-50"
-          >
-            {contactLabel}
-          </button>
-          {!isOwnListingPost && !isSwapPost && (
-          <button
-            type="button"
-            onClick={() => {
-              inCart ? removeFromCart(listing.id) : addToCart(listing.id);
-            }}
-            className={`w-full py-4 rounded-full text-sm font-bold ${
-              inCart
-                ? 'bg-white border border-black/[0.12] text-on-surface'
-                : 'premium-gradient text-white'
-            }`}
-          >
-            {inCart ? '已加入購物車（點我移除）' : '加入購物車'}
-          </button>
-          )}
+          {isOwnListingPost ? (
+            <button type="button" disabled className={contactButtonClass}>
+              這是你的貼文
+            </button>
+          ) : null}
+
+          {!isOwnListingPost && isSellPost ? (
+            <>
+              <button
+                type="button"
+                onClick={handleBuyNow}
+                className="w-full rounded-full premium-gradient py-4 text-sm font-bold text-white"
+              >
+                立即購買
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  inCart ? removeFromCart(listing.id) : addToCart(listing.id);
+                }}
+                className={`w-full py-4 rounded-full text-sm font-bold ${cartButtonClass}`}
+              >
+                {inCart ? '已加入購物車（點我移除）' : '加入購物車'}
+              </button>
+              <button
+                type="button"
+                disabled={contacting}
+                onClick={handleContactSeller}
+                className={contactButtonClass}
+              >
+                {contactLabel}
+              </button>
+            </>
+          ) : null}
+
+          {!isOwnListingPost && isSplitPost ? (
+            <>
+              <button
+                type="button"
+                onClick={handleClaimSlot}
+                disabled={!splitGroupId}
+                className="w-full rounded-full premium-gradient py-4 text-sm font-bold text-white disabled:opacity-50"
+              >
+                認領此款
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  inCart ? removeFromCart(listing.id) : addToCart(listing.id);
+                }}
+                className={`w-full py-4 rounded-full text-sm font-bold ${cartButtonClass}`}
+              >
+                {inCart ? '已加入購物車（點我移除）' : '加入購物車'}
+              </button>
+              <button
+                type="button"
+                disabled={contacting}
+                onClick={handleContactSeller}
+                className={contactButtonClass}
+              >
+                {contactLabel}
+              </button>
+            </>
+          ) : null}
+
+          {!isOwnListingPost && isSwapPost ? (
+            <button
+              type="button"
+              onClick={() => {
+                inCart ? removeFromCart(listing.id) : addToCart(listing.id);
+              }}
+              className={`w-full py-4 rounded-full text-sm font-bold ${cartButtonClass}`}
+            >
+              {inCart ? '已加入購物車（點我移除）' : '加入購物車'}
+            </button>
+          ) : null}
         </div>
+
       </main>
     </div>
   );

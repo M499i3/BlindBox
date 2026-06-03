@@ -30,8 +30,15 @@ export function buildBrandRow(products: CatalogProduct[], limit = 6): BrandRow[]
 
 let _cache: CatalogProduct[] | null = null;
 
-export function useCatalogProducts(opts?: { q?: string; brand?: string; series?: string }) {
+export function useCatalogProducts(opts?: {
+  q?: string;
+  brand?: string;
+  series?: string;
+  /** API mode: skip fetch when false (avoids loading full catalog). */
+  enabled?: boolean;
+}) {
   const mock = isMockDataEnabled();
+  const enabled = opts?.enabled !== false;
   const hasFilter = Boolean(opts?.q || opts?.brand || opts?.series);
   const mockProducts = useMemo(
     () => (mock ? filterMockProducts(opts) : []),
@@ -39,9 +46,14 @@ export function useCatalogProducts(opts?: { q?: string; brand?: string; series?:
   );
 
   const [products, setProducts] = useState<CatalogProduct[]>(mock ? mockProducts : _cache ?? []);
-  const [loading, setLoading] = useState(!mock && !_cache && !hasFilter);
+  const [loading, setLoading] = useState(!mock && enabled && !_cache && !hasFilter);
 
   useEffect(() => {
+    if (!enabled && !mock) {
+      setProducts([]);
+      setLoading(false);
+      return;
+    }
     if (mock) {
       setProducts(mockProducts);
       setLoading(false);
@@ -65,7 +77,7 @@ export function useCatalogProducts(opts?: { q?: string; brand?: string; series?:
       })
       .finally(() => setLoading(false));
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mock, mockProducts, opts?.q, opts?.brand, opts?.series, hasFilter]);
+  }, [mock, mockProducts, enabled, opts?.q, opts?.brand, opts?.series, hasFilter]);
 
   return { products, loading };
 }

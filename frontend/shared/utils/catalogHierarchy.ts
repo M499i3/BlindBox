@@ -93,6 +93,8 @@ function countCollected(productIds: string[], ownedSet: Set<string>) {
 export type BuildCatalogHierarchyOptions = {
   /** 僅保留至少有一件已收藏的節點；商品層只顯示已收藏盲盒 */
   onlyCollected?: boolean;
+  /** 品牌名稱 → logo（來自 DB brands.logo_url 或前端覆寫） */
+  brandImagesByName?: Record<string, string>;
 };
 
 function filterCollectedHierarchy(hierarchy: CatalogHierarchy): CatalogHierarchy {
@@ -182,12 +184,13 @@ export function buildCatalogHierarchy(
     productMap.get(sk)!.push(leaf);
   }
 
+  const brandLogos = options?.brandImagesByName ?? {};
   const brands: BrandNode[] = Array.from(brandMap.entries())
     .map(([name, meta]) => ({
       kind: 'brand' as const,
       id: name,
       name,
-      image: meta.image,
+      image: brandLogos[name] || meta.image,
       progress: progress(countCollected(meta.productIds, ownedSet), meta.productIds.length),
     }))
     .sort((a, b) => a.name.localeCompare(b.name, 'zh-Hant'));
