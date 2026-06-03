@@ -11,7 +11,7 @@ import { useProductCollection } from '@/frontend/presentation/hooks/useProductCo
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
 import { getRankings, getTrendingTags } from '@/frontend/infrastructure/api/marketplaceApi';
 import { listSplitBoxes } from '@/frontend/infrastructure/api/splitBoxApi';
-import { fetchCached, peekCache } from '@/frontend/shared/utils/fetchCache';
+import { fetchCached, peekCache, refetchCached, useOnCacheInvalidate } from '@/frontend/shared/utils/fetchCache';
 import type { SplitBoxGroupSummary } from '@/frontend/domain/entities/splitBox';
 import { SPLIT_BOX_STATUS_LABEL } from '@/frontend/domain/entities/splitBox';
 import type { MarketplaceRankingItem } from '@/frontend/infrastructure/api/marketplaceApi';
@@ -101,21 +101,37 @@ export default function Marketplace() {
     restoreHomeScroll();
   }, []);
 
-  useEffect(() => {
+  const loadMarketplaceMeta = useCallback(() => {
     fetchCached('marketplace:rankings', getRankings, 3 * 60 * 1000)
       .then(setRankings)
       .catch(console.error);
     fetchCached('marketplace:trending-tags', getTrendingTags, 3 * 60 * 1000)
       .then(setTrendingTags)
       .catch(console.error);
-  }, []);
+    if (mode === 'unbox') {
+      fetchCached('marketplace:split-boxes', listSplitBoxes, 3 * 60 * 1000)
+        .then(setSplitBoxes)
+        .catch(() => setSplitBoxes([]));
+    }
+  }, [mode]);
 
   useEffect(() => {
-    if (mode !== 'unbox') return;
-    fetchCached('marketplace:split-boxes', listSplitBoxes, 3 * 60 * 1000)
-      .then(setSplitBoxes)
-      .catch(() => setSplitBoxes([]));
-  }, [mode]);
+    loadMarketplaceMeta();
+  }, [loadMarketplaceMeta]);
+
+  useOnCacheInvalidate(() => {
+    refetchCached('marketplace:rankings', getRankings)
+      .then(setRankings)
+      .catch(console.error);
+    refetchCached('marketplace:trending-tags', getTrendingTags)
+      .then(setTrendingTags)
+      .catch(console.error);
+    if (mode === 'unbox') {
+      refetchCached('marketplace:split-boxes', listSplitBoxes)
+        .then(setSplitBoxes)
+        .catch(() => setSplitBoxes([]));
+    }
+  }, 'marketplace:');
 
   const listingPool = useMemo(() => {
     const map = new Map<string, Listing>();

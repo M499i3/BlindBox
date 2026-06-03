@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import { getCatalogBrands, getCatalogSeries, getCatalogStyles } from '@/frontend/infrastructure/api/catalogApi';
 import { fetchCached } from '@/frontend/shared/utils/fetchCache';
+import { invalidateMarketplaceCache } from '@/frontend/shared/utils/cacheInvalidation';
 import {
   CATALOG_BRANDS_KEY,
   catalogSeriesKey,
@@ -131,6 +132,7 @@ export default function CreateSplitBox({ embedded = false, onBack }: Props) {
           reservedByHost: reservedIds.has(s.id),
         })),
       });
+      invalidateMarketplaceCache();
       navigate(`/split-box/${group.id}`);
     } catch (e) {
       setError(e instanceof Error ? e.message : '發起失敗');

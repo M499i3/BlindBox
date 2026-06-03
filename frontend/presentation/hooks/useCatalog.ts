@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { BrandRow, CatalogProduct, CatalogSearchResult } from '@/frontend/domain/entities/catalog';
 import {
   getCatalogBrands,
@@ -17,7 +17,12 @@ import {
   isMockDataEnabled,
   buildMockCatalogSearch,
 } from '@/frontend/lib/popmartShowcase';
-import { fetchCached, peekCache, useCachedFetch } from '@/frontend/shared/utils/fetchCache';
+import {
+  fetchCached,
+  peekCache,
+  useCacheGeneration,
+  useCachedFetch,
+} from '@/frontend/shared/utils/fetchCache';
 import {
   CATALOG_BRANDS_KEY,
   catalogProductKey,
@@ -80,6 +85,8 @@ export function useCatalogProduct(id: string | undefined) {
     mock ? mockProduct : fromList ?? null
   );
   const [loading, setLoading] = useState(!mock && !!id && !fromList);
+  const cacheGeneration = useCacheGeneration();
+  const prevGenerationRef = useRef(cacheGeneration);
 
   useEffect(() => {
     if (!id) return;
@@ -89,30 +96,44 @@ export function useCatalogProduct(id: string | undefined) {
       return;
     }
 
+    const force = cacheGeneration !== prevGenerationRef.current;
+    prevGenerationRef.current = cacheGeneration;
+
     const cachedList = peekCache<CatalogProduct[]>(catalogProductsKey());
     const inList = cachedList?.find((p) => p.id === id);
-    if (inList) {
-      setProduct(inList);
-      setLoading(false);
-      return;
-    }
-
     const cachedOne = peekCache<CatalogProduct>(catalogProductKey(id));
-    if (cachedOne) {
-      setProduct(cachedOne);
+
+    if (!force) {
+      if (inList) {
+        setProduct(inList);
+        setLoading(false);
+        return;
+      }
+      if (cachedOne) {
+        setProduct(cachedOne);
+        setLoading(false);
+        return;
+      }
+    } else if (inList || cachedOne) {
+      setProduct(inList ?? cachedOne ?? null);
       setLoading(false);
-      return;
+    } else {
+      setLoading(true);
     }
 
-    setLoading(true);
-    fetchCached(catalogProductKey(id), () => getCatalogProductById(id))
+    const fetcher = () => getCatalogProductById(id);
+    const run = force
+      ? fetchCached(catalogProductKey(id), fetcher, { force: true, staleMs: 0 })
+      : fetchCached(catalogProductKey(id), fetcher);
+
+    run
       .then((p) => {
         mergeProductIntoCatalogCache(p);
         setProduct(p);
       })
       .catch(() => setProduct(getProductById(id) ?? null))
       .finally(() => setLoading(false));
-  }, [mock, id]);
+  }, [mock, id, cacheGeneration]);
 
   return { product, loading };
 }

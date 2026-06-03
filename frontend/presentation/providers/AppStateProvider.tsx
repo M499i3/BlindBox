@@ -18,6 +18,7 @@ import {
   getMyListings,
 } from '@/frontend/infrastructure/api/listingsApi';
 import { getMyOrders } from '@/frontend/infrastructure/api/ordersApi';
+import { invalidateCachesAfterListingPublish } from '@/frontend/shared/utils/cacheInvalidation';
 import {
   addCollectionItem,
   getCollections,
@@ -46,6 +47,8 @@ type AppStateValue = {
   purchaseCount: number | null;
   sellCount: number | null;
   refreshOrderCounts: () => Promise<void>;
+  /** 強制從 API 重載貼文、購物車、個人資料等 */
+  refreshUserData: () => Promise<void>;
   setAvatarDataUrl: (v: string | null) => void | Promise<void>;
   listings: Listing[];
   posts: Listing[];
@@ -319,9 +322,11 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       const listing = await apiCreateListing(input);
       setListings((prev) => [listing, ...prev]);
       setPosts((prev) => [listing, ...prev]);
+      invalidateCachesAfterListingPublish();
+      void loadUserData();
       return listing.id;
     },
-    [mock, displayName]
+    [mock, displayName, loadUserData]
   );
 
   const addToCart = useCallback(
@@ -500,6 +505,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       purchaseCount,
       sellCount,
       refreshOrderCounts,
+      refreshUserData: loadUserData,
       setAvatarDataUrl,
       listings,
       posts: allPosts,
@@ -540,6 +546,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       purchaseCount,
       sellCount,
       refreshOrderCounts,
+      loadUserData,
       setAvatarDataUrl,
       listings,
       allPosts,
