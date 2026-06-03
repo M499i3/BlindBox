@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { navigateWithReturn } from '@/frontend/shared/utils/routeNavigation';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import UserAvatar from '@/frontend/presentation/components/UserAvatar';
 import SellerInfoModal from '@/frontend/presentation/components/SellerInfoModal';
@@ -34,6 +35,7 @@ import { cn } from '@/frontend/shared/utils/cn';
 
 export default function ListingDetail() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { id = '' } = useParams();
   const { addToCart, removeFromCart, isInCart, avatarDataUrl, userId, posts, listings, getPostById } = useAppState();
   const [listing, setListing] = useState<Listing | undefined | null>(null);
@@ -200,7 +202,11 @@ export default function ListingDetail() {
     const params = new URLSearchParams();
     if (listing.splitBoxSlotId) params.set('slotId', listing.splitBoxSlotId);
     params.set('listingId', listing.id);
-    navigate(`/split-box/${splitGroupId}/apply?${params.toString()}`);
+    navigateWithReturn(
+      navigate,
+      `/split-box/${splitGroupId}/apply?${params.toString()}`,
+      location
+    );
   };
 
   const handleContactSeller = async () => {
@@ -354,11 +360,11 @@ export default function ListingDetail() {
               <div
                 role="button"
                 tabIndex={0}
-                onClick={() => navigate(`/split-box/${splitGroupId}`)}
+                onClick={() => navigateWithReturn(navigate, `/split-box/${splitGroupId}`, location)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    navigate(`/split-box/${splitGroupId}`);
+                    navigateWithReturn(navigate, `/split-box/${splitGroupId}`, location);
                   }
                 }}
                 className="block w-full min-w-0 max-w-full cursor-pointer text-left transition-colors active:bg-black/[0.03]"
@@ -382,7 +388,7 @@ export default function ListingDetail() {
                         <p className="text-[10px] font-bold uppercase tracking-wider text-secondary">
                           {SPLIT_BOX_STATUS_LABEL[splitGroup.status] ?? splitGroup.status}
                         </p>
-                        <p className="mt-1 text-base font-extrabold leading-snug text-on-surface line-clamp-2">
+                        <p className="card-title-2 mt-1 text-base font-extrabold leading-snug text-on-surface">
                           {splitGroup.title}
                         </p>
                         <p className="mt-1 text-xs text-on-surface-variant">

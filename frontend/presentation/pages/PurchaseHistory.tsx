@@ -108,7 +108,7 @@ export default function PurchaseHistory() {
                     ) : null}
                   </div>
                   <div className="flex flex-col justify-center min-w-0">
-                    <h3 className="font-bold text-on-surface text-sm line-clamp-2 mb-1">{order.title}</h3>
+                    <h3 className="card-title-2 mb-1 text-sm font-bold leading-snug text-on-surface">{order.title}</h3>
                     <div className="flex items-center gap-2">
                       <UserAvatar size="sm" />
                       <p className="text-[10px] text-on-surface-variant font-bold uppercase tracking-tight truncate">

@@ -278,7 +278,7 @@ export default function Explore() {
                       </div>
                       <div className="min-w-0 flex-1">
                         {s.brandName && <p className="text-xs font-bold text-primary">{s.brandName}</p>}
-                        <p className="text-sm font-extrabold text-on-surface line-clamp-2 leading-snug">{s.name}</p>
+                        <p className="card-title-2 text-sm font-extrabold leading-snug text-on-surface">{s.name}</p>
                         {s.count != null && s.count > 0 && (
                           <p className="text-[11px] text-on-surface-variant mt-1">{s.count} 款</p>
                         )}
@@ -482,7 +482,7 @@ export default function Explore() {
                       </div>
                       <div className="min-w-0 flex-1">
                         {selectedIp && <p className="text-xs font-bold text-primary">{selectedIp}</p>}
-                        <p className="text-sm font-extrabold text-on-surface line-clamp-2 leading-snug">{s.name}</p>
+                        <p className="card-title-2 text-sm font-extrabold leading-snug text-on-surface">{s.name}</p>
                         <p className="text-[11px] text-on-surface-variant mt-1">{s.count} 款</p>
                       </div>
                       <span className="material-symbols-outlined text-on-surface-variant">chevron_right</span>

@@ -62,6 +62,16 @@
   box-shadow: var(--doodle-shadow);
 }
 
+/** 商品卡片標題：固定兩行高度，避免按鈕因標題一行/兩行而錯位 */
+@utility card-title-2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  min-height: 2lh;
+}
+
+
 @utility elevated-card {
   background: var(--color-surface-container);
   border: var(--doodle-border) solid var(--color-outline);

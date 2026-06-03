@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { motion } from 'motion/react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import CartIcon from '@/frontend/presentation/components/CartIcon';
 import ListingCardImage from '@/frontend/presentation/components/ListingCardImage';
@@ -21,6 +21,7 @@ import { APP_PAGE_CLASS, BOTTOM_NAV_OFFSET } from '@/frontend/presentation/const
 import { TOPBAR_RIGHT_ICON_SIZE } from '@/frontend/presentation/constants/topbar';
 import { useListingCardActions } from '@/frontend/presentation/hooks/useListingCardActions';
 import { isOwnListing } from '@/frontend/shared/utils/listingOwnership';
+import { navigateWithReturn } from '@/frontend/shared/utils/routeNavigation';
 
 function isRealListing(item: Listing): boolean {
   if (item.isSeeded) return false;
@@ -54,6 +55,7 @@ function restoreHomeScroll() {
 
 export default function Marketplace() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const { cartIds, posts, userId } = useAppState();
   const {
@@ -297,7 +299,12 @@ export default function Marketplace() {
                         <button
                           key={g.id}
                           type="button"
-                          onClick={() => navigate(`/split-box/${g.id}`)}
+                          onClick={() => {
+                            saveHomeScroll();
+                            navigateWithReturn(navigate, `/split-box/${g.id}`, location, {
+                              from: homeReturnPath,
+                            });
+                          }}
                           className="flex w-full items-center gap-3 rounded-2xl border-2 border-outline bg-white p-3 text-left shadow-[4px_4px_0_#111] active:opacity-95"
                         >
                           <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-neutral-50">
@@ -387,7 +394,7 @@ export default function Marketplace() {
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-sm text-on-surface truncate font-semibold">{item.title}</h3>
+                  <h3 className="card-title-2 text-sm font-semibold leading-snug text-on-surface">{item.title}</h3>
                 </div>
               </motion.button>
             ))}

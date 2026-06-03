@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { navigateWithReturn } from '@/frontend/shared/utils/routeNavigation';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import { getCatalogBrands, getCatalogProducts, getCatalogSeries } from '@/frontend/infrastructure/api/catalogApi';
 import { createSplitBox } from '@/frontend/infrastructure/api/splitBoxApi';
@@ -26,6 +27,7 @@ type Props = {
 type StyleRow = { id: string; name: string; image: string };
 
 export default function CreateSplitBox({ embedded = false, onBack }: Props) {
+  const location = useLocation();
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [brand, setBrand] = useState('');
@@ -166,7 +168,9 @@ export default function CreateSplitBox({ embedded = false, onBack }: Props) {
           reservedByHost: reservedIds.has(s.id),
         })),
       });
-      navigate(`/split-box/${group.id}`);
+      navigateWithReturn(navigate, `/split-box/${group.id}`, location, {
+        from: embedded ? '/add-listing' : undefined,
+      });
     } catch (e) {
       setError(e instanceof Error ? e.message : '發起失敗');
     } finally {
@@ -280,7 +284,7 @@ export default function CreateSplitBox({ embedded = false, onBack }: Props) {
                       <img src={s.image} alt="" className="h-full w-full object-contain p-2" referrerPolicy="no-referrer" />
                     ) : null}
                   </div>
-                  <p className="line-clamp-2 p-2 text-[10px] font-bold leading-snug">{s.name}</p>
+                  <p className="card-title-2 p-2 text-[10px] font-bold leading-snug">{s.name}</p>
                   <p className="px-2 pb-2 text-[9px] font-bold text-primary">{reserved ? '自留' : '開放認領'}</p>
                 </button>
               );

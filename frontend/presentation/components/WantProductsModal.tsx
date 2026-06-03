@@ -127,7 +127,7 @@ export default function WantProductsModal({ open, onClose, collection }: Props) 
                     referrerPolicy="no-referrer"
                   />
                   <div className="min-w-0 flex-1 py-0.5">
-                    <p className="line-clamp-2 text-xs font-bold leading-snug text-on-surface">
+                    <p className="card-title-2 text-xs font-bold leading-snug text-on-surface">
                       {settingsProduct.title}
                     </p>
                   </div>
@@ -182,7 +182,7 @@ export default function WantProductsModal({ open, onClose, collection }: Props) 
                     </div>
                     <div className="space-y-2 p-3">
                       <div className="w-full text-left">
-                        <p className="line-clamp-2 text-xs font-bold leading-snug text-on-surface">{p.title}</p>
+                        <p className="card-title-2 text-xs font-bold leading-snug text-on-surface">{p.title}</p>
                         <p className="mt-1 text-[10px] text-on-surface-variant">搜尋此盲盒</p>
                       </div>
                       <button

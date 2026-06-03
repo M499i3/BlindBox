@@ -160,7 +160,7 @@ export default function CheckoutPage() {
               <div className="flex gap-3">
                 <ListingCardImage src={item.image} alt={item.title} className="h-20 w-20 shrink-0 rounded-xl" />
                 <div className="min-w-0 flex-1">
-                  <h2 className="line-clamp-2 text-sm font-bold text-on-surface">{item.title}</h2>
+                  <h2 className="card-title-2 text-sm font-bold leading-snug text-on-surface">{item.title}</h2>
                   <p className="mt-0.5 line-clamp-1 text-xs text-on-surface-variant">{item.itemName}</p>
                   <p className="mt-2 text-base font-black text-primary">{item.price}</p>
                 </div>

@@ -66,7 +66,7 @@ export default function MyListings() {
               </span>
             </div>
             <div className="p-3">
-              <p className="text-xs font-bold text-on-surface line-clamp-2 leading-snug">{p.title}</p>
+              <p className="card-title-2 text-xs font-bold leading-snug text-on-surface">{p.title}</p>
               <p className="text-sm font-bold text-primary mt-1">{p.price}</p>
             </div>
           </motion.button>

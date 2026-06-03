@@ -194,7 +194,7 @@ export default function CollectionTreeModal({ open, onClose, collection }: Props
               </div>
             </div>
             <div className="w-full p-3 text-left">
-              <p className="line-clamp-2 text-xs font-bold leading-snug text-on-surface">{p.title}</p>
+              <p className="card-title-2 text-xs font-bold leading-snug text-on-surface">{p.title}</p>
               <p className="mt-1 text-[10px] font-semibold text-primary">搜尋此盲盒</p>
             </div>
           </div>

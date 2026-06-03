@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { navigateWithReturn } from '@/frontend/shared/utils/routeNavigation';
 import CollectionTreeModal from '@/frontend/presentation/components/CollectionTreeModal';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import UserAvatar from '@/frontend/presentation/components/UserAvatar';
@@ -10,6 +11,7 @@ import { useAuth } from '@/frontend/presentation/providers/AuthProvider';
 
 export default function Profile() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { avatarDataUrl, displayName, displayId, ratingAvg, ratingCount, transactionCount, listings, openWantModal } =
     useAppState();
   const collection = useProductCollection();
@@ -167,7 +169,13 @@ export default function Profile() {
               <button
                 key={item.label}
                 type="button"
-                onClick={() => navigate(item.to)}
+                onClick={() => {
+                  if (item.to === '/profile/split-boxes') {
+                    navigateWithReturn(navigate, item.to, location, { from: '/profile' });
+                  } else {
+                    navigate(item.to);
+                  }
+                }}
                 className="w-full flex items-center justify-between p-4 border-b border-black/[0.06] last:border-0 text-left active:bg-black/[0.03]"
               >
                 <div className="flex items-center gap-4">

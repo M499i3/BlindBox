@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { navigateWithReturn } from '@/frontend/shared/utils/routeNavigation';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import ListingCardImage from '@/frontend/presentation/components/ListingCardImage';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
@@ -50,7 +51,7 @@ function SellCartItemRow({
       </label>
       <ListingCardImage src={item.image} alt={item.title} className="w-20 h-20 rounded-xl" />
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-bold text-on-surface line-clamp-2">{item.title}</p>
+        <p className="card-title-2 text-sm font-bold leading-snug text-on-surface">{item.title}</p>
         <p className="text-sm font-black text-primary mt-1">{item.price || '—'}</p>
         <div className="flex gap-2 mt-2">
           <button
@@ -91,7 +92,7 @@ function IntentCartItemRow({
     <div className="rounded-2xl border-2 border-outline bg-white shadow-none p-3 flex gap-3">
       <ListingCardImage src={item.image} alt={item.title} className="w-20 h-20 rounded-xl" />
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-bold text-on-surface line-clamp-2">{item.title}</p>
+        <p className="card-title-2 text-sm font-bold leading-snug text-on-surface">{item.title}</p>
         <p className="text-sm font-black text-primary mt-1">{priceLabel}</p>
         <div className="flex flex-wrap gap-2 mt-2">
           <button
@@ -120,6 +121,7 @@ function isCartTab(raw: string | null): raw is ListingTradeKind {
 
 export default function CartPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get('tab');
   const { cartItems, removeFromCart } = useAppState();
@@ -180,7 +182,11 @@ export default function CartPage() {
       const params = new URLSearchParams();
       if (item.splitBoxSlotId) params.set('slotId', item.splitBoxSlotId);
       params.set('listingId', item.id);
-      navigate(`/split-box/${item.splitBoxGroupId}/apply?${params.toString()}`);
+      navigateWithReturn(
+        navigate,
+        `/split-box/${item.splitBoxGroupId}/apply?${params.toString()}`,
+        location
+      );
       return;
     }
     navigate(`/listing/${item.id}`);

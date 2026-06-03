@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { navigateBack } from '@/frontend/shared/utils/routeNavigation';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import UserAvatar from '@/frontend/presentation/components/UserAvatar';
 import {
@@ -39,6 +40,7 @@ export default function SplitBoxClaimApply() {
   const [searchParams] = useSearchParams();
   const slotIdParam = searchParams.get('slotId');
   const listingIdParam = searchParams.get('listingId');
+  const location = useLocation();
   const navigate = useNavigate();
 
   const [group, setGroup] = useState<SplitBoxGroupDetail | null>(null);
@@ -105,7 +107,11 @@ export default function SplitBoxClaimApply() {
     return (
       <div className="px-6 pt-24 text-center">
         <p className="text-sm text-on-surface-variant">{error || '找不到拆盒團'}</p>
-        <button type="button" onClick={() => navigate(-1)} className="mt-4 text-sm font-bold text-primary">
+        <button
+          type="button"
+          onClick={() => navigateBack(navigate, location)}
+          className="mt-4 text-sm font-bold text-primary"
+        >
           返回
         </button>
       </div>
@@ -132,17 +138,17 @@ export default function SplitBoxClaimApply() {
             <div className="mt-6 flex flex-col gap-3">
               <button
                 type="button"
-                onClick={() => navigate('/profile/split-boxes')}
+                onClick={() => navigate('/profile/split-boxes?tab=joined')}
                 className="w-full rounded-full premium-gradient py-3 text-sm font-bold text-white"
               >
                 查看我參與的拆盒團
               </button>
               <button
                 type="button"
-                onClick={() => navigate(`/listing/${slot?.listingId ?? listingIdParam ?? ''}`)}
+                onClick={() => navigateBack(navigate, location)}
                 className="w-full rounded-full border-2 border-outline bg-white py-3 text-sm font-bold text-on-surface"
               >
-                返回貼文
+                返回
               </button>
             </div>
           </section>

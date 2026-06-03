@@ -81,7 +81,7 @@ export default function CatalogFigurineTile({
         />
       </div>
 
-      <p className="mt-2 line-clamp-2 min-h-[2.25rem] text-center text-[10px] font-bold leading-snug text-on-surface">
+      <p className="card-title-2 mt-2 text-center text-[10px] font-bold leading-snug text-on-surface">
         {title}
       </p>
     </motion.div>

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { navigateWithReturn } from '@/frontend/shared/utils/routeNavigation';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import UserAvatar from '@/frontend/presentation/components/UserAvatar';
 import {
@@ -73,7 +74,9 @@ export default function ChatDetail() {
   };
 
   const openSplitGroup = () => {
-    if (ctx?.splitBoxGroupId) navigate(`/split-box/${ctx.splitBoxGroupId}`);
+    if (ctx?.splitBoxGroupId) {
+      navigateWithReturn(navigate, `/split-box/${ctx.splitBoxGroupId}`, location);
+    }
   };
 
   const handleAddToCart = () => {

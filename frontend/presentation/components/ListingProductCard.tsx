@@ -7,7 +7,7 @@ import { cn } from '@/frontend/shared/utils/cn';
 
 /**
  * 卡片內容區固定高度（px）：
- * p-3(24) + badge h-6+mb-2(32) + title h-10(40) + gap h-2(8) + price h-6(24) + btn mt-2+h-11(52) = 180
+ * p-3(24) + badge h-6+mb-2(32) + title 2lh + gap h-2(8) + price h-6(24) + btn mt-2+h-11(52)
  */
 const BODY_HEIGHT = 'h-[11.25rem]';
 
@@ -108,8 +108,8 @@ export default function ListingProductCard({
         </div>
 
         {/* 3. 商品名稱：固定兩行高度，一行時保留第二行空白 */}
-        <div className="h-10 shrink-0 overflow-hidden">
-          <h3 className="line-clamp-2 text-sm font-semibold leading-5 text-on-surface">{title}</h3>
+        <div className="shrink-0 overflow-hidden">
+          <h3 className="card-title-2 text-sm font-semibold leading-5 text-on-surface">{title}</h3>
         </div>
 
         {/* 固定間距，取代 flex-1 避免高度飄移 */}

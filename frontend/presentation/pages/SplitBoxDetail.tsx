@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { navigateBack, navigateWithReturn } from '@/frontend/shared/utils/routeNavigation';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import {
   completeSplitBox,
@@ -71,7 +72,7 @@ function SlotCard({
         </span>
       </div>
       <div className="space-y-2 p-3">
-        <p className="line-clamp-2 text-xs font-bold leading-snug">{slot.productTitle}</p>
+        <p className="card-title-2 text-xs font-bold leading-snug">{slot.productTitle}</p>
         <p className="text-sm font-extrabold text-primary">{slot.price}</p>
         {slot.claimedByName ? (
           <p className="text-[10px] text-on-surface-variant">認領：{slot.claimedByName}</p>
@@ -108,6 +109,7 @@ function SlotCard({
 
 export default function SplitBoxDetail() {
   const { id } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const { addToCart, isInCart } = useAppState();
   const [group, setGroup] = useState<SplitBoxGroupDetail | null>(null);
@@ -137,7 +139,7 @@ export default function SplitBoxDetail() {
     const params = new URLSearchParams({ slotId });
     const slot = group?.slots.find((s) => s.id === slotId);
     if (slot?.listingId) params.set('listingId', slot.listingId);
-    navigate(`/split-box/${id}/apply?${params.toString()}`);
+    navigateWithReturn(navigate, `/split-box/${id}/apply?${params.toString()}`, location);
   };
 
   const handleShip = async () => {
@@ -176,7 +178,11 @@ export default function SplitBoxDetail() {
     return (
       <div className="px-6 pt-24 text-center">
         <p className="text-sm text-on-surface-variant">{error || '找不到拆盒團'}</p>
-        <button type="button" onClick={() => navigate('/profile')} className="mt-4 text-sm font-bold text-primary">
+        <button
+          type="button"
+          onClick={() => navigateBack(navigate, location)}
+          className="mt-4 text-sm font-bold text-primary"
+        >
           返回
         </button>
       </div>
@@ -189,7 +195,7 @@ export default function SplitBoxDetail() {
 
   return (
     <div className="animate-in fade-in min-h-full pb-32 duration-500">
-      <TopBar showBack title="拆盒團" onBack={() => navigate('/profile')} rightElement={<></>} />
+      <TopBar showBack title="拆盒團" rightElement={<></>} />
 
       <main className="space-y-6 px-container-margin pt-topbar-content">
         <section className="overflow-hidden rounded-2xl border-2 border-outline bg-white shadow-[4px_4px_0_#111]">
