@@ -27,7 +27,7 @@ function getAppShellPortalRoot(): HTMLElement {
 export default function WantProductsModal({ open, onClose, collection }: Props) {
   const navigate = useNavigate();
   const { posts, getWishAlert, setWishAlert } = useAppState();
-  const { wishedProducts, toggleWish, toggleOwned, isOwned, wishCount } = collection;
+  const { wishedProducts, toggleWish, wishCount } = collection;
 
   const [settingsProduct, setSettingsProduct] = useState<CatalogProduct | null>(null);
   const [form, setForm] = useState<WishAlertSettings>(() => createDefaultWishAlertSettings(null));
@@ -168,15 +168,11 @@ export default function WantProductsModal({ open, onClose, collection }: Props) 
                           kind="wish"
                           active
                           onClick={(e) => {
+                            e.stopPropagation();
                             toggleWish(p.id);
                             if (settingsProduct?.id === p.id) setSettingsProduct(null);
                           }}
                           label="從想要移除"
-                        />
-                        <CollectionActionButton
-                          kind="owned"
-                          active={isOwned(p.id)}
-                          onClick={() => toggleOwned(p.id)}
                         />
                       </div>
                     </div>
