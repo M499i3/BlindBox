@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import type { CatalogProduct } from '@/frontend/domain/entities/catalog';
 import type { Listing } from '@/frontend/domain/entities/listing';
-import { useCatalogProducts } from '@/frontend/presentation/hooks/useCatalog';
+import { useCatalogBrands, useCatalogProducts } from '@/frontend/presentation/hooks/useCatalog';
+import { brandLogoForSlug } from '@/frontend/lib/brandLogos';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
 import { buildCatalogHierarchy } from '@/frontend/shared/utils/catalogHierarchy';
 import {
@@ -31,7 +32,17 @@ export function useProductCollection() {
     addWishWithDefaultSettings,
   } = useAppState();
   const { products } = useCatalogProducts();
+  const catalogBrands = useCatalogBrands();
   const migratedRef = useRef(false);
+
+  const brandImagesByName = useMemo(() => {
+    const map: Record<string, string> = {};
+    for (const b of catalogBrands) {
+      const image = brandLogoForSlug(b.slug) ?? b.image;
+      if (image) map[b.name] = image;
+    }
+    return map;
+  }, [catalogBrands]);
 
   useEffect(() => {
     if (!products.length || migratedRef.current) return;
@@ -149,8 +160,12 @@ export function useProductCollection() {
   );
 
   const collectionHierarchy = useMemo(
-    () => buildCatalogHierarchy(products, ownedIds, { onlyCollected: true }),
-    [products, ownedIds]
+    () =>
+      buildCatalogHierarchy(products, ownedIds, {
+        onlyCollected: true,
+        brandImagesByName,
+      }),
+    [products, ownedIds, brandImagesByName]
   );
 
   const toggleWishForProductIds = useCallback(

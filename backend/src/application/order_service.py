@@ -51,6 +51,8 @@ def place_order(
     conn: psycopg2.extensions.connection,
     user_id: str,
     listing_id: str,
+    *,
+    shipping_ui: str | None = None,
 ) -> OrderCreated:
     listing = get_listing_for_chat(conn, listing_id)
     if not listing:
@@ -83,6 +85,29 @@ def place_order(
     if not stock_row:
         raise HTTPException(status_code=400, detail="商品已售完，無法下單")
 
+    from infrastructure.db.repositories.listing_repository import (
+        _SHIPPING_MAP,
+        _SHIPPING_UI,
+        _parse_shipping_methods_raw,
+    )
+
+    raw_methods = _parse_shipping_methods_raw(listing.get("shipping_methods"))
+    allowed_ui = [_SHIPPING_UI.get(str(m), str(m)) for m in raw_methods if m]
+    if not allowed_ui:
+        allowed_ui = [_SHIPPING_UI.get(str(listing["shipping_method"]), "7-11 店到店")]
+
+    if len(allowed_ui) > 1:
+        if not shipping_ui or shipping_ui not in allowed_ui:
+            raise HTTPException(
+                status_code=400,
+                detail=f"請選擇出貨方式：{', '.join(allowed_ui)}",
+            )
+        chosen_ui = shipping_ui
+    else:
+        chosen_ui = allowed_ui[0]
+
+    shipping_db = _SHIPPING_MAP.get(chosen_ui, str(listing["shipping_method"]))
+
     order = create_order(
         conn,
         listing_id=listing_id,
@@ -90,7 +115,7 @@ def place_order(
         seller_id=seller_id,
         amount=int(listing["price_amount"]),
         currency=str(listing["price_currency"]),
-        shipping_method=str(listing["shipping_method"]),
+        shipping_method=shipping_db,
     )
     status = str(order["status"])
     chat_id = apply_order_status_to_chat(

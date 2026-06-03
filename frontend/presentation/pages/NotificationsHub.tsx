@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import {
   deleteNotification,
@@ -9,15 +9,38 @@ import {
   notificationIcon,
   type NotificationItem,
 } from '@/frontend/infrastructure/api/notificationsApi';
+import { cn } from '@/frontend/shared/utils/cn';
 
-const BLOCKS = [
-  { type: 'system',   label: '系統通知', icon: 'settings' },
+const CATEGORIES = [
+  { type: 'system', label: '系統通知', icon: 'settings' },
   { type: 'activity', label: '活動快訊', icon: 'campaign' },
-  { type: 'trade',    label: '交易通知', icon: 'swap_horiz' },
-  { type: 'support',  label: '客服消息', icon: 'support_agent' },
-];
+  { type: 'trade', label: '交易動態', icon: 'swap_horiz' },
+  { type: 'support', label: '客服消息', icon: 'support_agent' },
+] as const;
+
+const TYPE_LABEL: Record<string, string> = {
+  system: '系統通知',
+  activity: '活動快訊',
+  trade: '交易動態',
+  support: '客服消息',
+};
+
+function formatDateTime(iso: string): string {
+  try {
+    return new Date(iso).toLocaleString('zh-TW', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  } catch {
+    return iso;
+  }
+}
 
 export default function NotificationsHub() {
+  const navigate = useNavigate();
   const [params] = useSearchParams();
   const focus = params.get('type');
   const [items, setItems] = useState<NotificationItem[]>([]);
@@ -30,6 +53,13 @@ export default function NotificationsHub() {
   useEffect(() => {
     reload().finally(() => setLoading(false));
   }, [reload]);
+
+  const filteredSorted = useMemo(() => {
+    if (!focus) return [];
+    return items
+      .filter((n) => n.type === focus)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }, [items, focus]);
 
   const handleMarkRead = async (id: string) => {
     const target = items.find((n) => n.id === id);
@@ -60,11 +90,89 @@ export default function NotificationsHub() {
     }
   };
 
-  const visibleBlocks = focus
-    ? BLOCKS.filter((b) => b.type === focus || (focus === 'news' && b.type === 'activity'))
-    : BLOCKS;
-
   const hasUnread = items.some((n) => !n.isRead);
+  const focusUnread = filteredSorted.some((n) => !n.isRead);
+
+  if (focus) {
+    const title = TYPE_LABEL[focus] ?? '通知';
+    return (
+      <div className="animate-in fade-in duration-500 pb-28">
+        <TopBar
+          title={title}
+          showBack
+          rightElement={
+            focusUnread ? (
+              <button
+                type="button"
+                onClick={async () => {
+                  for (const n of filteredSorted.filter((x) => !x.isRead)) {
+                    await markNotificationRead(n.id).catch(console.error);
+                  }
+                  setItems((prev) =>
+                    prev.map((n) => (n.type === focus ? { ...n, isRead: true } : n))
+                  );
+                }}
+                className="whitespace-nowrap text-xs font-bold text-primary"
+              >
+                全部已讀
+              </button>
+            ) : undefined
+          }
+        />
+        <main className="w-full min-w-0 max-w-full space-y-3 px-5 pt-topbar-content">
+          {loading && <p className="text-sm text-on-surface-variant">載入中…</p>}
+          {!loading && filteredSorted.length === 0 && (
+            <div className="glass-card rounded-2xl p-5 shadow-[4px_4px_0_#111]">
+              <p className="text-sm text-on-surface-variant">目前沒有{title}</p>
+            </div>
+          )}
+          {filteredSorted.map((n) => (
+            <article
+              key={n.id}
+              className={cn(
+                'glass-card rounded-2xl p-5 shadow-[4px_4px_0_#111]',
+                !n.isRead && 'ring-2 ring-primary/20'
+              )}
+            >
+              <div className="mb-2 flex items-start justify-between gap-2">
+                <div className="min-w-0 flex-1">
+                  <h2 className="text-sm font-bold text-on-surface">{n.title}</h2>
+                  <p className="mt-1 text-[10px] font-semibold text-on-surface-variant">
+                    {formatDateTime(n.createdAt)}
+                  </p>
+                </div>
+                <div className="flex shrink-0 items-center gap-2">
+                  {!n.isRead && (
+                    <span className="text-[10px] font-bold uppercase text-primary">未讀</span>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(n.id)}
+                    className="text-[10px] font-bold uppercase text-on-surface-variant"
+                    aria-label="刪除通知"
+                  >
+                    刪除
+                  </button>
+                </div>
+              </div>
+              <p className="whitespace-pre-line text-sm leading-relaxed text-on-surface-variant">
+                {n.body}
+              </p>
+              {!n.isRead && (
+                <button
+                  type="button"
+                  onClick={() => handleMarkRead(n.id)}
+                  className="mt-3 text-xs font-bold text-primary"
+                >
+                  標為已讀
+                </button>
+              )}
+            </article>
+          ))}
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="animate-in fade-in duration-500 pb-28">
@@ -76,85 +184,45 @@ export default function NotificationsHub() {
             <button
               type="button"
               onClick={handleMarkAllRead}
-              className="text-xs font-bold text-primary whitespace-nowrap"
+              className="whitespace-nowrap text-xs font-bold text-primary"
             >
               全部已讀
             </button>
           ) : undefined
         }
       />
-      <main className="pt-topbar-content px-5 space-y-6 w-full min-w-0 max-w-full">
+      <main className="w-full min-w-0 max-w-full space-y-4 px-5 pt-topbar-content">
         {loading && <p className="text-sm text-on-surface-variant">載入中…</p>}
         {!loading &&
-          visibleBlocks.map((b) => {
-            const blockItems = items.filter((n) => n.type === b.type);
-            const blockHasUnread = blockItems.some((n) => !n.isRead);
+          CATEGORIES.map((cat) => {
+            const count = items.filter((n) => n.type === cat.type).length;
+            const unread = items.filter((n) => n.type === cat.type && !n.isRead).length;
             return (
-              <section key={b.type}>
-                <div className="flex items-center gap-2 mb-3">
+              <button
+                key={cat.type}
+                type="button"
+                onClick={() => navigate(`/notifications?type=${cat.type}`)}
+                className="glass-card flex w-full items-center gap-4 rounded-2xl p-4 text-left shadow-[4px_4px_0_#111] active:opacity-95"
+              >
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-surface-container-high">
                   <span
-                    className="material-symbols-outlined text-on-surface-variant text-[20px]"
+                    className="material-symbols-outlined text-on-surface-variant"
                     style={{ fontVariationSettings: "'FILL' 1" }}
                   >
-                    {notificationIcon(b.type)}
+                    {notificationIcon(cat.type)}
                   </span>
-                  <h2 className="text-base font-extrabold text-on-surface">{b.label}</h2>
-                  {blockHasUnread && (
-                    <span className="text-[10px] font-bold text-primary uppercase ml-auto">
-                      有未讀
-                    </span>
-                  )}
                 </div>
-                {blockItems.length === 0 ? (
-                  <div className="glass-card shadow-[4px_4px_0_#111] rounded-2xl p-5">
-                    <p className="text-sm text-on-surface-variant">目前沒有{b.label}</p>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {blockItems.map((n) => (
-                      <div
-                        key={n.id}
-                        className={`glass-card shadow-[4px_4px_0_#111] rounded-2xl p-5 ${!n.isRead ? 'ring-2 ring-primary/20' : ''}`}
-                      >
-                        <div className="flex justify-between items-start gap-2 mb-2">
-                          <button
-                            type="button"
-                            onClick={() => handleMarkRead(n.id)}
-                            className="text-sm font-bold text-on-surface text-left flex-1"
-                          >
-                            {n.title}
-                          </button>
-                          <div className="flex items-center gap-2 flex-shrink-0">
-                            {!n.isRead && (
-                              <span className="text-[10px] font-bold text-primary uppercase">未讀</span>
-                            )}
-                            <button
-                              type="button"
-                              onClick={() => handleDelete(n.id)}
-                              className="text-[10px] font-bold text-on-surface-variant uppercase"
-                              aria-label="刪除通知"
-                            >
-                              刪除
-                            </button>
-                          </div>
-                        </div>
-                        <p className="text-sm text-on-surface-variant leading-relaxed whitespace-pre-line">
-                          {n.body}
-                        </p>
-                        {!n.isRead && (
-                          <button
-                            type="button"
-                            onClick={() => handleMarkRead(n.id)}
-                            className="mt-3 text-xs font-bold text-primary"
-                          >
-                            標為已讀
-                          </button>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </section>
+                <div className="min-w-0 flex-1">
+                  <h2 className="text-base font-extrabold text-on-surface">{cat.label}</h2>
+                  <p className="mt-0.5 text-xs text-on-surface-variant">
+                    {count > 0 ? `${count} 則通知` : '暫無通知'}
+                    {unread > 0 ? ` · ${unread} 則未讀` : ''}
+                  </p>
+                </div>
+                <span className="material-symbols-outlined shrink-0 text-on-surface-variant">
+                  chevron_right
+                </span>
+              </button>
             );
           })}
       </main>

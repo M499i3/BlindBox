@@ -1,31 +1,38 @@
 import { useEffect, useMemo, useState } from 'react';
-import { getCatalogBrands, getCatalogSeries, getCatalogStyles } from '@/frontend/infrastructure/api/catalogApi';
+import {
+  getCatalogBrands,
+  getCatalogProducts,
+  getCatalogSeries,
+} from '@/frontend/infrastructure/api/catalogApi';
 import { uploadImageToStorage } from '@/frontend/infrastructure/storage/supabaseStorage';
-import type { BrandRow, SeriesRow, StyleRow } from '@/frontend/domain/entities/catalog';
+import type { BrandRow, CatalogProduct, SeriesRow } from '@/frontend/domain/entities/catalog';
+import {
+  filterProductsByIp,
+  productLinesFromProducts,
+  productsInLine,
+} from '@/frontend/shared/utils/catalogProductLines';
+
+export type CatalogStyleOption = { id: string; name: string; image: string };
 
 export function useCatalogListingForm() {
   const [images, setImages] = useState<string[]>([]);
   const [localImageFiles, setLocalImageFiles] = useState<(File | null)[]>([]);
+  const [recommendedImage, setRecommendedImage] = useState('');
   const [title, setTitle] = useState('');
   const [itemName, setItemName] = useState('');
+  const [catalogProductId, setCatalogProductId] = useState('');
+
   const [brand, setBrand] = useState('');
-  const [series, setSeries] = useState('');
   const [brandSlug, setBrandSlug] = useState('');
   const [brandOptions, setBrandOptions] = useState<BrandRow[]>([]);
-  const [seriesOptions, setSeriesOptions] = useState<SeriesRow[]>([]);
-  const [seriesSlug, setSeriesSlug] = useState('');
-  const [styleOptions, setStyleOptions] = useState<StyleRow[]>([]);
-  const [query, setQuery] = useState('');
 
-  const filteredStyles = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    let pool = styleOptions;
-    if (itemName.trim()) {
-      pool = pool.filter((style) => style.name === itemName.trim());
-    }
-    if (!q) return pool.slice(0, 8);
-    return pool.filter((style) => style.name.toLowerCase().includes(q)).slice(0, 8);
-  }, [styleOptions, query, itemName]);
+  const [ip, setIp] = useState('');
+  const [ipSlug, setIpSlug] = useState('');
+  const [ipOptions, setIpOptions] = useState<SeriesRow[]>([]);
+
+  const [productLine, setProductLine] = useState('');
+  const [brandProducts, setBrandProducts] = useState<CatalogProduct[]>([]);
+  const [productsLoading, setProductsLoading] = useState(false);
 
   useEffect(() => {
     getCatalogBrands()
@@ -33,16 +40,12 @@ export function useCatalogListingForm() {
         if (!rows.length) return;
         setBrandOptions(rows);
         const first = rows[0];
-        const firstSlug = first.slug ?? first.name.toLowerCase().replace(/\s+/g, '-');
+        const slug = first.slug ?? first.name.toLowerCase().replace(/\s+/g, '-');
         setBrand(first.name);
-        setBrandSlug(firstSlug);
+        setBrandSlug(slug);
       })
       .catch(() => {
-        const fallback = [
-          { name: 'POPMART 泡泡瑪特', slug: 'popmart', image: '' },
-          { name: '52TOYS', slug: '52toys', image: '' },
-          { name: 'Finding Unicorn', slug: 'finding-unicorn', image: '' },
-        ];
+        const fallback = [{ name: 'Pop Mart', slug: 'pop-mart', image: '' }];
         setBrandOptions(fallback);
         setBrand(fallback[0].name);
         setBrandSlug(fallback[0].slug);
@@ -51,31 +54,56 @@ export function useCatalogListingForm() {
 
   useEffect(() => {
     if (!brandSlug) return;
-    getCatalogSeries(brandSlug)
-      .then((rows) => {
-        setSeriesOptions(rows);
-        const first = rows[0];
-        setSeries(first?.name ?? '');
-        setSeriesSlug(first?.slug ?? '');
+    setProductsLoading(true);
+    Promise.all([getCatalogSeries(brandSlug), getCatalogProducts({ brand: brandSlug })])
+      .then(([ips, products]) => {
+        setIpOptions(ips);
+        setBrandProducts(products);
+        const first = ips[0];
+        setIp(first?.name ?? '');
+        setIpSlug(first?.slug ?? '');
+        setProductLine('');
+        setCatalogProductId('');
         setItemName('');
       })
       .catch(() => {
-        setSeriesOptions([]);
-        setSeries('');
-        setSeriesSlug('');
-        setItemName('');
-      });
+        setIpOptions([]);
+        setBrandProducts([]);
+        setIp('');
+        setIpSlug('');
+      })
+      .finally(() => setProductsLoading(false));
   }, [brandSlug]);
 
+  const productsForIp = useMemo(
+    () => filterProductsByIp(brandProducts, ip),
+    [brandProducts, ip]
+  );
+
+  const productLineOptions = useMemo(
+    () => productLinesFromProducts(productsForIp),
+    [productsForIp]
+  );
+
+  const styleOptions: CatalogStyleOption[] = useMemo(() => {
+    const pool = productLine ? productsInLine(productsForIp, productLine) : [];
+    return pool.map((p) => ({ id: p.id, name: p.title, image: p.image }));
+  }, [productsForIp, productLine]);
+
   useEffect(() => {
-    if (!brandSlug || !seriesSlug) {
-      setStyleOptions([]);
+    if (!productLineOptions.length) {
+      setProductLine('');
       return;
     }
-    getCatalogStyles(brandSlug, seriesSlug)
-      .then((rows) => setStyleOptions(rows))
-      .catch(() => setStyleOptions([]));
-  }, [brandSlug, seriesSlug]);
+    if (!productLine || !productLineOptions.includes(productLine)) {
+      setProductLine(productLineOptions[0]);
+    }
+  }, [productLineOptions, productLine]);
+
+  useEffect(() => {
+    setCatalogProductId('');
+    setItemName('');
+  }, [productLine, ip]);
 
   const onUploadImage = (index: number, file?: File | null) => {
     if (!file) return;
@@ -97,11 +125,23 @@ export function useCatalogListingForm() {
     setLocalImageFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const applyCatalogStyle = (style: StyleRow) => {
-    if (style.image) setImages([style.image]);
-    setLocalImageFiles([]);
+  const applyCatalogStyle = (styleId: string) => {
+    const style = styleOptions.find((s) => s.id === styleId);
+    if (!style) return;
+    setCatalogProductId(style.id);
     setItemName(style.name);
-    if (!title) setTitle(style.name);
+    if (!title.trim()) setTitle(style.name);
+    if (style.image) {
+      setRecommendedImage(style.image);
+      setImages([style.image]);
+      setLocalImageFiles([]);
+    }
+  };
+
+  const useRecommendedImage = () => {
+    if (!recommendedImage) return;
+    setImages([recommendedImage]);
+    setLocalImageFiles([]);
   };
 
   const uploadImages = async () => {
@@ -114,29 +154,42 @@ export function useCatalogListingForm() {
     );
   };
 
+  const hasRequiredStyle = Boolean(catalogProductId && itemName.trim());
+
   return {
     images,
     title,
     setTitle,
     itemName,
     setItemName,
+    catalogProductId,
     brand,
     setBrand,
-    series,
-    setSeries,
     brandSlug,
     setBrandSlug,
     brandOptions,
-    seriesOptions,
-    seriesSlug,
-    setSeriesSlug,
+    ip,
+    setIp,
+    ipSlug,
+    setIpSlug,
+    ipOptions,
+    productLine,
+    setProductLine,
+    productLineOptions,
     styleOptions,
-    query,
-    setQuery,
-    filteredStyles,
+    productsLoading,
+    recommendedImage,
+    applyCatalogStyle,
+    useRecommendedImage,
     onUploadImage,
     removeImage,
-    applyCatalogStyle,
     uploadImages,
+    hasRequiredStyle,
+    /** @deprecated kept for swap wizard typing */
+    series: ip,
+    setSeries: setIp,
+    seriesOptions: ipOptions,
+    seriesSlug: ipSlug,
+    setSeriesSlug: setIpSlug,
   };
 }

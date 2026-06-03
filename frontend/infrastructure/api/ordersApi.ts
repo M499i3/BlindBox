@@ -69,10 +69,15 @@ export async function getMyOrders(role: 'buyer' | 'seller'): Promise<OrderSummar
   return items.map(toFrontend);
 }
 
-export async function createOrder(listingId: string): Promise<OrderCreated> {
+export async function createOrder(
+  listingId: string,
+  shipping?: string
+): Promise<OrderCreated> {
+  const body: { listing_id: string; shipping?: string } = { listing_id: listingId };
+  if (shipping) body.shipping = shipping;
   const item = await apiFetch<ApiOrderCreated>('/api/orders', {
     method: 'POST',
-    body: JSON.stringify({ listing_id: listingId }),
+    body: JSON.stringify(body),
   });
   return createdToFrontend(item);
 }

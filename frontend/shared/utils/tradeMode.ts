@@ -33,7 +33,6 @@ function isSwapModeListing(item: Pick<Listing, 'tradeMode' | 'allowSwap'>): bool
 
 export function listingMatchesTradeMode(item: Listing, mode: TradeMode): boolean {
   const tm = item.tradeMode ?? '';
-  const cond = item.condition ?? '';
   const isSwap = isSwapModeListing(item);
 
   if (mode === 'swap') return isSwap;
@@ -41,7 +40,7 @@ export function listingMatchesTradeMode(item: Listing, mode: TradeMode): boolean
   if (isSwap) return false;
 
   if (mode === 'unbox') {
-    return tm.includes('拆') || cond.includes('拆') || tm.includes('group_buy');
+    return isSplitBoxListing(item);
   }
   return tm.includes('賣') || tm.includes('買') || (!tm.includes('換') && !tm.includes('拆'));
 }
@@ -54,4 +53,27 @@ export function tradeModeBadge(mode: TradeMode): string {
 
 export function isSwapListing(item: Pick<Listing, 'tradeMode' | 'allowSwap'>): boolean {
   return isSwapModeListing(item);
+}
+
+/** 拆盒團貼文（勿用「已拆盒」等狀態欄位判斷） */
+export function isSplitBoxListing(
+  item: Pick<Listing, 'tradeMode'> & { splitBoxGroupId?: string | null }
+): boolean {
+  if (item.splitBoxGroupId) return true;
+  const tm = item.tradeMode ?? '';
+  return (
+    tm.includes('拆盒') ||
+    tm.includes('加入拆盒') ||
+    tm.includes('group_buy')
+  );
+}
+
+export type ListingTradeKind = 'sell' | 'split' | 'swap';
+
+export function listingTradeKind(
+  item: Pick<Listing, 'tradeMode' | 'allowSwap'> & { splitBoxGroupId?: string | null }
+): ListingTradeKind {
+  if (isSwapListing(item)) return 'swap';
+  if (isSplitBoxListing(item)) return 'split';
+  return 'sell';
 }

@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
-import { getCatalogBrands, getCatalogSeries, getCatalogStyles } from '@/frontend/infrastructure/api/catalogApi';
+import { getCatalogBrands, getCatalogProducts, getCatalogSeries } from '@/frontend/infrastructure/api/catalogApi';
 import { createSplitBox } from '@/frontend/infrastructure/api/splitBoxApi';
-import type { BrandRow, SeriesRow, StyleRow } from '@/frontend/domain/entities/catalog';
+import type { BrandRow, CatalogProduct, SeriesRow } from '@/frontend/domain/entities/catalog';
 import ListingWizardSteps from '@/frontend/presentation/components/listing/ListingWizardSteps';
 import {
   LISTING_FIELD,
@@ -11,6 +11,11 @@ import {
   LISTING_SECTION,
   SHIPPING_OPTIONS,
 } from '@/frontend/presentation/components/listing/listingFormStyles';
+import {
+  filterProductsByIp,
+  productLinesFromProducts,
+  productsInLine,
+} from '@/frontend/shared/utils/catalogProductLines';
 import { cn } from '@/frontend/shared/utils/cn';
 
 type Props = {
@@ -18,16 +23,20 @@ type Props = {
   onBack?: () => void;
 };
 
+type StyleRow = { id: string; name: string; image: string };
+
 export default function CreateSplitBox({ embedded = false, onBack }: Props) {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [brand, setBrand] = useState('');
-  const [series, setSeries] = useState('');
+  const [ip, setIp] = useState('');
+  const [productLine, setProductLine] = useState('');
   const [brandSlug, setBrandSlug] = useState('');
-  const [seriesSlug, setSeriesSlug] = useState('');
+  const [ipSlug, setIpSlug] = useState('');
   const [brandOptions, setBrandOptions] = useState<BrandRow[]>([]);
-  const [seriesOptions, setSeriesOptions] = useState<SeriesRow[]>([]);
-  const [styles, setStyles] = useState<StyleRow[]>([]);
+  const [ipOptions, setIpOptions] = useState<SeriesRow[]>([]);
+  const [brandProducts, setBrandProducts] = useState<CatalogProduct[]>([]);
+  const [productsLoading, setProductsLoading] = useState(false);
   const [reservedIds, setReservedIds] = useState<Set<string>>(new Set());
   const [title, setTitle] = useState('');
   const [totalPrice, setTotalPrice] = useState('');
@@ -52,24 +61,58 @@ export default function CreateSplitBox({ embedded = false, onBack }: Props) {
 
   useEffect(() => {
     if (!brandSlug) return;
-    getCatalogSeries(brandSlug)
-      .then(setSeriesOptions)
-      .catch(() => setSeriesOptions([]));
+    setProductsLoading(true);
+    Promise.all([getCatalogSeries(brandSlug), getCatalogProducts({ brand: brandSlug })])
+      .then(([ips, products]) => {
+        setIpOptions(ips);
+        setBrandProducts(products);
+        const first = ips[0];
+        setIp(first?.name ?? '');
+        setIpSlug(first?.slug ?? '');
+        setProductLine('');
+        setReservedIds(new Set());
+      })
+      .catch(() => {
+        setIpOptions([]);
+        setBrandProducts([]);
+        setIp('');
+        setIpSlug('');
+      })
+      .finally(() => setProductsLoading(false));
   }, [brandSlug]);
 
-  useEffect(() => {
-    if (!brandSlug || !seriesSlug) {
-      setStyles([]);
-      return;
-    }
-    getCatalogStyles(brandSlug, seriesSlug)
-      .then(setStyles)
-      .catch(() => setStyles([]));
-  }, [brandSlug, seriesSlug]);
+  const productsForIp = useMemo(
+    () => filterProductsByIp(brandProducts, ip),
+    [brandProducts, ip]
+  );
+
+  const productLineOptions = useMemo(
+    () => productLinesFromProducts(productsForIp),
+    [productsForIp]
+  );
+
+  const styles: StyleRow[] = useMemo(() => {
+    const pool = productLine ? productsInLine(productsForIp, productLine) : [];
+    return pool.map((p) => ({ id: p.id, name: p.title, image: p.image }));
+  }, [productsForIp, productLine]);
 
   useEffect(() => {
-    if (series && !title) setTitle(`${series} 拆盒團`);
-  }, [series, title]);
+    if (!productLineOptions.length) {
+      setProductLine('');
+      return;
+    }
+    if (!productLine || !productLineOptions.includes(productLine)) {
+      setProductLine(productLineOptions[0]);
+    }
+  }, [productLineOptions, productLine]);
+
+  useEffect(() => {
+    setReservedIds(new Set());
+  }, [productLine, ip]);
+
+  useEffect(() => {
+    if (productLine && !title) setTitle(`${productLine} 拆盒團`);
+  }, [productLine, title]);
 
   const claimableCount = styles.length - reservedIds.size;
   const pricePreview = useMemo(() => {
@@ -108,9 +151,9 @@ export default function CreateSplitBox({ embedded = false, onBack }: Props) {
     setError('');
     try {
       const group = await createSplitBox({
-        title: title.trim() || `${series} 拆盒團`,
+        title: title.trim() || `${productLine} 拆盒團`,
         brand,
-        series,
+        series: ip,
         description: description.trim(),
         coverImage: styles.find((s) => !reservedIds.has(s.id))?.image,
         shipping,
@@ -133,11 +176,14 @@ export default function CreateSplitBox({ embedded = false, onBack }: Props) {
 
   const content = (
     <div className="space-y-6">
-      <ListingWizardSteps current={step} total={3} labels={['選擇系列', '自留款式', '團購設定']} />
+      <ListingWizardSteps current={step} total={3} labels={['選擇商品', '自留款式', '團購設定']} />
 
       {step === 1 ? (
         <section className="space-y-4">
-          <p className={LISTING_SECTION}>選擇系列</p>
+          <p className={LISTING_SECTION}>選擇商品</p>
+          {productsLoading ? (
+            <p className="text-xs text-on-surface-variant">載入圖鑑資料…</p>
+          ) : null}
           <div className="space-y-1.5">
             <label className={LISTING_LABEL}>品牌</label>
             <select
@@ -148,8 +194,6 @@ export default function CreateSplitBox({ embedded = false, onBack }: Props) {
                 const row = brandOptions.find((b) => (b.slug ?? b.name) === slug);
                 setBrandSlug(slug);
                 setBrand(row?.name ?? '');
-                setSeries('');
-                setSeriesSlug('');
               }}
             >
               {brandOptions.map((b) => {
@@ -163,31 +207,53 @@ export default function CreateSplitBox({ embedded = false, onBack }: Props) {
             </select>
           </div>
           <div className="space-y-1.5">
+            <label className={LISTING_LABEL}>IP</label>
+            <select
+              className={LISTING_FIELD}
+              value={ip}
+              disabled={!ipOptions.length}
+              onChange={(e) => {
+                const nextName = e.target.value;
+                const row = ipOptions.find((s) => s.name === nextName);
+                setIp(nextName);
+                setIpSlug(row?.slug ?? '');
+              }}
+            >
+              {ipOptions.length ? (
+                ipOptions.map((s) => (
+                  <option key={s.id} value={s.name}>
+                    {s.name}
+                  </option>
+                ))
+              ) : (
+                <option value="">（此品牌尚無 IP）</option>
+              )}
+            </select>
+          </div>
+          <div className="space-y-1.5">
             <label className={LISTING_LABEL}>系列</label>
             <select
               className={LISTING_FIELD}
-              value={seriesSlug}
-              onChange={(e) => {
-                const slug = e.target.value;
-                const row = seriesOptions.find((s) => s.slug === slug);
-                setSeriesSlug(slug);
-                setSeries(row?.name ?? '');
-                setReservedIds(new Set());
-              }}
+              value={productLine}
+              disabled={!productLineOptions.length}
+              onChange={(e) => setProductLine(e.target.value)}
             >
-              <option value="">請選擇系列</option>
-              {seriesOptions.map((s) => (
-                <option key={s.slug} value={s.slug}>
-                  {s.name}
-                </option>
-              ))}
+              {productLineOptions.length ? (
+                productLineOptions.map((line) => (
+                  <option key={line} value={line}>
+                    {line}
+                  </option>
+                ))
+              ) : (
+                <option value="">（此 IP 尚無系列）</option>
+              )}
             </select>
           </div>
           <WizardNav
             onBack={handleBack}
             onNext={() => setStep(2)}
             nextLabel={`下一步（${styles.length} 款）`}
-            nextDisabled={!seriesSlug || !styles.length}
+            nextDisabled={!productLine || !styles.length}
           />
         </section>
       ) : null}

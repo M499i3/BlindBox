@@ -46,13 +46,15 @@ export default function SubseriesDetail() {
         const s = deriveSeriesName(p.title);
         return name ? s === name : Boolean(s);
       })
-    : dbStyles.map((s) => ({
-        id: s.id,
-        title: s.name,
-        image: s.image,
-        price: '',
-        sourceUrl: '',
-      }));
+    : name
+      ? catalogProducts.filter((p) => deriveSeriesName(p.title) === name)
+      : dbStyles.map((s) => ({
+          id: s.id,
+          title: s.name,
+          image: s.image,
+          price: '',
+          sourceUrl: '',
+        }));
 
   const hero =
     products[0]?.image ??

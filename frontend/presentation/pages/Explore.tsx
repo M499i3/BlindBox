@@ -13,6 +13,8 @@ import {
 import { getCatalogSearch } from '@/frontend/infrastructure/api/catalogApi';
 import type { CatalogSearchResult } from '@/frontend/domain/entities/catalog';
 import { buildMockCatalogSearch, isMockDataEnabled } from '@/frontend/lib/popmartShowcase';
+import { brandLogoForSlug } from '@/frontend/lib/brandLogos';
+import { popmartIpImageForName, popmartIpImageForSlug } from '@/frontend/lib/popmartIpImages';
 
 export default function Explore() {
   const navigate = useNavigate();
@@ -30,8 +32,13 @@ export default function Explore() {
   const isSearching = activeQuery.length > 0;
 
   const dbBrands = useCatalogBrands();
-  const { products } = useCatalogProducts();
-  const { series: dbSeries } = useCatalogSeries(mock || isSearching ? undefined : selectedBrandSlug);
+  const brandFilter = mock || isSearching ? undefined : selectedBrandSlug;
+  const { products } = useCatalogProducts({ enabled: mock });
+  const { products: brandProducts, loading: brandProductsLoading } = useCatalogProducts({
+    brand: brandFilter,
+    enabled: !mock && !isSearching && Boolean(brandFilter),
+  });
+  const { series: dbSeries, loading: dbSeriesLoading } = useCatalogSeries(brandFilter);
 
   useEffect(() => {
     setDraft(activeQuery);
@@ -78,7 +85,7 @@ export default function Explore() {
       {
         slug: 'pop-mart',
         title: 'Pop Mart',
-        image: products[0]?.image,
+        image: brandLogoForSlug('pop-mart') ?? products[0]?.image,
       },
       {
         slug: 'jellycat',
@@ -91,11 +98,14 @@ export default function Explore() {
 
   const brandCards = useMemo(() => {
     if (mock) return mockBrandCards;
-    return dbBrands.map((b) => ({
-      slug: b.slug ?? b.name.toLowerCase().replace(/\s+/g, '-'),
-      title: b.name,
-      image: b.image,
-    }));
+    return dbBrands.map((b) => {
+      const slug = b.slug ?? b.name.toLowerCase().replace(/\s+/g, '-');
+      return {
+        slug,
+        title: b.name,
+        image: brandLogoForSlug(slug) ?? b.image,
+      };
+    });
   }, [mock, mockBrandCards, dbBrands]);
 
   useEffect(() => {
@@ -118,51 +128,51 @@ export default function Explore() {
       map.get(ip)!.count += 1;
     }
     return Array.from(map.values()).sort((a, b) => b.count - a.count).slice(0, 16);
-  }, [products, selectedBrandTitle, deriveBrandLabel]);
+  }, [products, selectedBrandTitle]);
 
-  useEffect(() => {
-    if (isSearching || !mock) {
-      if (!mock) setSelectedIp('');
-      return;
-    }
-    if (selectedBrandTitle !== 'Pop Mart') {
-      setSelectedIp('');
-      return;
-    }
-    if (mockIpOptions.length === 0) {
-      setSelectedIp('');
-      return;
-    }
-    if (!selectedIp || !mockIpOptions.some((x) => x.ip === selectedIp)) {
-      setSelectedIp(mockIpOptions[0].ip);
-    }
-  }, [mock, mockIpOptions, selectedBrandTitle, selectedIp, isSearching]);
-
-  const mockSeriesOptions = useMemo(() => {
-    if (!selectedIp) return [];
-    const map = new Map<string, { name: string; image?: string; count: number }>();
-    for (const p of products) {
-      if (deriveBrandLabel(p.title) !== selectedIp) continue;
-      const s = deriveSeriesName(p.title);
-      if (!s) continue;
-      if (!map.has(s)) map.set(s, { name: s, image: p.image, count: 0 });
-      map.get(s)!.count += 1;
-    }
-    return Array.from(map.values()).sort((a, b) => b.count - a.count).slice(0, 40);
-  }, [products, selectedIp, deriveBrandLabel, deriveSeriesName]);
-
-  const dbSeriesOptions = useMemo(
+  const apiIpOptions = useMemo(
     () =>
       dbSeries.map((s) => ({
+        ip: s.name,
         slug: s.slug,
-        name: s.name,
-        image: s.image,
+        image: popmartIpImageForSlug(s.slug) ?? popmartIpImageForName(s.name) ?? s.image,
         count: s.count ?? 0,
       })),
     [dbSeries]
   );
 
-  const seriesOptions = mock ? mockSeriesOptions : dbSeriesOptions;
+  const ipOptions = mock ? mockIpOptions : apiIpOptions;
+  const showIpRow = !isSearching && ipOptions.length > 0;
+
+  useEffect(() => {
+    if (isSearching) return;
+    setSelectedIp('');
+  }, [selectedBrandSlug, isSearching]);
+
+  useEffect(() => {
+    if (isSearching || ipOptions.length === 0) return;
+    if (!selectedIp || !ipOptions.some((x) => x.ip === selectedIp)) {
+      setSelectedIp(ipOptions[0].ip);
+    }
+  }, [ipOptions, selectedIp, isSearching]);
+
+  const productLineOptions = useMemo(() => {
+    if (!selectedIp) return [];
+    const map = new Map<string, { name: string; slug?: string; image?: string; count: number }>();
+    const source = mock ? products : brandProducts;
+    for (const p of source) {
+      const ipName = mock ? deriveBrandLabel(p.title) : p.seriesName;
+      if (ipName !== selectedIp) continue;
+      const line = deriveSeriesName(p.title);
+      if (!line) continue;
+      if (!map.has(line)) map.set(line, { name: line, slug: p.seriesSlug, image: p.image, count: 0 });
+      map.get(line)!.count += 1;
+    }
+    return Array.from(map.values()).sort((a, b) => b.count - a.count);
+  }, [mock, products, brandProducts, selectedIp]);
+
+  const selectedIpMeta = ipOptions.find((x) => x.ip === selectedIp);
+  const seriesOptions = productLineOptions;
 
   const resultEmpty =
     isSearching &&
@@ -361,20 +371,25 @@ export default function Explore() {
               </div>
             </section>
 
-            {mock && (
+            {showIpRow && (
               <section className="pb-2">
                 <div className="flex items-end justify-between mb-2">
                   <p className="text-[10px] font-black text-secondary tracking-wider uppercase">IP</p>
+                  {!mock && (
+                    <p className="text-[10px] text-on-surface-variant">{ipOptions.length} 個 IP</p>
+                  )}
                 </div>
 
-                {mockIpOptions.length === 0 ? (
+                {(dbSeriesLoading || brandProductsLoading) && !mock ? (
+                  <p className="text-sm text-on-surface-variant px-1">載入 IP…</p>
+                ) : ipOptions.length === 0 ? (
                   <div className="glass-card rounded-2xl p-5">
                     <p className="text-sm text-on-surface-variant">此品牌暫無可用的 IP 資料。</p>
                   </div>
                 ) : (
                   <div className="overflow-x-auto overflow-y-visible no-scrollbar -mx-1 px-1 py-2 pr-3">
                     <div className="flex gap-4">
-                      {mockIpOptions.map((ip) => {
+                      {ipOptions.map((ip) => {
                         const active = selectedIp === ip.ip;
                         return (
                           <button
@@ -426,28 +441,36 @@ export default function Explore() {
                 <div className="min-w-0">
                   <p className="text-[10px] font-black text-secondary tracking-wider uppercase">SERIES</p>
                   <h2 className="text-lg font-extrabold text-on-background mt-1 truncate">
-                    {mock ? selectedIp || '請先選擇 IP' : selectedBrandTitle || '請先選擇品牌'}
+                    {selectedIp || selectedBrandTitle || '請先選擇品牌'}
                   </h2>
+                  {selectedIpMeta && (
+                    <p className="text-[11px] text-on-surface-variant mt-0.5">
+                      {selectedBrandTitle} · {selectedIpMeta.count} 款
+                    </p>
+                  )}
                 </div>
               </div>
 
               <div className="space-y-3">
-                {(mock ? selectedIp : selectedBrandSlug) && seriesOptions.length === 0 && (
+                {selectedIp && seriesOptions.length === 0 && (
                   <div className="glass-card shadow-[4px_4px_0_#111] rounded-2xl p-5">
                     <p className="text-sm text-on-surface-variant">
-                      {mock ? '此 IP 暫無可辨識的系列。' : '此品牌暫無系列，請先執行圖鑑種子匯入。'}
+                      {mock
+                        ? '此 IP 暫無可辨識的系列。'
+                        : '此 IP 暫無可辨識的系列名稱，請點上方 IP 或改用搜尋。'}
                     </p>
                   </div>
                 )}
 
                 {seriesOptions.map((s) => {
-                  const seriesSlug = 'slug' in s ? s.slug : undefined;
+                  const ipSlug =
+                    apiIpOptions.find((x) => x.ip === selectedIp)?.slug ?? selectedIp;
                   const href = mock
                     ? `/subseries?ip=${encodeURIComponent(selectedIp)}&name=${encodeURIComponent(s.name)}`
-                    : `/subseries?brand=${encodeURIComponent(selectedBrandSlug)}&series=${encodeURIComponent(seriesSlug ?? '')}&name=${encodeURIComponent(s.name)}`;
+                    : `/subseries?brand=${encodeURIComponent(selectedBrandSlug)}&series=${encodeURIComponent(ipSlug)}&name=${encodeURIComponent(s.name)}`;
                   return (
                     <button
-                      key={seriesSlug ?? s.name}
+                      key={s.name}
                       type="button"
                       onClick={() => navigate(href)}
                       className="w-full glass-card shadow-[4px_4px_0_#111] rounded-2xl overflow-hidden flex items-center gap-4 p-4 text-left"
@@ -458,8 +481,7 @@ export default function Explore() {
                         ) : null}
                       </div>
                       <div className="min-w-0 flex-1">
-                        {!mock && <p className="text-xs font-bold text-primary">{selectedBrandTitle}</p>}
-                        {mock && selectedIp && <p className="text-xs font-bold text-primary">{selectedIp}</p>}
+                        {selectedIp && <p className="text-xs font-bold text-primary">{selectedIp}</p>}
                         <p className="text-sm font-extrabold text-on-surface line-clamp-2 leading-snug">{s.name}</p>
                         <p className="text-[11px] text-on-surface-variant mt-1">{s.count} 款</p>
                       </div>

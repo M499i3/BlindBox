@@ -28,6 +28,9 @@ type Props = {
   isInCart?: boolean;
   cartDisabled?: boolean;
   onAddToCart?: (e: React.MouseEvent) => void;
+  actionLabel?: string;
+  actionDisabled?: boolean;
+  onAction?: (e: React.MouseEvent) => void;
   className?: string;
   /** 橫向捲動列中的固定寬度卡片 */
   scrollItem?: boolean;
@@ -50,6 +53,9 @@ export default function ListingProductCard({
   isInCart = false,
   cartDisabled = false,
   onAddToCart,
+  actionLabel,
+  actionDisabled = false,
+  onAction,
   className,
   scrollItem = false,
 }: Props) {
@@ -116,7 +122,17 @@ export default function ListingProductCard({
 
         {/* 5. 按鈕區：無購物車時以 placeholder 維持高度 */}
         <div className="mt-2 flex h-11 shrink-0 items-center">
-          {showCart && onAddToCart ? (
+          {actionLabel && onAction ? (
+            <button
+              type="button"
+              data-no-scroll-top="true"
+              onClick={onAction}
+              disabled={actionDisabled}
+              className="h-11 w-full rounded-full border-2 border-outline bg-white px-3 text-xs font-extrabold text-on-background shadow-[3px_3px_0_#111] transition-transform hover:bg-secondary/10 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-60"
+            >
+              {actionLabel}
+            </button>
+          ) : showCart && onAddToCart ? (
             <button
               type="button"
               data-no-scroll-top="true"
