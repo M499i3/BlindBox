@@ -62,7 +62,21 @@ async function main() {
   {
     const { res: r1, body: rankings } = await api('/api/marketplace/rankings');
     const { res: r2, body: tags } = await api('/api/marketplace/trending-tags');
-    if (r1.ok && Array.isArray(rankings) && rankings.length > 0) {
+    const rankingShapeOk =
+      r1.ok &&
+      Array.isArray(rankings) &&
+      rankings.length > 0 &&
+      rankings.every(
+        (item) =>
+          typeof item?.id === 'string' &&
+          typeof item?.rank === 'string' &&
+          typeof item?.title === 'string' &&
+          typeof item?.price === 'string' &&
+          typeof item?.image === 'string' &&
+          typeof item?.is_hot === 'boolean' &&
+          item.heat_score === undefined
+      );
+    if (rankingShapeOk) {
       pass('Marketplace rankings', `${rankings.length} items`);
     } else fail('Marketplace rankings');
     if (r2.ok && Array.isArray(tags)) pass('Trending tags', `${tags.length} tags`);

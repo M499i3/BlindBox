@@ -40,7 +40,7 @@ def get_trending_tags(conn: psycopg2.extensions.connection) -> list[str]:
 
 
 def get_rankings(conn: psycopg2.extensions.connection) -> list[MarketplaceRankingItem]:
-    """依最新上架 + 品牌熱門排序取前 10 項。"""
+    """依 catalog_product_metrics.heat_score 排序取前 10 項。"""
     with conn.cursor() as cur:
         cur.execute(
             """
@@ -49,9 +49,11 @@ def get_rankings(conn: psycopg2.extensions.connection) -> list[MarketplaceRankin
                 cp.title,
                 cp.official_price_amount,
                 cp.official_price_currency,
-                cp.image_url
+                cp.image_url,
+                COALESCE(m.heat_score, 0) AS heat_score
             FROM catalog_products cp
-            ORDER BY cp.updated_at DESC
+            LEFT JOIN catalog_product_metrics m ON m.catalog_product_id = cp.id
+            ORDER BY COALESCE(m.heat_score, 0) DESC, cp.updated_at DESC
             LIMIT 10
             """
         )
@@ -64,6 +66,7 @@ def get_rankings(conn: psycopg2.extensions.connection) -> list[MarketplaceRankin
         currency = row.get("official_price_currency") or "HKD"
         symbol = {"HKD": "HK$", "TWD": "NT$", "CNY": "¥"}.get(currency, "HK$")
         price = f"{symbol} {amount / 100:.2f}"
+        heat_score = int(row.get("heat_score") or 0)
         result.append(
             MarketplaceRankingItem(
                 id=row["id"] or str(i),
@@ -71,7 +74,7 @@ def get_rankings(conn: psycopg2.extensions.connection) -> list[MarketplaceRankin
                 title=row["title"],
                 price=price,
                 image=row["image_url"] or "",
-                is_hot=i < 3,
+                is_hot=i < 3 and heat_score > 0,
             )
         )
     return result

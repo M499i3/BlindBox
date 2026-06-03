@@ -102,6 +102,8 @@ npm run db:seed:dry   # 預覽，不寫入
 npm run db:seed       # 圖鑑 + user1@test.com（密碼 password）
 npm run db:seed:demo  # 3 使用者 + 市集/訂單/聊天/通知 demo（需先 db:seed）
 npm run db:seed:all   # 上述兩者連跑
+npm run db:refresh-heat  # KOCA 熱度指標 + 月成交 rollup（需先 db:seed:koca）
+npm run db:compute-heat  # 僅重算本站月指标與混合 heat_score
 ```
 
 `users.password_hash` 以 bcrypt 儲存；測試帳號 `user1@test.com`～`user3@test.com` 密碼皆為 `password`。
