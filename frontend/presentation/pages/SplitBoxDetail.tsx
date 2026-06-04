@@ -89,13 +89,13 @@ function SlotCard({
             認領此款
           </button>
         ) : null}
-        {slot.listingId && slot.status !== 'reserved' ? (
+        {slot.listingId && slot.status !== 'reserved' && onAddToCart ? (
           <button
             type="button"
             disabled={isInCart}
             onClick={(e) => {
               e.stopPropagation();
-              onAddToCart?.();
+              onAddToCart();
             }}
             className="w-full rounded-full border-2 border-outline bg-white py-2 text-xs font-extrabold text-on-surface shadow-[2px_2px_0_#111] disabled:opacity-50"
           >
@@ -274,7 +274,7 @@ export default function SplitBoxDetail() {
                 onOpenListing={(listingId) => navigate(`/listing/${listingId}`)}
                 isInCart={slot.listingId ? isInCart(slot.listingId) : false}
                 onAddToCart={
-                  slot.listingId
+                  slot.listingId && !group.isOrganizer
                     ? () => {
                         if (!isInCart(slot.listingId!)) addToCart(slot.listingId!);
                       }

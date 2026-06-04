@@ -35,6 +35,14 @@ def add_to_cart(
 ) -> None:
     with conn.cursor() as cur:
         cur.execute(
+            "SELECT seller_id FROM listings WHERE id = %s AND deleted_at IS NULL",
+            (listing_id,),
+        )
+        row = cur.fetchone()
+        if row and str(row["seller_id"]) == user_id:
+            from fastapi import HTTPException
+            raise HTTPException(status_code=403, detail="無法將自己的貼文加入購物車")
+        cur.execute(
             """
             INSERT INTO cart_items (user_id, listing_id)
             VALUES (%s, %s)
