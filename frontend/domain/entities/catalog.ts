@@ -7,6 +7,8 @@ export type CatalogProduct = {
   sourceUrl: string;
   brandSlug?: string;
   brandName?: string;
+  ipSlug?: string;
+  ipName?: string;
   seriesSlug?: string;
   seriesName?: string;
 };
@@ -33,6 +35,14 @@ export type BrandRow = {
   slug?: string;
 };
 
+export type IpRow = {
+  id: string;
+  slug: string;
+  name: string;
+  image?: string;
+  count?: number;
+};
+
 export type SeriesRow = {
   id: string;
   slug: string;
@@ -41,6 +51,8 @@ export type SeriesRow = {
   count?: number;
   brandSlug?: string;
   brandName?: string;
+  ipSlug?: string;
+  ipName?: string;
 };
 
 export type CatalogSearchResult = {

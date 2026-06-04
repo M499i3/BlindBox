@@ -27,4 +27,6 @@ export type Listing = {
 export type CreateListingInput = Omit<
   Listing,
   'id' | 'createdAt' | 'sellerName' | 'isSeeded'
->;
+> & {
+  ip?: string;
+};

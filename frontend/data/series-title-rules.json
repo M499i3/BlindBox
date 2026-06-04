@@ -1,0 +1,646 @@
+{
+  "$schema": "series-title-rules.v1",
+  "description": "標題包含 titleContains 時歸入 seriesName（不需有「系列」二字）。較長的規則優先匹配。",
+  "rules": [
+    {
+      "seriesName": "THE MONSTERS PIN FOR LOVE - 字母掛件盲盒 吊飾",
+      "titleContains": "THE MONSTERS PIN FOR LOVE - 字母掛件盲盒 吊飾"
+    },
+    {
+      "seriesName": "AZURA日本限定Y2K盲盒 公仔",
+      "titleContains": "AZURA日本限定Y2K盲盒 公仔"
+    },
+    {
+      "seriesName": "The Monsters - Time to Chill 初代 公仔",
+      "titleContains": "The Monsters - Time to Chill 初代 公仔"
+    },
+    {
+      "seriesName": "THE MONSTER ANGEL IN CLOUDS 公仔",
+      "titleContains": "THE MONSTER ANGEL IN CLOUDS 公仔"
+    },
+    {
+      "seriesName": "Spotlight 13th 聚光燈下 13週年 公仔",
+      "titleContains": "Spotlight 13th 聚光燈下 13週年 公仔"
+    },
+    {
+      "seriesName": "Hello Thailand 金屬鏈條徽章盲盒 別針",
+      "titleContains": "Hello Thailand 金屬鏈條徽章盲盒 別針"
+    },
+    {
+      "seriesName": "Hello Thailand 金屬鏈條徽章盲盒 吊飾",
+      "titleContains": "Hello Thailand 金屬鏈條徽章盲盒 吊飾"
+    },
+    {
+      "seriesName": "Care Bears愛心熊聯名 毛絨掛件盲盒 吊飾",
+      "titleContains": "Care Bears愛心熊聯名 毛絨掛件盲盒 吊飾"
+    },
+    {
+      "seriesName": "扭蛋盲盒 Baby MOLLY 抱抱探索計劃",
+      "titleContains": "扭蛋盲盒 Baby MOLLY 抱抱探索計劃"
+    },
+    {
+      "seriesName": "LABUBU 搞怪便利店 炸蝦耳機包 擺件",
+      "titleContains": "LABUBU 搞怪便利店 炸蝦耳機包 擺件"
+    },
+    {
+      "seriesName": "扭蛋盲盒 PINO JELLY 在你生活裡",
+      "titleContains": "扭蛋盲盒 PINO JELLY 在你生活裡"
+    },
+    {
+      "seriesName": "14週年 無雙鎮 14週年 無雙鎮 公仔",
+      "titleContains": "14週年 無雙鎮 14週年 無雙鎮 公仔"
+    },
+    {
+      "seriesName": "Ted2 泰迪熊 可動毛絨掛件盲盒 吊飾",
+      "titleContains": "Ted2 泰迪熊 可動毛絨掛件盲盒 吊飾"
+    },
+    {
+      "seriesName": "Hirono x CLOT 八代 公仔",
+      "titleContains": "Hirono x CLOT 八代 公仔"
+    },
+    {
+      "seriesName": "橫山宏Ma.k.系列 手辦盲盒 公仔",
+      "titleContains": "橫山宏Ma.k.系列 手辦盲盒 公仔"
+    },
+    {
+      "seriesName": "Sweet Treat Series",
+      "titleContains": "Sweet Treat Series"
+    },
+    {
+      "seriesName": "SAD CLUB 場景手辦盲盒 擺件",
+      "titleContains": "SAD CLUB 場景手辦盲盒 擺件"
+    },
+    {
+      "seriesName": "SAD CLUB 盲盒毛絨花朵 娃娃",
+      "titleContains": "SAD CLUB 盲盒毛絨花朵 娃娃"
+    },
+    {
+      "seriesName": "春天野在家 搪膠毛絨公仔掛件 吊飾",
+      "titleContains": "春天野在家 搪膠毛絨公仔掛件 吊飾"
+    },
+    {
+      "seriesName": "x 柯達聯名 小野熊毛絨掛飾 公仔",
+      "titleContains": "x 柯達聯名 小野熊毛絨掛飾 公仔"
+    },
+    {
+      "seriesName": "扭蛋盲盒 玩具總動員 萬聖節驚魂夜",
+      "titleContains": "扭蛋盲盒 玩具總動員 萬聖節驚魂夜"
+    },
+    {
+      "seriesName": "飛天小女警聯名 飛天小女警 公仔",
+      "titleContains": "飛天小女警聯名 飛天小女警 公仔"
+    },
+    {
+      "seriesName": "飛天小女警聯名 泡泡兔 扭蛋盲盒",
+      "titleContains": "飛天小女警聯名 泡泡兔 扭蛋盲盒"
+    },
+    {
+      "seriesName": "SAD CLUB 場景手辦 擺件",
+      "titleContains": "SAD CLUB 場景手辦 擺件"
+    },
+    {
+      "seriesName": "眼淚發射計畫 毛絨掛件盲盒 吊飾",
+      "titleContains": "眼淚發射計畫 毛絨掛件盲盒 吊飾"
+    },
+    {
+      "seriesName": "特別盲盒 慶祝一刻15周年 公仔",
+      "titleContains": "特別盲盒 慶祝一刻15周年 公仔"
+    },
+    {
+      "seriesName": "扭蛋盲盒 CRYBABY落日歌會",
+      "titleContains": "扭蛋盲盒 CRYBABY落日歌會"
+    },
+    {
+      "seriesName": "扭蛋盲盒 LABUBU 慵懶瑜伽",
+      "titleContains": "扭蛋盲盒 LABUBU 慵懶瑜伽"
+    },
+    {
+      "seriesName": "扭蛋盲盒 LABUBU 看不見我",
+      "titleContains": "扭蛋盲盒 LABUBU 看不見我"
+    },
+    {
+      "seriesName": "扭蛋盲盒 MOLLY 放空的一天",
+      "titleContains": "扭蛋盲盒 MOLLY 放空的一天"
+    },
+    {
+      "seriesName": "PINO JELLY 嫉妒 公仔",
+      "titleContains": "公仔 PINO JELLY 嫉妒"
+    },
+    {
+      "seriesName": "象棋大冒險 醣膠絨毛玩偶 公仔",
+      "titleContains": "象棋大冒險 醣膠絨毛玩偶 公仔"
+    },
+    {
+      "seriesName": "米蘭聯名 二代 搪膠毛絨 公仔",
+      "titleContains": "米蘭聯名 二代 搪膠毛絨 公仔"
+    },
+    {
+      "seriesName": "HIRONO小野兔毛绒公仔挂件",
+      "titleContains": "HIRONO小野兔毛绒公仔挂件"
+    },
+    {
+      "seriesName": "Care Bears 扭蛋盲盒",
+      "titleContains": "Care Bears 扭蛋盲盒"
+    },
+    {
+      "seriesName": "Pin for love 吊飾",
+      "titleContains": "Pin for love 吊飾"
+    },
+    {
+      "seriesName": "特別盲盒 無雙陣14周年 公仔",
+      "titleContains": "特別盲盒 無雙陣14周年 公仔"
+    },
+    {
+      "seriesName": "扭蛋盲盒 Zsiga 樹大招風",
+      "titleContains": "扭蛋盲盒 Zsiga 樹大招風"
+    },
+    {
+      "seriesName": "123星星人 懶蟲起床啦 吊飾",
+      "titleContains": "吊飾 123星星人 懶蟲起床啦"
+    },
+    {
+      "seriesName": "邸語-觀中景 擺件 車載香氛",
+      "titleContains": "邸語-觀中景 擺件 車載香氛"
+    },
+    {
+      "seriesName": "比奇堡的居民們 2.0 吊飾",
+      "titleContains": "比奇堡的居民們 2.0 吊飾"
+    },
+    {
+      "seriesName": "米蘭聯名 搪膠毛絨公仔 吊飾",
+      "titleContains": "米蘭聯名 搪膠毛絨公仔 吊飾"
+    },
+    {
+      "seriesName": "海綿寶寶 睡衣派對 扭蛋盲盒",
+      "titleContains": "海綿寶寶 睡衣派對 扭蛋盲盒"
+    },
+    {
+      "seriesName": "Hello Thailand",
+      "titleContains": "Hello Thailand"
+    },
+    {
+      "seriesName": "MOLLY 100% 第二代",
+      "titleContains": "MOLLY 100% 第二代"
+    },
+    {
+      "seriesName": "MOLLY 100% 第四代",
+      "titleContains": "MOLLY 100% 第四代"
+    },
+    {
+      "seriesName": "Labubu心動馬卡龍 娃娃",
+      "titleContains": "Labubu心動馬卡龍 娃娃"
+    },
+    {
+      "seriesName": "迪士尼100週年皮克斯 公仔",
+      "titleContains": "迪士尼100週年皮克斯 公仔"
+    },
+    {
+      "seriesName": "加拿大限定河狸寶寶吊卡 公仔",
+      "titleContains": "公仔 加拿大限定河狸寶寶吊卡"
+    },
+    {
+      "seriesName": "象棋大冒險 醣膠絨毛 吊飾",
+      "titleContains": "象棋大冒險 醣膠絨毛 吊飾"
+    },
+    {
+      "seriesName": "象棋大冒險 盲盒 香氛蠟燭",
+      "titleContains": "象棋大冒險 盲盒 香氛蠟燭"
+    },
+    {
+      "seriesName": "象棋大冒險 盲盒冰箱 磁鐵",
+      "titleContains": "象棋大冒險 盲盒冰箱 磁鐵"
+    },
+    {
+      "seriesName": "象棋大冒險 盲盒掛件 吊飾",
+      "titleContains": "象棋大冒險 盲盒掛件 吊飾"
+    },
+    {
+      "seriesName": "比奇堡的居民們 二代 吊飾",
+      "titleContains": "比奇堡的居民們 二代 吊飾"
+    },
+    {
+      "seriesName": "米蘭聯名 一代 搪膠 公仔",
+      "titleContains": "米蘭聯名 一代 搪膠 公仔"
+    },
+    {
+      "seriesName": "午夜馬戲團 手辦盲盒 公仔",
+      "titleContains": "午夜馬戲團 手辦盲盒 公仔"
+    },
+    {
+      "seriesName": "犬夜叉聯名 手辦盲盒 公仔",
+      "titleContains": "犬夜叉聯名 手辦盲盒 公仔"
+    },
+    {
+      "seriesName": "肯德基聯名 手辦盲盒 公仔",
+      "titleContains": "肯德基聯名 手辦盲盒 公仔"
+    },
+    {
+      "seriesName": "Care Bears 公仔",
+      "titleContains": "Care Bears 公仔"
+    },
+    {
+      "seriesName": "海綿寶寶人生轉場 扭蛋盲盒",
+      "titleContains": "海綿寶寶人生轉場 扭蛋盲盒"
+    },
+    {
+      "seriesName": "海綿寶寶野餐派對 扭蛋盲盒",
+      "titleContains": "海綿寶寶野餐派對 扭蛋盲盒"
+    },
+    {
+      "seriesName": "橫山宏Ma.k.系列 擺件",
+      "titleContains": "橫山宏Ma.k.系列 擺件"
+    },
+    {
+      "seriesName": "扭蛋盲盒 MOLLY 抱抱",
+      "titleContains": "扭蛋盲盒 MOLLY 抱抱"
+    },
+    {
+      "seriesName": "扭蛋盲盒 chaka琉光曲",
+      "titleContains": "扭蛋盲盒 chaka琉光曲"
+    },
+    {
+      "seriesName": "扭蛋盲盒 畢奇 美食大酒樓",
+      "titleContains": "扭蛋盲盒 畢奇 美食大酒樓"
+    },
+    {
+      "seriesName": "萌粒 咖啡工廠 香氛蠟燭",
+      "titleContains": "萌粒 咖啡工廠 香氛蠟燭"
+    },
+    {
+      "seriesName": "森林之夜 手辦盲盒 公仔",
+      "titleContains": "森林之夜 手辦盲盒 公仔"
+    },
+    {
+      "seriesName": "貓和老鼠 搞怪樂園 公仔",
+      "titleContains": "貓和老鼠 搞怪樂園 公仔"
+    },
+    {
+      "seriesName": "貓和老鼠 星盤奇緣 公仔",
+      "titleContains": "貓和老鼠 星盤奇緣 公仔"
+    },
+    {
+      "seriesName": "MEGA 400% 公仔",
+      "titleContains": "MEGA 400% 公仔"
+    },
+    {
+      "seriesName": "叛桃朋克 朋克仙子 公仔",
+      "titleContains": "叛桃朋克 朋克仙子 公仔"
+    },
+    {
+      "seriesName": "特別盲盒 吃著不盡 公仔",
+      "titleContains": "特別盲盒 吃著不盡 公仔"
+    },
+    {
+      "seriesName": "特別盲盒 樂園限定 公仔",
+      "titleContains": "特別盲盒 樂園限定 公仔"
+    },
+    {
+      "seriesName": "特別盲盒 聚光燈下 公仔",
+      "titleContains": "特別盲盒 聚光燈下 公仔"
+    },
+    {
+      "seriesName": "畢業季 耳機包 扭蛋盲盒",
+      "titleContains": "畢業季 耳機包 扭蛋盲盒"
+    },
+    {
+      "seriesName": "Acura暖冬聖誕 公仔",
+      "titleContains": "公仔 Acura暖冬聖誕"
+    },
+    {
+      "seriesName": "KUBO 海盜船長 公仔",
+      "titleContains": "公仔 KUBO 海盜船長"
+    },
+    {
+      "seriesName": "PUCKY 肉肉龍 公仔",
+      "titleContains": "公仔 PUCKY 肉肉龍"
+    },
+    {
+      "seriesName": "小小的使壞 二代 公仔",
+      "titleContains": "小小的使壞 二代 公仔"
+    },
+    {
+      "seriesName": "英雄聯盟中路對決 公仔",
+      "titleContains": "英雄聯盟中路對決 公仔"
+    },
+    {
+      "seriesName": "DIMOO稻草人 公仔",
+      "titleContains": "公仔 DIMOO稻草人"
+    },
+    {
+      "seriesName": "小甜豆 迎兔接福 公仔",
+      "titleContains": "公仔 小甜豆 迎兔接福"
+    },
+    {
+      "seriesName": "比奇堡的居民們 吊飾",
+      "titleContains": "比奇堡的居民們 吊飾"
+    },
+    {
+      "seriesName": "飛天小女警聯名 吊飾",
+      "titleContains": "飛天小女警聯名 吊飾"
+    },
+    {
+      "seriesName": "飛天小女警聯名 公仔",
+      "titleContains": "飛天小女警聯名 公仔"
+    },
+    {
+      "seriesName": "狂歡週年慶 扭蛋盲盒",
+      "titleContains": "狂歡週年慶 扭蛋盲盒"
+    },
+    {
+      "seriesName": "自然的形狀 扭蛋盲盒",
+      "titleContains": "自然的形狀 扭蛋盲盒"
+    },
+    {
+      "seriesName": "萌粒 咖啡工廠 公仔",
+      "titleContains": "萌粒 咖啡工廠 公仔"
+    },
+    {
+      "seriesName": "今天心情怎麼樣 公仔",
+      "titleContains": "今天心情怎麼樣 公仔"
+    },
+    {
+      "seriesName": "寬恕之城 三代 公仔",
+      "titleContains": "寬恕之城 三代 公仔"
+    },
+    {
+      "seriesName": "放學後的Merodi",
+      "titleContains": "放學後的Merodi"
+    },
+    {
+      "seriesName": "Molly二代 公仔",
+      "titleContains": "Molly二代 公仔"
+    },
+    {
+      "seriesName": "慵懶瑜伽係 扭蛋盲盒",
+      "titleContains": "慵懶瑜伽係 扭蛋盲盒"
+    },
+    {
+      "seriesName": "曉組織盲盒 扭蛋盲盒",
+      "titleContains": "曉組織盲盒 扭蛋盲盒"
+    },
+    {
+      "seriesName": "龍吟獻瑞 盲盒 公仔",
+      "titleContains": "龍吟獻瑞 盲盒 公仔"
+    },
+    {
+      "seriesName": "精靈們的茶話會 公仔",
+      "titleContains": "公仔 精靈們的茶話會"
+    },
+    {
+      "seriesName": "進退之門 香氛蠟燭",
+      "titleContains": "進退之門 香氛蠟燭"
+    },
+    {
+      "seriesName": "魔力卡卡 扭蛋盲盒",
+      "titleContains": "魔力卡卡 扭蛋盲盒"
+    },
+    {
+      "seriesName": "邸語-觀中景 公仔",
+      "titleContains": "邸語-觀中景 公仔"
+    },
+    {
+      "seriesName": "庇護所 六代 公仔",
+      "titleContains": "庇護所 六代 公仔"
+    },
+    {
+      "seriesName": "糖果怪物小鎮 公仔",
+      "titleContains": "糖果怪物小鎮 公仔"
+    },
+    {
+      "seriesName": "詭樂園 十代 公仔",
+      "titleContains": "詭樂園 十代 公仔"
+    },
+    {
+      "seriesName": "叛桃朋克 扭蛋盲盒",
+      "titleContains": "叛桃朋克 扭蛋盲盒"
+    },
+    {
+      "seriesName": "哭熊 吊飾 耳機包",
+      "titleContains": "哭熊 吊飾 耳機包"
+    },
+    {
+      "seriesName": "小熊軟體 扭蛋盲盒",
+      "titleContains": "小熊軟體 扭蛋盲盒"
+    },
+    {
+      "seriesName": "掉了天大的牙 吊飾",
+      "titleContains": "掉了天大的牙 吊飾"
+    },
+    {
+      "seriesName": "侏羅紀世界 公仔",
+      "titleContains": "侏羅紀世界 公仔"
+    },
+    {
+      "seriesName": "像我一樣甜 公仔",
+      "titleContains": "像我一樣甜 公仔"
+    },
+    {
+      "seriesName": "回聲 九代 公仔",
+      "titleContains": "回聲 九代 公仔"
+    },
+    {
+      "seriesName": "在你生活裡 公仔",
+      "titleContains": "在你生活裡 公仔"
+    },
+    {
+      "seriesName": "明日早高峰 公仔",
+      "titleContains": "明日早高峰 公仔"
+    },
+    {
+      "seriesName": "許願時間到 公仔",
+      "titleContains": "許願時間到 公仔"
+    },
+    {
+      "seriesName": "重塑 五代 公仔",
+      "titleContains": "重塑 五代 公仔"
+    },
+    {
+      "seriesName": "默劇 四代 公仔",
+      "titleContains": "默劇 四代 公仔"
+    },
+    {
+      "seriesName": "AZURA 公仔",
+      "titleContains": "AZURA 公仔"
+    },
+    {
+      "seriesName": "SP 吊卡 公仔",
+      "titleContains": "SP 吊卡 公仔"
+    },
+    {
+      "seriesName": "春天野在家 公仔",
+      "titleContains": "春天野在家 公仔"
+    },
+    {
+      "seriesName": "爵士樂吊卡 吊飾",
+      "titleContains": "爵士樂吊卡 吊飾"
+    },
+    {
+      "seriesName": "三角巧克力 公仔",
+      "titleContains": "公仔 三角巧克力"
+    },
+    {
+      "seriesName": "和平主義號 公仔",
+      "titleContains": "公仔 和平主義號"
+    },
+    {
+      "seriesName": "餐桌 香氛蠟燭",
+      "titleContains": "餐桌 香氛蠟燭"
+    },
+    {
+      "seriesName": "進退之門 公仔",
+      "titleContains": "進退之門 公仔"
+    },
+    {
+      "seriesName": "不眠劇場 娃娃",
+      "titleContains": "不眠劇場 娃娃"
+    },
+    {
+      "seriesName": "人生如戲 公仔",
+      "titleContains": "人生如戲 公仔"
+    },
+    {
+      "seriesName": "冬日樂章 娃娃",
+      "titleContains": "冬日樂章 娃娃"
+    },
+    {
+      "seriesName": "密林古堡 公仔",
+      "titleContains": "密林古堡 公仔"
+    },
+    {
+      "seriesName": "小野一代 公仔",
+      "titleContains": "小野一代 公仔"
+    },
+    {
+      "seriesName": "平日奇境 公仔",
+      "titleContains": "平日奇境 公仔"
+    },
+    {
+      "seriesName": "庭前墨梅 公仔",
+      "titleContains": "庭前墨梅 公仔"
+    },
+    {
+      "seriesName": "熊貓熱潮 公仔",
+      "titleContains": "熊貓熱潮 公仔"
+    },
+    {
+      "seriesName": "食夢動物 公仔",
+      "titleContains": "食夢動物 公仔"
+    },
+    {
+      "seriesName": "我們都是星星人",
+      "titleContains": "我們都是星星人"
+    },
+    {
+      "seriesName": "吉量手辦 公仔",
+      "titleContains": "吉量手辦 公仔"
+    },
+    {
+      "seriesName": "搪膠毛絨 公仔",
+      "titleContains": "搪膠毛絨 公仔"
+    },
+    {
+      "seriesName": "漫威 扭蛋盲盒",
+      "titleContains": "漫威 扭蛋盲盒"
+    },
+    {
+      "seriesName": "牡蠣寶寶 娃娃",
+      "titleContains": "牡蠣寶寶 娃娃"
+    },
+    {
+      "seriesName": "瞬間飛行 公仔",
+      "titleContains": "瞬間飛行 公仔"
+    },
+    {
+      "seriesName": "今天心情怎麼樣 公仔",
+      "titleContains": "今天心情怎麼樣"
+    },
+    {
+      "seriesName": "野外拾遺 公仔",
+      "titleContains": "公仔 野外拾遺"
+    },
+    {
+      "seriesName": "電氣星人 公仔",
+      "titleContains": "公仔 電氣星人"
+    },
+    {
+      "seriesName": "夜之城 公仔",
+      "titleContains": "夜之城 公仔"
+    },
+    {
+      "seriesName": "小王子 公仔",
+      "titleContains": "小王子 公仔"
+    },
+    {
+      "seriesName": "100%三代",
+      "titleContains": "100%三代"
+    },
+    {
+      "seriesName": "Fluffy",
+      "titleContains": "Fluffy"
+    },
+    {
+      "seriesName": "誕生花 公仔",
+      "titleContains": "誕生花 公仔"
+    },
+    {
+      "seriesName": "磁鐵 冰箱貼",
+      "titleContains": "磁鐵 冰箱貼"
+    },
+    {
+      "seriesName": "金鏟鏟 公仔",
+      "titleContains": "金鏟鏟 公仔"
+    },
+    {
+      "seriesName": "香草脆 吊飾",
+      "titleContains": "香草脆 吊飾"
+    },
+    {
+      "seriesName": "馬卡龍 公仔",
+      "titleContains": "公仔 馬卡龍"
+    },
+    {
+      "seriesName": "大久保 公仔",
+      "titleContains": "大久保 公仔"
+    },
+    {
+      "seriesName": "餐桌 公仔",
+      "titleContains": "餐桌 公仔"
+    },
+    {
+      "seriesName": "溫度 公仔",
+      "titleContains": "溫度 公仔"
+    },
+    {
+      "seriesName": "一代 公仔",
+      "titleContains": "一代 公仔"
+    },
+    {
+      "seriesName": "侏羅紀世界 公仔",
+      "titleContains": "侏羅紀世界"
+    },
+    {
+      "seriesName": "在你生活裡 公仔",
+      "titleContains": "在你生活裡"
+    },
+    {
+      "seriesName": "極夜 公仔",
+      "titleContains": "公仔 極夜"
+    },
+    {
+      "seriesName": "禁錮 公仔",
+      "titleContains": "公仔 禁錮"
+    },
+    {
+      "seriesName": "哭娃 吊飾",
+      "titleContains": "吊飾 哭娃"
+    },
+    {
+      "seriesName": "一盞風月",
+      "titleContains": "一盞風月"
+    },
+    {
+      "seriesName": "魔力卡卡 扭蛋盲盒",
+      "titleContains": "魔力卡卡"
+    }
+  ]
+}

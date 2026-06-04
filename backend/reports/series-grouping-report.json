@@ -1,0 +1,6903 @@
+{
+  "summary": {
+    "series_count": 298,
+    "product_count": 2387,
+    "multi_ip_series_count": 27,
+    "multi_ip_series": [
+      {
+        "brand": "pop-mart",
+        "line": "未分系列",
+        "assigned_ip": "其他 IP",
+        "koca_ips": [
+          "Baby Molly",
+          "CRYBABY",
+          "Dimoo",
+          "LABUBU",
+          "Molly",
+          "SKULLPANDA",
+          "其他 IP",
+          "星星人",
+          "迪士尼"
+        ],
+        "products": 28
+      },
+      {
+        "brand": "pop-mart",
+        "line": "浪漫指尖系列",
+        "assigned_ip": "其他 IP",
+        "koca_ips": [
+          "CHAKA",
+          "Dimoo",
+          "HACIPUPU",
+          "KUBO",
+          "LABUBU",
+          "Molly",
+          "PINO JELLY",
+          "PUCKY",
+          "SKULLPANDA",
+          "Zsiga",
+          "其他 IP"
+        ],
+        "products": 27
+      },
+      {
+        "brand": "pop-mart",
+        "line": "你最珍貴系列",
+        "assigned_ip": "其他 IP",
+        "koca_ips": [
+          "Baby Molly",
+          "Dimoo",
+          "HACIPUPU",
+          "Hirono",
+          "LABUBU",
+          "Molly",
+          "SKULLPANDA",
+          "星星人"
+        ],
+        "products": 24
+      },
+      {
+        "brand": "pop-mart",
+        "line": "萌粒 睡衣派對系列",
+        "assigned_ip": "其他 IP",
+        "koca_ips": [
+          "CRYBABY",
+          "Dimoo",
+          "HACIPUPU",
+          "KUBO",
+          "LABUBU",
+          "Molly",
+          "PINO JELLY",
+          "PUCKY",
+          "SKULLPANDA",
+          "Zsiga",
+          "其他 IP",
+          "小甜豆",
+          "星星人"
+        ],
+        "products": 23
+      },
+      {
+        "brand": "pop-mart",
+        "line": "Dear Birds系列",
+        "assigned_ip": "其他 IP",
+        "koca_ips": [
+          "Baby Molly",
+          "CRYBABY",
+          "Dimoo",
+          "HACIPUPU",
+          "Hirono",
+          "LABUBU",
+          "SKULLPANDA",
+          "星星人"
+        ],
+        "products": 20
+      },
+      {
+        "brand": "pop-mart",
+        "line": "沿途的風景系列",
+        "assigned_ip": "其他 IP",
+        "koca_ips": [
+          "Baby Molly",
+          "Molly"
+        ],
+        "products": 19
+      },
+      {
+        "brand": "pop-mart",
+        "line": "萌粒 遇見錦鯉系列",
+        "assigned_ip": "其他 IP",
+        "koca_ips": [
+          "CRYBABY",
+          "Dimoo",
+          "HACIPUPU",
+          "LABUBU",
+          "Molly",
+          "PINO JELLY",
+          "PUCKY",
+          "SKULLPANDA",
+          "Zsiga",
+          "其他 IP",
+          "小甜豆"
+        ],
+        "products": 19
+      },
+      {
+        "brand": "pop-mart",
+        "line": "晚安夜空系列",
+        "assigned_ip": "其他 IP",
+        "koca_ips": [
+          "CHAKA",
+          "Dimoo",
+          "HACIPUPU",
+          "KUBO",
+          "LABUBU",
+          "Molly",
+          "PINO JELLY",
+          "PUCKY",
+          "SKULLPANDA",
+          "Zsiga",
+          "其他 IP",
+          "小甜豆",
+          "星星人"
+        ],
+        "products": 18
+      },
+      {
+        "brand": "pop-mart",
+        "line": "萌粒 跟我去郊遊系列",
+        "assigned_ip": "其他 IP",
+        "koca_ips": [
+          "CHAKA",
+          "CRYBABY",
+          "Dimoo",
+          "HACIPUPU",
+          "KUBO",
+          "LABUBU",
+          "Molly",
+          "PINO JELLY",
+          "POLAR",
+          "PUCKY",
+          "SKULLPANDA",
+          "Zsiga",
+          "其他 IP",
+          "小甜豆",
+          "星星人"
+        ],
+        "products": 18
+      },
+      {
+        "brand": "pop-mart",
+        "line": "15週年系列",
+        "assigned_ip": "其他 IP",
+        "koca_ips": [
+          "Baby Molly",
+          "CHAKA",
+          "CRYBABY",
+          "Dimoo",
+          "HACIPUPU",
+          "Hirono",
+          "KUBO",
+          "LABUBU",
+          "Molly",
+          "PINO JELLY",
+          "POLAR",
+          "PUCKY",
+          "SKULLPANDA",
+          "Zsiga",
+          "小甜豆",
+          "星星人"
+        ],
+        "products": 17
+      },
+      {
+        "brand": "pop-mart",
+        "line": "萌粒 咖啡工廠 公仔",
+        "assigned_ip": "其他 IP",
+        "koca_ips": [
+          "CHAKA",
+          "CRYBABY",
+          "Dimoo",
+          "LABUBU",
+          "Molly",
+          "PINO JELLY",
+          "SKULLPANDA",
+          "Zsiga"
+        ],
+        "products": 16
+      },
+      {
+        "brand": "pop-mart",
+        "line": "萌粒 毛絨絨暖呼呼系列",
+        "assigned_ip": "其他 IP",
+        "koca_ips": [
+          "CRYBABY",
+          "Dimoo",
+          "LABUBU",
+          "Molly",
+          "SKULLPANDA",
+          "星星人"
+        ],
+        "products": 16
+      },
+      {
+        "brand": "pop-mart",
+        "line": "小手拉小手系列",
+        "assigned_ip": "其他 IP",
+        "koca_ips": [
+          "Baby Molly",
+          "CRYBABY",
+          "Dimoo",
+          "HACIPUPU",
+          "Hirono",
+          "KUBO",
+          "LABUBU",
+          "Molly",
+          "PINO JELLY",
+          "POLAR",
+          "PUCKY",
+          "SKULLPANDA",
+          "Zsiga",
+          "小甜豆"
+        ],
+        "products": 15
+      },
+      {
+        "brand": "pop-mart",
+        "line": "萌粒 招財貓貓系列",
+        "assigned_ip": "其他 IP",
+        "koca_ips": [
+          "CRYBABY",
+          "Dimoo",
+          "HACIPUPU",
+          "KUBO",
+          "LABUBU",
+          "Molly",
+          "PUCKY",
+          "SKULLPANDA",
+          "Zsiga",
+          "其他 IP",
+          "小甜豆"
+        ],
+        "products": 15
+      },
+      {
+        "brand": "pop-mart",
+        "line": "點金奔騰系列",
+        "assigned_ip": "其他 IP",
+        "koca_ips": [
+          "Baby Molly",
+          "CHAKA",
+          "Dimoo",
+          "HACIPUPU",
+          "LABUBU",
+          "Molly",
+          "PUCKY",
+          "SKULLPANDA",
+          "Zsiga",
+          "其他 IP",
+          "星星人"
+        ],
+        "products": 15
+      },
+      {
+        "brand": "pop-mart",
+        "line": "14週年 無雙鎮 14週年 無雙鎮 公仔",
+        "assigned_ip": "其他 IP",
+        "koca_ips": [
+          "CRYBABY",
+          "Dimoo",
+          "HACIPUPU",
+          "Hirono",
+          "KUBO",
+          "LABUBU",
+          "Molly",
+          "PINO JELLY",
+          "PUCKY",
+          "SKULLPANDA",
+          "Zsiga",
+          "小甜豆"
+        ],
+        "products": 13
+      },
+      {
+        "brand": "pop-mart",
+        "line": "Spotlight 13th 聚光燈下 13週年 公仔",
+        "assigned_ip": "其他 IP",
+        "koca_ips": [
+          "CRYBABY",
+          "Dimoo",
+          "HACIPUPU",
+          "Hirono",
+          "LABUBU",
+          "Molly",
+          "PINO JELLY",
+          "PUCKY",
+          "SKULLPANDA",
+          "小甜豆"
+        ],
+        "products": 12
+      },
+      {
+        "brand": "pop-mart",
+        "line": "WHY SO SERIOUS 系列",
+        "assigned_ip": "其他 IP",
+        "koca_ips": [
+          "Dimoo",
+          "HACIPUPU",
+          "LABUBU",
+          "Molly",
+          "星星人"
+        ],
+        "products": 12
+      },
+      {
+        "brand": "pop-mart",
+        "line": "心願指尖系列",
+        "assigned_ip": "其他 IP",
+        "koca_ips": [
+          "Dimoo",
+          "HACIPUPU",
+          "LABUBU",
+          "Molly",
+          "PUCKY",
+          "SKULLPANDA",
+          "其他 IP",
+          "小甜豆"
+        ],
+        "products": 10
+      },
+      {
+        "brand": "pop-mart",
+        "line": "貓和老鼠 星盤奇緣 公仔",
+        "assigned_ip": "其他 IP",
+        "koca_ips": [
+          "Molly",
+          "其他 IP"
+        ],
+        "products": 9
+      },
+      {
+        "brand": "pop-mart",
+        "line": "比奇堡的居民們 吊飾",
+        "assigned_ip": "其他 IP",
+        "koca_ips": [
+          "SpongeBob",
+          "其他 IP"
+        ],
+        "products": 8
+      },
+      {
+        "brand": "pop-mart",
+        "line": "萌粒 咖啡工廠 香氛蠟燭",
+        "assigned_ip": "其他 IP",
+        "koca_ips": [
+          "CHAKA",
+          "CRYBABY",
+          "Dimoo",
+          "LABUBU",
+          "Molly",
+          "PINO JELLY",
+          "SKULLPANDA",
+          "Zsiga"
+        ],
+        "products": 8
+      },
+      {
+        "brand": "pop-mart",
+        "line": "怪怪狂歡系列",
+        "assigned_ip": "其他 IP",
+        "koca_ips": [
+          "Dimoo",
+          "LABUBU",
+          "Molly",
+          "PUCKY"
+        ],
+        "products": 7
+      },
+      {
+        "brand": "pop-mart",
+        "line": "馬力全開系列",
+        "assigned_ip": "其他 IP",
+        "koca_ips": [
+          "CRYBABY",
+          "Dimoo",
+          "Hirono",
+          "LABUBU",
+          "Molly",
+          "SKULLPANDA",
+          "星星人"
+        ],
+        "products": 7
+      },
+      {
+        "brand": "pop-mart",
+        "line": "公仔 海綿寶寶 搞怪系列",
+        "assigned_ip": "其他 IP",
+        "koca_ips": [
+          "SpongeBob",
+          "其他 IP"
+        ],
+        "products": 4
+      },
+      {
+        "brand": "pop-mart",
+        "line": "磁鐵 冰箱貼",
+        "assigned_ip": "其他 IP",
+        "koca_ips": [
+          "SKULLPANDA",
+          "其他 IP"
+        ],
+        "products": 3
+      },
+      {
+        "brand": "pop-mart",
+        "line": "馬卡龍 公仔",
+        "assigned_ip": "其他 IP",
+        "koca_ips": [
+          "Molly",
+          "其他 IP",
+          "星星人"
+        ],
+        "products": 3
+      }
+    ]
+  },
+  "groups": [
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "迪士尼系列",
+      "line_name": "迪士尼系列",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 39,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "395619",
+        "395620",
+        "395622",
+        "395623",
+        "395625",
+        "395626",
+        "395627",
+        "395628",
+        "395630",
+        "395632",
+        "395633",
+        "395635",
+        "395637",
+        "395642",
+        "395644",
+        "395645",
+        "395647",
+        "395648",
+        "395649",
+        "395651",
+        "395654",
+        "395656",
+        "395657",
+        "395659",
+        "395660",
+        "395662",
+        "395663",
+        "395664",
+        "395666",
+        "395667",
+        "395668",
+        "395669",
+        "395670",
+        "395671",
+        "395673",
+        "395674",
+        "395675",
+        "395676",
+        "617817"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "花的四幕戲系列",
+      "line_name": "花的四幕戲系列",
+      "ip_slug": "skullpanda",
+      "ip_name": "SKULLPANDA",
+      "product_count": 36,
+      "koca_ips": [
+        "SKULLPANDA"
+      ],
+      "external_ids": [
+        "794431",
+        "794437",
+        "794438",
+        "794439",
+        "794440",
+        "794441",
+        "794442",
+        "794444",
+        "794445",
+        "794446",
+        "794447",
+        "794448",
+        "794449",
+        "794451",
+        "794458",
+        "794465",
+        "794466",
+        "794470",
+        "794471",
+        "794472",
+        "794473",
+        "794474",
+        "794475",
+        "794476",
+        "794477",
+        "794478",
+        "794479",
+        "794480",
+        "794481",
+        "794483",
+        "794484",
+        "794485",
+        "794486",
+        "794487",
+        "794488",
+        "794489"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "吊卡系列",
+      "line_name": "吊卡系列",
+      "ip_slug": "hirono",
+      "ip_name": "Hirono",
+      "product_count": 35,
+      "koca_ips": [
+        "Hirono"
+      ],
+      "external_ids": [
+        "557035",
+        "557037",
+        "557047",
+        "557051",
+        "557056",
+        "557058",
+        "557061",
+        "557062",
+        "557063",
+        "557070",
+        "557074",
+        "557077",
+        "557080",
+        "557156",
+        "557158",
+        "557163",
+        "557168",
+        "557180",
+        "557184",
+        "557188",
+        "557201",
+        "557206",
+        "557210",
+        "557215",
+        "557222",
+        "557225",
+        "557227",
+        "557232",
+        "557235",
+        "557240",
+        "557245",
+        "557249",
+        "557250",
+        "557252",
+        "624364"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "美味時刻系列",
+      "line_name": "美味時刻系列",
+      "ip_slug": "twinkle-twinkle",
+      "ip_name": "星星人",
+      "product_count": 33,
+      "koca_ips": [
+        "星星人"
+      ],
+      "external_ids": [
+        "396847",
+        "440367",
+        "441265",
+        "441270",
+        "516594",
+        "516597",
+        "516599",
+        "516601",
+        "516604",
+        "516605",
+        "516607",
+        "516609",
+        "516611",
+        "516613",
+        "516617",
+        "522346",
+        "522347",
+        "679336",
+        "679337",
+        "679340",
+        "679342",
+        "679343",
+        "679345",
+        "679346",
+        "679348",
+        "679350",
+        "679353",
+        "679355",
+        "679356",
+        "679357",
+        "680599",
+        "811491",
+        "869288"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "怦然星動系列",
+      "line_name": "怦然星動系列",
+      "ip_slug": "twinkle-twinkle",
+      "ip_name": "星星人",
+      "product_count": 32,
+      "koca_ips": [
+        "星星人"
+      ],
+      "external_ids": [
+        "512483",
+        "512484",
+        "512485",
+        "512486",
+        "512487",
+        "512488",
+        "512489",
+        "512490",
+        "679309",
+        "679313",
+        "679315",
+        "679316",
+        "679317",
+        "679319",
+        "679321",
+        "679322",
+        "679323",
+        "679324",
+        "679325",
+        "679327",
+        "778063",
+        "778077",
+        "778079",
+        "778081",
+        "778083",
+        "778087",
+        "778091",
+        "778093",
+        "778098",
+        "778119",
+        "778122",
+        "778125"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "淚流成海系列",
+      "line_name": "淚流成海系列",
+      "ip_slug": "crybaby",
+      "ip_name": "CRYBABY",
+      "product_count": 31,
+      "koca_ips": [
+        "CRYBABY"
+      ],
+      "external_ids": [
+        "924524",
+        "924526",
+        "924527",
+        "924529",
+        "924530",
+        "924532",
+        "924534",
+        "924538",
+        "924569",
+        "924580",
+        "924584",
+        "924587",
+        "924616",
+        "924617",
+        "924618",
+        "924619",
+        "924620",
+        "924621",
+        "924623",
+        "924626",
+        "924628",
+        "924629",
+        "924630",
+        "924648",
+        "924649",
+        "924650",
+        "924651",
+        "924652",
+        "924653",
+        "924654",
+        "924655"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "限定時光系列",
+      "line_name": "限定時光系列",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 29,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "486418",
+        "492634",
+        "492635",
+        "492637",
+        "492640",
+        "492645",
+        "492649",
+        "492654",
+        "492660",
+        "492662",
+        "492664",
+        "492667",
+        "492672",
+        "588780",
+        "773209",
+        "773210",
+        "773212",
+        "773215",
+        "773216",
+        "773218",
+        "773219",
+        "773221",
+        "773223",
+        "773224",
+        "773225",
+        "773226",
+        "773227",
+        "773228",
+        "773231"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "未分系列",
+      "line_name": "未分系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 28,
+      "koca_ips": [
+        "Baby Molly",
+        "CRYBABY",
+        "Dimoo",
+        "LABUBU",
+        "Molly",
+        "SKULLPANDA",
+        "其他 IP",
+        "星星人",
+        "迪士尼"
+      ],
+      "external_ids": [
+        "487305",
+        "497840",
+        "540533",
+        "560889",
+        "560895",
+        "583304",
+        "621981",
+        "661590",
+        "665458",
+        "666469",
+        "675625",
+        "691640",
+        "691654",
+        "691668",
+        "691677",
+        "691681",
+        "691718",
+        "760094",
+        "760104",
+        "760481",
+        "760494",
+        "784612",
+        "792968",
+        "818670",
+        "850420",
+        "871849",
+        "897858",
+        "920991"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "浪漫指尖系列",
+      "line_name": "浪漫指尖系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 27,
+      "koca_ips": [
+        "CHAKA",
+        "Dimoo",
+        "HACIPUPU",
+        "KUBO",
+        "LABUBU",
+        "Molly",
+        "PINO JELLY",
+        "PUCKY",
+        "SKULLPANDA",
+        "Zsiga",
+        "其他 IP"
+      ],
+      "external_ids": [
+        "768107",
+        "769589",
+        "769591",
+        "769593",
+        "769595",
+        "769597",
+        "769599",
+        "769600",
+        "769601",
+        "769602",
+        "769604",
+        "769608",
+        "769624",
+        "769631",
+        "769634",
+        "769637",
+        "769638",
+        "769640",
+        "769641",
+        "769643",
+        "769645",
+        "769647",
+        "769649",
+        "769654",
+        "769660",
+        "769662",
+        "938353"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "shiny-shiny系列",
+      "line_name": "SHINY SHINY系列",
+      "ip_slug": "crybaby",
+      "ip_name": "CRYBABY",
+      "product_count": 25,
+      "koca_ips": [
+        "CRYBABY"
+      ],
+      "external_ids": [
+        "576111",
+        "762415",
+        "762416",
+        "762540",
+        "762543",
+        "762545",
+        "762572",
+        "762574",
+        "762575",
+        "762576",
+        "762583",
+        "762586",
+        "762587",
+        "762589",
+        "762590",
+        "762591",
+        "762600",
+        "762603",
+        "762605",
+        "762607",
+        "762609",
+        "762612",
+        "762614",
+        "762615",
+        "762617"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "你最珍貴系列",
+      "line_name": "你最珍貴系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 24,
+      "koca_ips": [
+        "Baby Molly",
+        "Dimoo",
+        "HACIPUPU",
+        "Hirono",
+        "LABUBU",
+        "Molly",
+        "SKULLPANDA",
+        "星星人"
+      ],
+      "external_ids": [
+        "763081",
+        "763087",
+        "763091",
+        "763092",
+        "763097",
+        "763102",
+        "763103",
+        "763136",
+        "763138",
+        "763139",
+        "763140",
+        "763142",
+        "763143",
+        "763145",
+        "763146",
+        "763158",
+        "763170",
+        "763175",
+        "763176",
+        "763179",
+        "763184",
+        "763186",
+        "763194",
+        "763200"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "動物貼貼系列",
+      "line_name": "動物貼貼系列",
+      "ip_slug": "hacipupu",
+      "ip_name": "HACIPUPU",
+      "product_count": 24,
+      "koca_ips": [
+        "HACIPUPU"
+      ],
+      "external_ids": [
+        "612255",
+        "612258",
+        "612260",
+        "612261",
+        "612263",
+        "612265",
+        "612267",
+        "612268",
+        "612269",
+        "612270",
+        "612272",
+        "612273",
+        "612274",
+        "761282",
+        "778785",
+        "782331",
+        "782334",
+        "782337",
+        "782340",
+        "782341",
+        "782344",
+        "782346",
+        "782349",
+        "782365"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "萌粒-睡衣派對系列",
+      "line_name": "萌粒 睡衣派對系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 23,
+      "koca_ips": [
+        "CRYBABY",
+        "Dimoo",
+        "HACIPUPU",
+        "KUBO",
+        "LABUBU",
+        "Molly",
+        "PINO JELLY",
+        "PUCKY",
+        "SKULLPANDA",
+        "Zsiga",
+        "其他 IP",
+        "小甜豆",
+        "星星人"
+      ],
+      "external_ids": [
+        "390562",
+        "390563",
+        "390564",
+        "390565",
+        "390566",
+        "390567",
+        "390568",
+        "390569",
+        "390570",
+        "390571",
+        "390572",
+        "390573",
+        "390574",
+        "390575",
+        "390576",
+        "390577",
+        "390578",
+        "390579",
+        "761070",
+        "761074",
+        "761081",
+        "761089",
+        "761092"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "dimoo瞬間的奇遇系列",
+      "line_name": "DIMOO瞬間的奇遇系列",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 22,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "670469",
+        "671186",
+        "754976",
+        "755385",
+        "755387",
+        "755390",
+        "755394",
+        "755397",
+        "755398",
+        "755402",
+        "755403",
+        "755404",
+        "755405",
+        "755408",
+        "778656",
+        "778657",
+        "778660",
+        "778663",
+        "778665",
+        "778669",
+        "778674",
+        "778687"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "夏日度假模式啟動系列",
+      "line_name": "夏日度假模式啟動系列",
+      "ip_slug": "crybaby",
+      "ip_name": "CRYBABY",
+      "product_count": 22,
+      "koca_ips": [
+        "CRYBABY"
+      ],
+      "external_ids": [
+        "395596",
+        "395597",
+        "395598",
+        "395599",
+        "395600",
+        "395601",
+        "653484",
+        "705718",
+        "762258",
+        "762260",
+        "762261",
+        "762271",
+        "762272",
+        "762275",
+        "762302",
+        "762305",
+        "762307",
+        "762357",
+        "762360",
+        "762361",
+        "762363",
+        "762623"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "dear-birds系列",
+      "line_name": "Dear Birds系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 20,
+      "koca_ips": [
+        "Baby Molly",
+        "CRYBABY",
+        "Dimoo",
+        "HACIPUPU",
+        "Hirono",
+        "LABUBU",
+        "SKULLPANDA",
+        "星星人"
+      ],
+      "external_ids": [
+        "924184",
+        "924200",
+        "924202",
+        "924203",
+        "924211",
+        "924213",
+        "924218",
+        "924221",
+        "924225",
+        "924231",
+        "924737",
+        "924741",
+        "924745",
+        "924746",
+        "924752",
+        "924756",
+        "924757",
+        "924759",
+        "924761",
+        "924763"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "cry-buddy系列",
+      "line_name": "Cry Buddy系列",
+      "ip_slug": "crybaby",
+      "ip_name": "CRYBABY",
+      "product_count": 19,
+      "koca_ips": [
+        "CRYBABY"
+      ],
+      "external_ids": [
+        "762725",
+        "762733",
+        "762744",
+        "762748",
+        "762751",
+        "763007",
+        "763013",
+        "763014",
+        "763015",
+        "763016",
+        "763019",
+        "763021",
+        "763023",
+        "763029",
+        "763031",
+        "763032",
+        "763033",
+        "763034",
+        "763036"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "沿途的風景系列",
+      "line_name": "沿途的風景系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 19,
+      "koca_ips": [
+        "Baby Molly",
+        "Molly"
+      ],
+      "external_ids": [
+        "735297",
+        "735300",
+        "735307",
+        "735310",
+        "735311",
+        "735313",
+        "735316",
+        "735319",
+        "735321",
+        "735324",
+        "735326",
+        "735331",
+        "735336",
+        "735348",
+        "735353",
+        "735368",
+        "735369",
+        "735370",
+        "754975"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "萌粒-遇見錦鯉系列",
+      "line_name": "萌粒 遇見錦鯉系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 19,
+      "koca_ips": [
+        "CRYBABY",
+        "Dimoo",
+        "HACIPUPU",
+        "LABUBU",
+        "Molly",
+        "PINO JELLY",
+        "PUCKY",
+        "SKULLPANDA",
+        "Zsiga",
+        "其他 IP",
+        "小甜豆"
+      ],
+      "external_ids": [
+        "390614",
+        "390615",
+        "390616",
+        "390617",
+        "390618",
+        "390619",
+        "390620",
+        "390621",
+        "390622",
+        "390623",
+        "390624",
+        "390625",
+        "390626",
+        "390627",
+        "390628",
+        "390629",
+        "390630",
+        "390631",
+        "390632"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "晚安夜空系列",
+      "line_name": "晚安夜空系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 18,
+      "koca_ips": [
+        "CHAKA",
+        "Dimoo",
+        "HACIPUPU",
+        "KUBO",
+        "LABUBU",
+        "Molly",
+        "PINO JELLY",
+        "PUCKY",
+        "SKULLPANDA",
+        "Zsiga",
+        "其他 IP",
+        "小甜豆",
+        "星星人"
+      ],
+      "external_ids": [
+        "773374",
+        "773378",
+        "773382",
+        "773384",
+        "773388",
+        "773390",
+        "773392",
+        "773393",
+        "773395",
+        "773396",
+        "773397",
+        "773400",
+        "773401",
+        "773402",
+        "773403",
+        "773404",
+        "773409",
+        "773412"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "萌粒-跟我去郊遊系列",
+      "line_name": "萌粒 跟我去郊遊系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 18,
+      "koca_ips": [
+        "CHAKA",
+        "CRYBABY",
+        "Dimoo",
+        "HACIPUPU",
+        "KUBO",
+        "LABUBU",
+        "Molly",
+        "PINO JELLY",
+        "POLAR",
+        "PUCKY",
+        "SKULLPANDA",
+        "Zsiga",
+        "其他 IP",
+        "小甜豆",
+        "星星人"
+      ],
+      "external_ids": [
+        "390580",
+        "390581",
+        "390582",
+        "390583",
+        "390584",
+        "390585",
+        "390586",
+        "390587",
+        "390588",
+        "390589",
+        "390590",
+        "390591",
+        "390592",
+        "390593",
+        "390594",
+        "390595",
+        "390596",
+        "390597"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "15週年系列",
+      "line_name": "15週年系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 17,
+      "koca_ips": [
+        "Baby Molly",
+        "CHAKA",
+        "CRYBABY",
+        "Dimoo",
+        "HACIPUPU",
+        "Hirono",
+        "KUBO",
+        "LABUBU",
+        "Molly",
+        "PINO JELLY",
+        "POLAR",
+        "PUCKY",
+        "SKULLPANDA",
+        "Zsiga",
+        "小甜豆",
+        "星星人"
+      ],
+      "external_ids": [
+        "388215",
+        "388216",
+        "388217",
+        "388218",
+        "388219",
+        "388220",
+        "388221",
+        "388222",
+        "388223",
+        "388224",
+        "388225",
+        "388226",
+        "388228",
+        "388230",
+        "388244",
+        "388245",
+        "388246"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "心動特調系列",
+      "line_name": "心動特調系列",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 17,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "395858",
+        "395859",
+        "395860",
+        "395861",
+        "395862",
+        "395863",
+        "395864",
+        "761265",
+        "768111",
+        "769785",
+        "769826",
+        "769836",
+        "769837",
+        "769838",
+        "769840",
+        "769845",
+        "769854"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "the-monsters怪味便利店系列",
+      "line_name": "THE MONSTERS怪味便利店系列",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 16,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "553072",
+        "553073",
+        "553075",
+        "553076",
+        "553077",
+        "553078",
+        "553079",
+        "553080",
+        "553082",
+        "553083",
+        "553084",
+        "553085",
+        "553087",
+        "782828",
+        "782892",
+        "782908"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "萌粒-咖啡工廠-公仔",
+      "line_name": "萌粒 咖啡工廠 公仔",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 16,
+      "koca_ips": [
+        "CHAKA",
+        "CRYBABY",
+        "Dimoo",
+        "LABUBU",
+        "Molly",
+        "PINO JELLY",
+        "SKULLPANDA",
+        "Zsiga"
+      ],
+      "external_ids": [
+        "395726",
+        "395727",
+        "395728",
+        "395729",
+        "395730",
+        "395731",
+        "395732",
+        "395733",
+        "395734",
+        "395735",
+        "395736",
+        "395737",
+        "395738",
+        "395739",
+        "395740",
+        "395741"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "萌粒-毛絨絨暖呼呼系列",
+      "line_name": "萌粒 毛絨絨暖呼呼系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 16,
+      "koca_ips": [
+        "CRYBABY",
+        "Dimoo",
+        "LABUBU",
+        "Molly",
+        "SKULLPANDA",
+        "星星人"
+      ],
+      "external_ids": [
+        "624665",
+        "760827",
+        "760841",
+        "760871",
+        "760874",
+        "760876",
+        "760881",
+        "760883",
+        "760890",
+        "760915",
+        "760916",
+        "760919",
+        "760921",
+        "760923",
+        "760924",
+        "760946"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "夢裡夢外系列",
+      "line_name": "夢裡夢外系列",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 15,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "441984",
+        "441986",
+        "441987",
+        "441988",
+        "441989",
+        "441990",
+        "441991",
+        "441992",
+        "441995",
+        "441998",
+        "442000",
+        "442005",
+        "442007",
+        "442017",
+        "563809"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "小手拉小手系列",
+      "line_name": "小手拉小手系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 15,
+      "koca_ips": [
+        "Baby Molly",
+        "CRYBABY",
+        "Dimoo",
+        "HACIPUPU",
+        "Hirono",
+        "KUBO",
+        "LABUBU",
+        "Molly",
+        "PINO JELLY",
+        "POLAR",
+        "PUCKY",
+        "SKULLPANDA",
+        "Zsiga",
+        "小甜豆"
+      ],
+      "external_ids": [
+        "563846",
+        "757128",
+        "757134",
+        "757137",
+        "757141",
+        "757144",
+        "757145",
+        "757146",
+        "757149",
+        "757151",
+        "757154",
+        "757156",
+        "757161",
+        "757165",
+        "757169"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "我是你的娃娃系列",
+      "line_name": "我是你的娃娃系列",
+      "ip_slug": "pino-jelly",
+      "ip_name": "PINO JELLY",
+      "product_count": 15,
+      "koca_ips": [
+        "PINO JELLY"
+      ],
+      "external_ids": [
+        "924793",
+        "924795",
+        "924797",
+        "924798",
+        "924799",
+        "924800",
+        "924802",
+        "924803",
+        "924806",
+        "924808",
+        "924809",
+        "924811",
+        "924813",
+        "924814",
+        "924816"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "星星人系列",
+      "line_name": "星星人系列",
+      "ip_slug": "twinkle-twinkle",
+      "ip_name": "星星人",
+      "product_count": 15,
+      "koca_ips": [
+        "星星人"
+      ],
+      "external_ids": [
+        "422737",
+        "434743",
+        "850747",
+        "850773",
+        "850809",
+        "850814",
+        "850818",
+        "850822",
+        "850826",
+        "850831",
+        "850834",
+        "850835",
+        "850836",
+        "850839",
+        "850845"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "時光漫遊系列",
+      "line_name": "時光漫遊系列",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 15,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "640961",
+        "768116",
+        "773120",
+        "773124",
+        "773127",
+        "773132",
+        "773135",
+        "773138",
+        "773143",
+        "773145",
+        "773148",
+        "773151",
+        "773153",
+        "773157",
+        "773159"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "萌粒-招財貓貓系列",
+      "line_name": "萌粒 招財貓貓系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 15,
+      "koca_ips": [
+        "CRYBABY",
+        "Dimoo",
+        "HACIPUPU",
+        "KUBO",
+        "LABUBU",
+        "Molly",
+        "PUCKY",
+        "SKULLPANDA",
+        "Zsiga",
+        "其他 IP",
+        "小甜豆"
+      ],
+      "external_ids": [
+        "390598",
+        "390599",
+        "390600",
+        "390601",
+        "390602",
+        "390603",
+        "390604",
+        "390605",
+        "390606",
+        "390607",
+        "390608",
+        "390609",
+        "390610",
+        "390611",
+        "390612"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "點金奔騰系列",
+      "line_name": "點金奔騰系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 15,
+      "koca_ips": [
+        "Baby Molly",
+        "CHAKA",
+        "Dimoo",
+        "HACIPUPU",
+        "LABUBU",
+        "Molly",
+        "PUCKY",
+        "SKULLPANDA",
+        "Zsiga",
+        "其他 IP",
+        "星星人"
+      ],
+      "external_ids": [
+        "612793",
+        "617782",
+        "756708",
+        "756711",
+        "756712",
+        "756713",
+        "756715",
+        "756716",
+        "756717",
+        "756719",
+        "756720",
+        "756721",
+        "756725",
+        "756728",
+        "756733"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "一盞風月",
+      "line_name": "一盞風月",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 14,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "430275",
+        "495482",
+        "495483",
+        "495486",
+        "495487",
+        "495490",
+        "495492",
+        "495494",
+        "495495",
+        "495497",
+        "495498",
+        "495500",
+        "495501",
+        "795592"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "侏羅紀世界-公仔",
+      "line_name": "侏羅紀世界 公仔",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 14,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "768097",
+        "773026",
+        "773029",
+        "773030",
+        "773032",
+        "773034",
+        "773035",
+        "773036",
+        "773038",
+        "773040",
+        "773044",
+        "773047",
+        "773050",
+        "773052"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "像我一樣甜-公仔",
+      "line_name": "像我一樣甜 公仔",
+      "ip_slug": "pino-jelly",
+      "ip_name": "PINO JELLY",
+      "product_count": 14,
+      "koca_ips": [
+        "PINO JELLY"
+      ],
+      "external_ids": [
+        "838820",
+        "838821",
+        "838822",
+        "838823",
+        "838825",
+        "838827",
+        "838829",
+        "838830",
+        "838832",
+        "838833",
+        "838834",
+        "838835",
+        "838836",
+        "838837"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "叛桃朋克-經濟學系列",
+      "line_name": "叛桃朋克 經濟學系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 14,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "759975",
+        "760028",
+        "760029",
+        "760030",
+        "760031",
+        "760032",
+        "760033",
+        "760035",
+        "760036",
+        "760037",
+        "760038",
+        "760039",
+        "760041",
+        "760042"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "在你身邊系列",
+      "line_name": "在你身邊系列",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 14,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "871974",
+        "871982",
+        "871986",
+        "871991",
+        "871995",
+        "871997",
+        "872000",
+        "872001",
+        "872003",
+        "872005",
+        "872007",
+        "872009",
+        "872015",
+        "872016"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "堅定-閃耀系列",
+      "line_name": "堅定&閃耀系列",
+      "ip_slug": "pino-jelly",
+      "ip_name": "PINO JELLY",
+      "product_count": 14,
+      "koca_ips": [
+        "PINO JELLY"
+      ],
+      "external_ids": [
+        "422338",
+        "789877",
+        "789878",
+        "789880",
+        "789882",
+        "789885",
+        "789888",
+        "789890",
+        "789892",
+        "789893",
+        "789895",
+        "789896",
+        "789906",
+        "789915"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "如果今天星期八系列",
+      "line_name": "如果今天星期八系列",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 14,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "441922",
+        "441925",
+        "441927",
+        "441928",
+        "441929",
+        "441930",
+        "441931",
+        "441932",
+        "441934",
+        "441935",
+        "441937",
+        "441940",
+        "770009",
+        "770120"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "小王子-公仔",
+      "line_name": "小王子 公仔",
+      "ip_slug": "hirono",
+      "ip_name": "Hirono",
+      "product_count": 14,
+      "koca_ips": [
+        "Hirono"
+      ],
+      "external_ids": [
+        "395908",
+        "482232",
+        "482233",
+        "482234",
+        "482236",
+        "482238",
+        "482239",
+        "482241",
+        "482250",
+        "482251",
+        "482252",
+        "482254",
+        "482258",
+        "482260"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "愛神的眼淚系列",
+      "line_name": "愛神的眼淚系列",
+      "ip_slug": "crybaby",
+      "ip_name": "CRYBABY",
+      "product_count": 14,
+      "koca_ips": [
+        "CRYBABY"
+      ],
+      "external_ids": [
+        "504446",
+        "782036",
+        "782042",
+        "782048",
+        "782053",
+        "782055",
+        "782059",
+        "782060",
+        "782065",
+        "782069",
+        "782223",
+        "782226",
+        "782228",
+        "782233"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "放學後的merodi",
+      "line_name": "放學後的Merodi",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 14,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "746500",
+        "755500",
+        "755502",
+        "755507",
+        "755509",
+        "755510",
+        "755512",
+        "755513",
+        "755515",
+        "755516",
+        "755517",
+        "755518",
+        "755519",
+        "755520"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "森林之夜-手辦盲盒-公仔",
+      "line_name": "森林之夜 手辦盲盒 公仔",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 14,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "768090",
+        "773060",
+        "773061",
+        "773063",
+        "773064",
+        "773068",
+        "773073",
+        "773078",
+        "773081",
+        "773083",
+        "773084",
+        "773085",
+        "773092",
+        "773093"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "海綿寶寶-睡衣派對-扭蛋盲盒",
+      "line_name": "海綿寶寶 睡衣派對 扭蛋盲盒",
+      "ip_slug": "spongebob",
+      "ip_name": "SpongeBob",
+      "product_count": 14,
+      "koca_ips": [
+        "SpongeBob"
+      ],
+      "external_ids": [
+        "516849",
+        "516851",
+        "516854",
+        "516856",
+        "516860",
+        "516862",
+        "516864",
+        "516866",
+        "516868",
+        "516870",
+        "516871",
+        "516875",
+        "516886",
+        "516887"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "火影忍者疾風傳童年系列",
+      "line_name": "火影忍者疾風傳童年系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 14,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "756322",
+        "756323",
+        "756325",
+        "756326",
+        "756329",
+        "756331",
+        "756335",
+        "756337",
+        "756339",
+        "756341",
+        "756342",
+        "756344",
+        "756345",
+        "756347"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "當我三歲時系列",
+      "line_name": "當我三歲時系列",
+      "ip_slug": "baby-molly",
+      "ip_name": "Baby Molly",
+      "product_count": 14,
+      "koca_ips": [
+        "Baby Molly"
+      ],
+      "external_ids": [
+        "567216",
+        "782525",
+        "782534",
+        "782537",
+        "782538",
+        "782539",
+        "782540",
+        "782541",
+        "782544",
+        "782546",
+        "782547",
+        "782550",
+        "782553",
+        "782555"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "秘密話劇社系列",
+      "line_name": "秘密話劇社系列",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 14,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "745654",
+        "745656",
+        "745660",
+        "745721",
+        "751284",
+        "751287",
+        "759544",
+        "759547",
+        "759552",
+        "759557",
+        "759559",
+        "759562",
+        "759593",
+        "759598"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "聖誕2020系列",
+      "line_name": "聖誕2020系列",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 14,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "889599",
+        "889602",
+        "889604",
+        "889606",
+        "889607",
+        "889608",
+        "889610",
+        "889611",
+        "889613",
+        "889614",
+        "889616",
+        "889617",
+        "934840",
+        "934841"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "追光記憶系列",
+      "line_name": "追光記憶系列",
+      "ip_slug": "sweet-bean",
+      "ip_name": "小甜豆",
+      "product_count": 14,
+      "koca_ips": [
+        "小甜豆"
+      ],
+      "external_ids": [
+        "755238",
+        "755243",
+        "755248",
+        "755253",
+        "755265",
+        "755266",
+        "755269",
+        "755272",
+        "755274",
+        "755279",
+        "755282",
+        "755286",
+        "755300",
+        "778126"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "麵包腦袋系列",
+      "line_name": "麵包腦袋系列",
+      "ip_slug": "molly",
+      "ip_name": "Molly",
+      "product_count": 14,
+      "koca_ips": [
+        "Molly"
+      ],
+      "external_ids": [
+        "629228",
+        "760108",
+        "777061",
+        "777062",
+        "777063",
+        "777066",
+        "777067",
+        "777070",
+        "777072",
+        "777074",
+        "777075",
+        "777077",
+        "777079",
+        "777080"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "14週年-無雙鎮-14週年-無雙鎮-公仔",
+      "line_name": "14週年 無雙鎮 14週年 無雙鎮 公仔",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 13,
+      "koca_ips": [
+        "CRYBABY",
+        "Dimoo",
+        "HACIPUPU",
+        "Hirono",
+        "KUBO",
+        "LABUBU",
+        "Molly",
+        "PINO JELLY",
+        "PUCKY",
+        "SKULLPANDA",
+        "Zsiga",
+        "小甜豆"
+      ],
+      "external_ids": [
+        "842161",
+        "842168",
+        "842171",
+        "842173",
+        "842175",
+        "842177",
+        "842180",
+        "842184",
+        "842187",
+        "842188",
+        "842189",
+        "842190",
+        "842198"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "care-bears-公仔",
+      "line_name": "Care Bears 公仔",
+      "ip_slug": "zsiga",
+      "ip_name": "Zsiga",
+      "product_count": 13,
+      "koca_ips": [
+        "Zsiga"
+      ],
+      "external_ids": [
+        "388197",
+        "388199",
+        "388200",
+        "388201",
+        "388202",
+        "388203",
+        "388204",
+        "388205",
+        "388206",
+        "388207",
+        "388208",
+        "388209",
+        "388210"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "hirono-温室芒草系列",
+      "line_name": "Hirono 温室芒草系列",
+      "ip_slug": "hirono",
+      "ip_name": "Hirono",
+      "product_count": 13,
+      "koca_ips": [
+        "Hirono"
+      ],
+      "external_ids": [
+        "755085",
+        "755088",
+        "755090",
+        "755093",
+        "755095",
+        "755099",
+        "755102",
+        "755104",
+        "755105",
+        "755111",
+        "755113",
+        "755115",
+        "755119"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "kubo日落之城系列",
+      "line_name": "KUBO日落之城系列",
+      "ip_slug": "kubo",
+      "ip_name": "KUBO",
+      "product_count": 13,
+      "koca_ips": [
+        "KUBO"
+      ],
+      "external_ids": [
+        "394352",
+        "598742",
+        "811345",
+        "811349",
+        "811356",
+        "811359",
+        "811364",
+        "811365",
+        "811370",
+        "811372",
+        "811378",
+        "811383",
+        "811386"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "walks-of-life系列",
+      "line_name": "Walks of Life系列",
+      "ip_slug": "kubo",
+      "ip_name": "KUBO",
+      "product_count": 13,
+      "koca_ips": [
+        "KUBO"
+      ],
+      "external_ids": [
+        "818923",
+        "818925",
+        "818926",
+        "818927",
+        "818928",
+        "818932",
+        "818934",
+        "818935",
+        "818937",
+        "818939",
+        "818940",
+        "818942",
+        "818944"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "人生如戲-公仔",
+      "line_name": "人生如戲 公仔",
+      "ip_slug": "skullpanda",
+      "ip_name": "SKULLPANDA",
+      "product_count": 13,
+      "koca_ips": [
+        "SKULLPANDA"
+      ],
+      "external_ids": [
+        "395812",
+        "395813",
+        "395814",
+        "395815",
+        "395816",
+        "395817",
+        "395818",
+        "395819",
+        "395820",
+        "395821",
+        "395822",
+        "395823",
+        "395824"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "今天心情怎麼樣-公仔",
+      "line_name": "今天心情怎麼樣 公仔",
+      "ip_slug": "pino-jelly",
+      "ip_name": "PINO JELLY",
+      "product_count": 13,
+      "koca_ips": [
+        "PINO JELLY"
+      ],
+      "external_ids": [
+        "422347",
+        "720068",
+        "838756",
+        "838757",
+        "838758",
+        "838761",
+        "838769",
+        "838771",
+        "838775",
+        "838776",
+        "838777",
+        "838778",
+        "838779"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "今晚不准睡系列",
+      "line_name": "今晚不准睡系列",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 13,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "611219",
+        "611222",
+        "611225",
+        "611226",
+        "611228",
+        "611230",
+        "611233",
+        "611234",
+        "611236",
+        "611237",
+        "611238",
+        "611239",
+        "611240"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "初代-迷途動物系列",
+      "line_name": "初代 迷途動物系列",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 13,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "794526",
+        "794527",
+        "794528",
+        "794530",
+        "794531",
+        "794532",
+        "794533",
+        "794535",
+        "794536",
+        "794537",
+        "794538",
+        "794539",
+        "794541"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "午夜馬戲團-手辦盲盒-公仔",
+      "line_name": "午夜馬戲團 手辦盲盒 公仔",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 13,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "794561",
+        "794562",
+        "794563",
+        "794564",
+        "794565",
+        "794566",
+        "794567",
+        "794568",
+        "794569",
+        "794570",
+        "794571",
+        "794572",
+        "794573"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "叛桃朋克-小小叛桃徹夜狂歡系列",
+      "line_name": "叛桃朋克 小小叛桃徹夜狂歡系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 13,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "759891",
+        "759893",
+        "759896",
+        "759897",
+        "759898",
+        "759900",
+        "759902",
+        "759905",
+        "759908",
+        "759911",
+        "759917",
+        "759919",
+        "759922"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "味覺性格測試系列",
+      "line_name": "味覺性格測試系列",
+      "ip_slug": "pino-jelly",
+      "ip_name": "PINO JELLY",
+      "product_count": 13,
+      "koca_ips": [
+        "PINO JELLY"
+      ],
+      "external_ids": [
+        "801154",
+        "801159",
+        "801162",
+        "801170",
+        "801180",
+        "801182",
+        "801185",
+        "801191",
+        "801194",
+        "801198",
+        "801206",
+        "801209",
+        "801210"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "哈利-波特開往霍格華茲系列",
+      "line_name": "哈利·波特開往霍格華茲系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 13,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "764897",
+        "764903",
+        "764905",
+        "764908",
+        "764926",
+        "764936",
+        "764940",
+        "764947",
+        "764948",
+        "764950",
+        "764952",
+        "764963",
+        "764972"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "回聲-九代-公仔",
+      "line_name": "回聲 九代 公仔",
+      "ip_slug": "hirono",
+      "ip_name": "Hirono",
+      "product_count": 13,
+      "koca_ips": [
+        "Hirono"
+      ],
+      "external_ids": [
+        "556842",
+        "556849",
+        "556850",
+        "556851",
+        "556854",
+        "556855",
+        "556856",
+        "556857",
+        "556858",
+        "556860",
+        "556862",
+        "556865",
+        "556866"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "在日光下系列",
+      "line_name": "在日光下系列",
+      "ip_slug": "zsiga",
+      "ip_name": "Zsiga",
+      "product_count": 13,
+      "koca_ips": [
+        "Zsiga"
+      ],
+      "external_ids": [
+        "763482",
+        "763484",
+        "763486",
+        "763489",
+        "763492",
+        "763494",
+        "763497",
+        "763500",
+        "763501",
+        "763503",
+        "763504",
+        "763506",
+        "763507"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "夜之城-公仔",
+      "line_name": "夜之城 公仔",
+      "ip_slug": "skullpanda",
+      "ip_name": "SKULLPANDA",
+      "product_count": 13,
+      "koca_ips": [
+        "SKULLPANDA"
+      ],
+      "external_ids": [
+        "406135",
+        "406136",
+        "406138",
+        "406139",
+        "406140",
+        "406141",
+        "406142",
+        "406143",
+        "406145",
+        "406146",
+        "406147",
+        "406150",
+        "406151"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "太空旅行系列",
+      "line_name": "太空旅行系列",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 13,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "457962",
+        "563856",
+        "756349",
+        "767995",
+        "794773",
+        "794776",
+        "794778",
+        "794780",
+        "794782",
+        "794784",
+        "794786",
+        "794789",
+        "794791"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "密林古堡-公仔",
+      "line_name": "密林古堡 公仔",
+      "ip_slug": "skullpanda",
+      "ip_name": "SKULLPANDA",
+      "product_count": 13,
+      "koca_ips": [
+        "SKULLPANDA"
+      ],
+      "external_ids": [
+        "395784",
+        "395786",
+        "395787",
+        "395788",
+        "395789",
+        "395790",
+        "395791",
+        "395792",
+        "395793",
+        "395794",
+        "395795",
+        "395796",
+        "395797"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "寵物度假系列",
+      "line_name": "寵物度假系列",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 13,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "457953",
+        "929727",
+        "929743",
+        "929773",
+        "934860",
+        "934862",
+        "934864",
+        "934867",
+        "934870",
+        "934876",
+        "934896",
+        "934901",
+        "934906"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "小小的使壞-二代-公仔",
+      "line_name": "小小的使壞 二代 公仔",
+      "ip_slug": "hirono",
+      "ip_name": "Hirono",
+      "product_count": 13,
+      "koca_ips": [
+        "Hirono"
+      ],
+      "external_ids": [
+        "555879",
+        "555880",
+        "555885",
+        "555888",
+        "555890",
+        "555893",
+        "555896",
+        "555898",
+        "555900",
+        "555902",
+        "555905",
+        "555906",
+        "555920"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "小野一代-公仔",
+      "line_name": "小野一代 公仔",
+      "ip_slug": "hirono",
+      "ip_name": "Hirono",
+      "product_count": 13,
+      "koca_ips": [
+        "Hirono"
+      ],
+      "external_ids": [
+        "555832",
+        "555836",
+        "555847",
+        "555848",
+        "555849",
+        "555850",
+        "555853",
+        "555855",
+        "555857",
+        "555859",
+        "555862",
+        "555863",
+        "555865"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "庭前墨梅-公仔",
+      "line_name": "庭前墨梅 公仔",
+      "ip_slug": "skullpanda",
+      "ip_name": "SKULLPANDA",
+      "product_count": 13,
+      "koca_ips": [
+        "SKULLPANDA"
+      ],
+      "external_ids": [
+        "390549",
+        "390550",
+        "390551",
+        "390552",
+        "390553",
+        "390554",
+        "390555",
+        "390556",
+        "390557",
+        "390558",
+        "390559",
+        "390560",
+        "390561"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "我們都是星星人",
+      "line_name": "我們都是星星人",
+      "ip_slug": "twinkle-twinkle",
+      "ip_name": "星星人",
+      "product_count": 13,
+      "koca_ips": [
+        "星星人"
+      ],
+      "external_ids": [
+        "576890",
+        "591712",
+        "658544",
+        "782436",
+        "782471",
+        "782485",
+        "782488",
+        "782492",
+        "782494",
+        "782496",
+        "782499",
+        "782500",
+        "838456"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "星座系列",
+      "line_name": "星座系列",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 13,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "457951",
+        "889663",
+        "889665",
+        "889666",
+        "889667",
+        "889670",
+        "889671",
+        "889673",
+        "889675",
+        "889677",
+        "889681",
+        "889682",
+        "934849"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "橫山宏ma-k-系列-手辦盲盒-公仔",
+      "line_name": "橫山宏Ma.k.系列 手辦盲盒 公仔",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 13,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "777102",
+        "777106",
+        "777108",
+        "777109",
+        "777111",
+        "777113",
+        "777115",
+        "777119",
+        "777122",
+        "777125",
+        "777127",
+        "777129",
+        "777134"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "水族館系列",
+      "line_name": "水族館系列",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 13,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "457930",
+        "647682",
+        "889691",
+        "889693",
+        "889699",
+        "889702",
+        "889704",
+        "889707",
+        "889712",
+        "889726",
+        "889734",
+        "889737",
+        "889740"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "海綿寶寶人生轉場-扭蛋盲盒",
+      "line_name": "海綿寶寶人生轉場 扭蛋盲盒",
+      "ip_slug": "spongebob",
+      "ip_name": "SpongeBob",
+      "product_count": 13,
+      "koca_ips": [
+        "SpongeBob"
+      ],
+      "external_ids": [
+        "506703",
+        "506708",
+        "506711",
+        "506715",
+        "506719",
+        "506722",
+        "506724",
+        "506725",
+        "506726",
+        "506727",
+        "506728",
+        "506729",
+        "506730"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "海綿寶寶好朋友系列",
+      "line_name": "海綿寶寶好朋友系列",
+      "ip_slug": "spongebob",
+      "ip_name": "SpongeBob",
+      "product_count": 13,
+      "koca_ips": [
+        "SpongeBob"
+      ],
+      "external_ids": [
+        "506507",
+        "506511",
+        "506516",
+        "506522",
+        "506528",
+        "506533",
+        "506538",
+        "506543",
+        "506546",
+        "506548",
+        "506554",
+        "506562",
+        "506579"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "溫度-公仔",
+      "line_name": "溫度 公仔",
+      "ip_slug": "skullpanda",
+      "ip_name": "SKULLPANDA",
+      "product_count": 13,
+      "koca_ips": [
+        "SKULLPANDA"
+      ],
+      "external_ids": [
+        "390536",
+        "390537",
+        "390538",
+        "390539",
+        "390540",
+        "390541",
+        "390542",
+        "390543",
+        "390544",
+        "390545",
+        "390546",
+        "390547",
+        "390548"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "熊貓熱潮-公仔",
+      "line_name": "熊貓熱潮 公仔",
+      "ip_slug": "skullpanda",
+      "ip_name": "SKULLPANDA",
+      "product_count": 13,
+      "koca_ips": [
+        "SKULLPANDA"
+      ],
+      "external_ids": [
+        "395798",
+        "395799",
+        "395800",
+        "395801",
+        "395802",
+        "395803",
+        "395804",
+        "395805",
+        "395806",
+        "395807",
+        "395808",
+        "395809",
+        "395810"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "社會大學系列",
+      "line_name": "社會大學系列",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 13,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "457938",
+        "457941",
+        "794864",
+        "794867",
+        "794869",
+        "794879",
+        "794882",
+        "794884",
+        "794885",
+        "794886",
+        "794887",
+        "794890",
+        "794891"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "童話系列",
+      "line_name": "童話系列",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 13,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "794799",
+        "794801",
+        "794803",
+        "794805",
+        "794806",
+        "794808",
+        "794809",
+        "794810",
+        "794812",
+        "794815",
+        "794817",
+        "794819",
+        "794822"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "糖果怪物小鎮-公仔",
+      "line_name": "糖果怪物小鎮 公仔",
+      "ip_slug": "skullpanda",
+      "ip_name": "SKULLPANDA",
+      "product_count": 13,
+      "koca_ips": [
+        "SKULLPANDA"
+      ],
+      "external_ids": [
+        "406107",
+        "406109",
+        "406111",
+        "406112",
+        "406117",
+        "406118",
+        "406121",
+        "406122",
+        "406124",
+        "406126",
+        "406128",
+        "406130",
+        "406131"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "絕區零邦布派對系列",
+      "line_name": "絕區零邦布派對系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 13,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "756567",
+        "756570",
+        "756572",
+        "756575",
+        "756578",
+        "756579",
+        "756580",
+        "756583",
+        "756587",
+        "756588",
+        "756591",
+        "756593",
+        "756595"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "聖誕系列",
+      "line_name": "聖誕系列",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 13,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "794585",
+        "794586",
+        "794587",
+        "794589",
+        "794592",
+        "794594",
+        "794597",
+        "794600",
+        "794602",
+        "794603",
+        "794606",
+        "794609",
+        "794613"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "自然的形狀-扭蛋盲盒",
+      "line_name": "自然的形狀 扭蛋盲盒",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 13,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "441946",
+        "441952",
+        "441956",
+        "441957",
+        "441959",
+        "441961",
+        "441964",
+        "441968",
+        "441970",
+        "441972",
+        "441973",
+        "441976",
+        "441979"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "誕生花-公仔",
+      "line_name": "誕生花 公仔",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 13,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "873326",
+        "873339",
+        "873341",
+        "873345",
+        "873348",
+        "873353",
+        "873358",
+        "873361",
+        "873365",
+        "873369",
+        "873373",
+        "873376",
+        "873377"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "進退之門-公仔",
+      "line_name": "進退之門 公仔",
+      "ip_slug": "skullpanda",
+      "ip_name": "SKULLPANDA",
+      "product_count": 13,
+      "koca_ips": [
+        "SKULLPANDA"
+      ],
+      "external_ids": [
+        "390633",
+        "390634",
+        "390635",
+        "390636",
+        "390637",
+        "390638",
+        "390639",
+        "390640",
+        "390641",
+        "390642",
+        "390643",
+        "390644",
+        "390645"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "餐桌-公仔",
+      "line_name": "餐桌 公仔",
+      "ip_slug": "skullpanda",
+      "ip_name": "SKULLPANDA",
+      "product_count": 13,
+      "koca_ips": [
+        "SKULLPANDA"
+      ],
+      "external_ids": [
+        "390679",
+        "390680",
+        "390681",
+        "390682",
+        "390683",
+        "390684",
+        "390685",
+        "390687",
+        "390689",
+        "390690",
+        "390691",
+        "390693",
+        "390695"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "默劇-四代-公仔",
+      "line_name": "默劇 四代 公仔",
+      "ip_slug": "hirono",
+      "ip_name": "Hirono",
+      "product_count": 13,
+      "koca_ips": [
+        "Hirono"
+      ],
+      "external_ids": [
+        "555961",
+        "555962",
+        "555963",
+        "555964",
+        "555965",
+        "555966",
+        "555968",
+        "555969",
+        "555970",
+        "555972",
+        "555973",
+        "555975",
+        "555976"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "azura-衣櫥穿搭系列",
+      "line_name": "AZURA 衣櫥穿搭系列",
+      "ip_slug": "molly",
+      "ip_name": "Molly",
+      "product_count": 12,
+      "koca_ips": [
+        "Molly"
+      ],
+      "external_ids": [
+        "900357",
+        "900361",
+        "900363",
+        "900365",
+        "900366",
+        "900368",
+        "900369",
+        "900370",
+        "900371",
+        "900377",
+        "900380",
+        "900382"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "azura日本限定y2k盲盒-公仔",
+      "line_name": "AZURA日本限定Y2K盲盒 公仔",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 12,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "495202",
+        "495203",
+        "495205",
+        "495206",
+        "495220",
+        "495224",
+        "495226",
+        "495229",
+        "495232",
+        "495235",
+        "495238",
+        "495243"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "cheer-up-baby-系列",
+      "line_name": "CHEER UP, BABY!系列",
+      "ip_slug": "crybaby",
+      "ip_name": "CRYBABY",
+      "product_count": 12,
+      "koca_ips": [
+        "CRYBABY"
+      ],
+      "external_ids": [
+        "705779",
+        "760620",
+        "760648",
+        "760656",
+        "767999",
+        "769451",
+        "769482",
+        "769491",
+        "769497",
+        "769503",
+        "769508",
+        "769515"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "spotlight-13th-聚光燈下-13週年-公仔",
+      "line_name": "Spotlight 13th 聚光燈下 13週年 公仔",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 12,
+      "koca_ips": [
+        "CRYBABY",
+        "Dimoo",
+        "HACIPUPU",
+        "Hirono",
+        "LABUBU",
+        "Molly",
+        "PINO JELLY",
+        "PUCKY",
+        "SKULLPANDA",
+        "小甜豆"
+      ],
+      "external_ids": [
+        "841781",
+        "841786",
+        "841795",
+        "841807",
+        "841817",
+        "841827",
+        "841832",
+        "841836",
+        "841840",
+        "841845",
+        "841851",
+        "841857"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "why-so-serious-系列",
+      "line_name": "WHY SO SERIOUS 系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 12,
+      "koca_ips": [
+        "Dimoo",
+        "HACIPUPU",
+        "LABUBU",
+        "Molly",
+        "星星人"
+      ],
+      "external_ids": [
+        "481463",
+        "481467",
+        "773287",
+        "773327",
+        "773334",
+        "773336",
+        "773338",
+        "773340",
+        "773341",
+        "773343",
+        "773344",
+        "773345"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "三麗鷗粉色派對系列",
+      "line_name": "三麗鷗粉色派對系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 12,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "755197",
+        "755199",
+        "755202",
+        "755206",
+        "755208",
+        "755209",
+        "755210",
+        "755211",
+        "755212",
+        "755213",
+        "755215",
+        "755216"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "出走的月亮-系列",
+      "line_name": "出走的月亮 系列",
+      "ip_slug": "crybaby",
+      "ip_name": "CRYBABY",
+      "product_count": 12,
+      "koca_ips": [
+        "CRYBABY"
+      ],
+      "external_ids": [
+        "459036",
+        "459037",
+        "459038",
+        "459040",
+        "459042",
+        "459043",
+        "459045",
+        "459047",
+        "459049",
+        "459051",
+        "459052",
+        "459054"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "動物王國系列",
+      "line_name": "動物王國系列",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 12,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "493297",
+        "493299",
+        "493306",
+        "493307",
+        "493308",
+        "493309",
+        "493310",
+        "493311",
+        "493313",
+        "493314",
+        "493315",
+        "493318"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "呼吸感應系列",
+      "line_name": "呼吸感應系列",
+      "ip_slug": "kubo",
+      "ip_name": "KUBO",
+      "product_count": 12,
+      "koca_ips": [
+        "KUBO"
+      ],
+      "external_ids": [
+        "754149",
+        "754151",
+        "754159",
+        "754163",
+        "754172",
+        "754177",
+        "754183",
+        "754187",
+        "754189",
+        "754191",
+        "754194",
+        "754196"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "小野200-系列",
+      "line_name": "小野200%系列",
+      "ip_slug": "hirono",
+      "ip_name": "Hirono",
+      "product_count": 12,
+      "koca_ips": [
+        "Hirono"
+      ],
+      "external_ids": [
+        "557392",
+        "557402",
+        "557425",
+        "557432",
+        "557445",
+        "557452",
+        "557458",
+        "557462",
+        "557465",
+        "557472",
+        "557476",
+        "557479"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "平日奇境-公仔",
+      "line_name": "平日奇境 公仔",
+      "ip_slug": "skullpanda",
+      "ip_name": "SKULLPANDA",
+      "product_count": 12,
+      "koca_ips": [
+        "SKULLPANDA"
+      ],
+      "external_ids": [
+        "486303",
+        "486306",
+        "486307",
+        "486310",
+        "486312",
+        "486313",
+        "486315",
+        "486317",
+        "486318",
+        "486320",
+        "486324",
+        "486327"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "經典復刻系列",
+      "line_name": "經典復刻系列",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 12,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "461383",
+        "799094",
+        "889528",
+        "889533",
+        "889535",
+        "889541",
+        "889544",
+        "889545",
+        "889547",
+        "889549",
+        "889550",
+        "889551"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "聲音-聲音系列",
+      "line_name": "聲音 聲音系列",
+      "ip_slug": "skullpanda",
+      "ip_name": "SKULLPANDA",
+      "product_count": 12,
+      "koca_ips": [
+        "SKULLPANDA"
+      ],
+      "external_ids": [
+        "841195",
+        "841199",
+        "841203",
+        "841205",
+        "841207",
+        "841210",
+        "841213",
+        "841216",
+        "841221",
+        "841228",
+        "841231",
+        "841233"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "迪士尼米奇創意無界系列",
+      "line_name": "迪士尼米奇創意無界系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 12,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "635461",
+        "778699",
+        "778700",
+        "778701",
+        "778702",
+        "778703",
+        "778704",
+        "778705",
+        "778706",
+        "778707",
+        "778708",
+        "778709"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "食夢動物-公仔",
+      "line_name": "食夢動物 公仔",
+      "ip_slug": "skullpanda",
+      "ip_name": "SKULLPANDA",
+      "product_count": 12,
+      "koca_ips": [
+        "SKULLPANDA"
+      ],
+      "external_ids": [
+        "486269",
+        "486270",
+        "486276",
+        "486279",
+        "486283",
+        "486288",
+        "486289",
+        "486293",
+        "486296",
+        "486297",
+        "486300",
+        "486301"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "庇護所-六代-公仔",
+      "line_name": "庇護所 六代 公仔",
+      "ip_slug": "hirono",
+      "ip_name": "Hirono",
+      "product_count": 11,
+      "koca_ips": [
+        "Hirono"
+      ],
+      "external_ids": [
+        "556711",
+        "556716",
+        "556719",
+        "556721",
+        "556724",
+        "556725",
+        "556726",
+        "556728",
+        "556729",
+        "556730",
+        "556731"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "新生日記系列",
+      "line_name": "新生日記系列",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 11,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "395604",
+        "395605",
+        "395606",
+        "395607",
+        "395608",
+        "395609",
+        "395610",
+        "751591",
+        "751594",
+        "759508",
+        "773360"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "許願時間到-公仔",
+      "line_name": "許願時間到 公仔",
+      "ip_slug": "skullpanda",
+      "ip_name": "SKULLPANDA",
+      "product_count": 11,
+      "koca_ips": [
+        "SKULLPANDA"
+      ],
+      "external_ids": [
+        "395825",
+        "395826",
+        "395827",
+        "395828",
+        "395829",
+        "395830",
+        "395831",
+        "395832",
+        "395833",
+        "395834",
+        "395835"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "魔力卡卡-扭蛋盲盒",
+      "line_name": "魔力卡卡 扭蛋盲盒",
+      "ip_slug": "molly",
+      "ip_name": "Molly",
+      "product_count": 11,
+      "koca_ips": [
+        "Molly"
+      ],
+      "external_ids": [
+        "877236",
+        "877242",
+        "877244",
+        "877249",
+        "877254",
+        "877260",
+        "877265",
+        "877268",
+        "877280",
+        "877284",
+        "877288"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "keya未境之夢系列",
+      "line_name": "KeyA未境之夢系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 10,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "755415",
+        "755416",
+        "755417",
+        "755419",
+        "755420",
+        "755422",
+        "755423",
+        "755424",
+        "755425",
+        "755426"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "三麗鷗家族-甜夢泡泡屋系列",
+      "line_name": "三麗鷗家族 甜夢泡泡屋系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 10,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "671167",
+        "778621",
+        "778624",
+        "778626",
+        "778628",
+        "778630",
+        "778633",
+        "778637",
+        "778639",
+        "778643"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "不眠劇場-娃娃",
+      "line_name": "不眠劇場 娃娃",
+      "ip_slug": "skullpanda",
+      "ip_name": "SKULLPANDA",
+      "product_count": 10,
+      "koca_ips": [
+        "SKULLPANDA"
+      ],
+      "external_ids": [
+        "390646",
+        "390647",
+        "390648",
+        "390649",
+        "390650",
+        "390651",
+        "390652",
+        "390653",
+        "390654",
+        "390655"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "來自星星的禮物系列",
+      "line_name": "來自星星的禮物系列",
+      "ip_slug": "twinkle-twinkle",
+      "ip_name": "星星人",
+      "product_count": 10,
+      "koca_ips": [
+        "星星人"
+      ],
+      "external_ids": [
+        "418598",
+        "731772",
+        "759686",
+        "759688",
+        "759693",
+        "759703",
+        "759704",
+        "759717",
+        "759719",
+        "759724"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "光織園系列",
+      "line_name": "光織園系列",
+      "ip_slug": "skullpanda",
+      "ip_name": "SKULLPANDA",
+      "product_count": 10,
+      "koca_ips": [
+        "SKULLPANDA"
+      ],
+      "external_ids": [
+        "445135",
+        "445137",
+        "445138",
+        "445139",
+        "445140",
+        "445141",
+        "445143",
+        "445144",
+        "445147",
+        "445148"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "史迪奇穿越系列",
+      "line_name": "史迪奇穿越系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 10,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "755557",
+        "755558",
+        "755561",
+        "755562",
+        "755564",
+        "755566",
+        "755567",
+        "755570",
+        "755574",
+        "755576"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "哈利-波特-pop-cube-1-系列",
+      "line_name": "哈利·波特 POP CUBE 1 系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 10,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "563867",
+        "782626",
+        "782643",
+        "782647",
+        "782649",
+        "782653",
+        "782658",
+        "782660",
+        "782663",
+        "782669"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "哈利-波特-pop-cube-2-系列",
+      "line_name": "哈利·波特 POP CUBE 2 系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 10,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "782628",
+        "782684",
+        "782690",
+        "782699",
+        "782702",
+        "782707",
+        "782712",
+        "782716",
+        "782719",
+        "782724"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "哈利-波特-pop-cube-3-系列",
+      "line_name": "哈利·波特 POP CUBE 3 系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 10,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "782630",
+        "782739",
+        "782746",
+        "782749",
+        "782764",
+        "782767",
+        "782769",
+        "782772",
+        "782777",
+        "782784"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "在你生活裡-公仔",
+      "line_name": "在你生活裡 公仔",
+      "ip_slug": "pino-jelly",
+      "ip_name": "PINO JELLY",
+      "product_count": 10,
+      "koca_ips": [
+        "PINO JELLY"
+      ],
+      "external_ids": [
+        "422344",
+        "838455",
+        "838457",
+        "838458",
+        "838466",
+        "838468",
+        "838470",
+        "838471",
+        "838479",
+        "937048"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "宅宅系列",
+      "line_name": "宅宅系列",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 10,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "934925",
+        "934930",
+        "934933",
+        "934936",
+        "934939",
+        "934946",
+        "934950",
+        "934956",
+        "934959",
+        "934982"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "心願指尖系列",
+      "line_name": "心願指尖系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 10,
+      "koca_ips": [
+        "Dimoo",
+        "HACIPUPU",
+        "LABUBU",
+        "Molly",
+        "PUCKY",
+        "SKULLPANDA",
+        "其他 IP",
+        "小甜豆"
+      ],
+      "external_ids": [
+        "768105",
+        "769697",
+        "769698",
+        "769699",
+        "769700",
+        "769702",
+        "769703",
+        "769704",
+        "769708",
+        "769715"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "海綿寶寶野餐派對-扭蛋盲盒",
+      "line_name": "海綿寶寶野餐派對 扭蛋盲盒",
+      "ip_slug": "spongebob",
+      "ip_name": "SpongeBob",
+      "product_count": 10,
+      "koca_ips": [
+        "SpongeBob"
+      ],
+      "external_ids": [
+        "509690",
+        "509691",
+        "509693",
+        "509695",
+        "509696",
+        "509697",
+        "509698",
+        "509754",
+        "509757",
+        "509760"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "貓和老鼠-搞怪樂園-公仔",
+      "line_name": "貓和老鼠 搞怪樂園 公仔",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 10,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "878741",
+        "878745",
+        "878748",
+        "878753",
+        "878760",
+        "878771",
+        "878786",
+        "878793",
+        "878795",
+        "878797"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "邸語-觀中景-公仔",
+      "line_name": "邸語-觀中景 公仔",
+      "ip_slug": "skullpanda",
+      "ip_name": "SKULLPANDA",
+      "product_count": 10,
+      "koca_ips": [
+        "SKULLPANDA"
+      ],
+      "external_ids": [
+        "594871",
+        "594875",
+        "594877",
+        "594879",
+        "594880",
+        "594883",
+        "594885",
+        "594886",
+        "594887",
+        "594888"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "重塑-五代-公仔",
+      "line_name": "重塑 五代 公仔",
+      "ip_slug": "hirono",
+      "ip_name": "Hirono",
+      "product_count": 10,
+      "koca_ips": [
+        "Hirono"
+      ],
+      "external_ids": [
+        "556683",
+        "556684",
+        "556685",
+        "556686",
+        "556687",
+        "556688",
+        "556689",
+        "556690",
+        "556691",
+        "556692"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "間諜過家家日常系列",
+      "line_name": "間諜過家家日常系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 10,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "756670",
+        "756671",
+        "756672",
+        "756674",
+        "756675",
+        "756676",
+        "756679",
+        "756680",
+        "756683",
+        "756689"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "夢幻自然元素系列",
+      "line_name": "夢幻自然元素系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 9,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "600046",
+        "600048",
+        "600052",
+        "600055",
+        "600056",
+        "600057",
+        "600058",
+        "600060",
+        "600061"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "天線寶寶系列",
+      "line_name": "天線寶寶系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 9,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "422660",
+        "422661",
+        "484788",
+        "529472",
+        "538261",
+        "538269",
+        "538277",
+        "538281",
+        "538284"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "明日早高峰-公仔",
+      "line_name": "明日早高峰 公仔",
+      "ip_slug": "skullpanda",
+      "ip_name": "SKULLPANDA",
+      "product_count": 9,
+      "koca_ips": [
+        "SKULLPANDA"
+      ],
+      "external_ids": [
+        "486416",
+        "486419",
+        "486423",
+        "486432",
+        "486435",
+        "486439",
+        "486449",
+        "486450",
+        "486456"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "玩具總動員之安迪的房間系列",
+      "line_name": "玩具總動員之安迪的房間系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 9,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "729108",
+        "729110",
+        "759774",
+        "759778",
+        "759782",
+        "759786",
+        "759789",
+        "759791",
+        "759795"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "貓和老鼠-星盤奇緣-公仔",
+      "line_name": "貓和老鼠 星盤奇緣 公仔",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 9,
+      "koca_ips": [
+        "Molly",
+        "其他 IP"
+      ],
+      "external_ids": [
+        "878559",
+        "878561",
+        "878564",
+        "878571",
+        "878575",
+        "878581",
+        "878587",
+        "878593",
+        "878598"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "貓貓樂園系列",
+      "line_name": "貓貓樂園系列",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 9,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "878476",
+        "878478",
+        "878480",
+        "878482",
+        "878483",
+        "878484",
+        "878485",
+        "878486",
+        "878487"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "crybaby眼淚工廠系列",
+      "line_name": "CRYBABY眼淚工廠系列",
+      "ip_slug": "crybaby",
+      "ip_name": "CRYBABY",
+      "product_count": 8,
+      "koca_ips": [
+        "CRYBABY"
+      ],
+      "external_ids": [
+        "418611",
+        "576037",
+        "576042",
+        "576045",
+        "576052",
+        "576056",
+        "576058",
+        "597377"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "care-bears愛心熊聯名-毛絨掛件盲盒-吊飾",
+      "line_name": "Care Bears愛心熊聯名 毛絨掛件盲盒 吊飾",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 8,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "765212",
+        "765217",
+        "765218",
+        "765222",
+        "765223",
+        "765227",
+        "765230",
+        "765236"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "hello-thailand",
+      "line_name": "Hello Thailand",
+      "ip_slug": "crybaby",
+      "ip_name": "CRYBABY",
+      "product_count": 8,
+      "koca_ips": [
+        "CRYBABY"
+      ],
+      "external_ids": [
+        "677170",
+        "762672",
+        "762675",
+        "762676",
+        "762678",
+        "762679",
+        "762680",
+        "762682"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "hello-thailand-金屬鏈條徽章盲盒-別針",
+      "line_name": "Hello Thailand 金屬鏈條徽章盲盒 別針",
+      "ip_slug": "crybaby",
+      "ip_name": "CRYBABY",
+      "product_count": 8,
+      "koca_ips": [
+        "CRYBABY"
+      ],
+      "external_ids": [
+        "762694",
+        "762695",
+        "762698",
+        "762699",
+        "762700",
+        "762702",
+        "762703",
+        "762708"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "sad-club-場景手辦-擺件",
+      "line_name": "SAD CLUB 場景手辦 擺件",
+      "ip_slug": "crybaby",
+      "ip_name": "CRYBABY",
+      "product_count": 8,
+      "koca_ips": [
+        "CRYBABY"
+      ],
+      "external_ids": [
+        "935129",
+        "935131",
+        "935133",
+        "935136",
+        "935137",
+        "935139",
+        "935140",
+        "935142"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "the-monsters-三麗鷗家族系列",
+      "line_name": "THE MONSTERS × 三麗鷗家族系列",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 8,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "647812",
+        "647814",
+        "647820",
+        "647823",
+        "647825",
+        "647828",
+        "647832",
+        "924771"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "the-monsters-前方高能系列",
+      "line_name": "THE MONSTERS 前方高能系列",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 8,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "538314",
+        "538318",
+        "538320",
+        "538322",
+        "538324",
+        "538333",
+        "662913",
+        "757056"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "比奇堡的居民們-吊飾",
+      "line_name": "比奇堡的居民們 吊飾",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 8,
+      "koca_ips": [
+        "SpongeBob",
+        "其他 IP"
+      ],
+      "external_ids": [
+        "506603",
+        "506605",
+        "506608",
+        "506610",
+        "506612",
+        "506615",
+        "506626",
+        "840395"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "眼淚發射計畫-毛絨掛件盲盒-吊飾",
+      "line_name": "眼淚發射計畫 毛絨掛件盲盒 吊飾",
+      "ip_slug": "crybaby",
+      "ip_name": "CRYBABY",
+      "product_count": 8,
+      "koca_ips": [
+        "CRYBABY"
+      ],
+      "external_ids": [
+        "756531",
+        "756533",
+        "756535",
+        "756537",
+        "756539",
+        "756542",
+        "756544",
+        "781968"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "萌粒-咖啡工廠-香氛蠟燭",
+      "line_name": "萌粒 咖啡工廠 香氛蠟燭",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 8,
+      "koca_ips": [
+        "CHAKA",
+        "CRYBABY",
+        "Dimoo",
+        "LABUBU",
+        "Molly",
+        "PINO JELLY",
+        "SKULLPANDA",
+        "Zsiga"
+      ],
+      "external_ids": [
+        "395744",
+        "395745",
+        "395746",
+        "395747",
+        "395748",
+        "395749",
+        "395750",
+        "395751"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "豹豹貓貓系列",
+      "line_name": "豹豹貓貓系列",
+      "ip_slug": "crybaby",
+      "ip_name": "CRYBABY",
+      "product_count": 8,
+      "koca_ips": [
+        "CRYBABY"
+      ],
+      "external_ids": [
+        "507520",
+        "507526",
+        "507528",
+        "507532",
+        "709844",
+        "778751",
+        "778755",
+        "778772"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "care-bears愛心熊聯名-cozy-life系列",
+      "line_name": "Care Bears愛心熊聯名 Cozy Life系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 7,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "764995",
+        "765189",
+        "765190",
+        "765192",
+        "765193",
+        "765195",
+        "765198"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "hirono-x-clot-八代-公仔",
+      "line_name": "Hirono x CLOT 八代 公仔",
+      "ip_slug": "hirono",
+      "ip_name": "Hirono",
+      "product_count": 7,
+      "koca_ips": [
+        "Hirono"
+      ],
+      "external_ids": [
+        "556801",
+        "556804",
+        "556807",
+        "556808",
+        "556811",
+        "556813",
+        "556820"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "ihirono公路日志系列",
+      "line_name": "IHIRONO公路日志系列",
+      "ip_slug": "hirono",
+      "ip_name": "Hirono",
+      "product_count": 7,
+      "koca_ips": [
+        "Hirono"
+      ],
+      "external_ids": [
+        "557093",
+        "557095",
+        "557100",
+        "557106",
+        "557109",
+        "557119",
+        "557122"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "冬日樂章-娃娃",
+      "line_name": "冬日樂章 娃娃",
+      "ip_slug": "skullpanda",
+      "ip_name": "SKULLPANDA",
+      "product_count": 7,
+      "koca_ips": [
+        "SKULLPANDA"
+      ],
+      "external_ids": [
+        "395836",
+        "395837",
+        "395838",
+        "395839",
+        "395840",
+        "395841",
+        "395842"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "冬日樂章系列",
+      "line_name": "冬日樂章系列",
+      "ip_slug": "skullpanda",
+      "ip_name": "SKULLPANDA",
+      "product_count": 7,
+      "koca_ips": [
+        "SKULLPANDA"
+      ],
+      "external_ids": [
+        "612289",
+        "612290",
+        "612291",
+        "612292",
+        "612294",
+        "612295",
+        "612296"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "好夢氣象局系列",
+      "line_name": "好夢氣象局系列",
+      "ip_slug": "twinkle-twinkle",
+      "ip_name": "星星人",
+      "product_count": 7,
+      "koca_ips": [
+        "星星人"
+      ],
+      "external_ids": [
+        "401726",
+        "481441",
+        "512448",
+        "512450",
+        "512453",
+        "512468",
+        "512478"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "寬恕之城-三代-公仔",
+      "line_name": "寬恕之城 三代 公仔",
+      "ip_slug": "hirono",
+      "ip_name": "Hirono",
+      "product_count": 7,
+      "koca_ips": [
+        "Hirono"
+      ],
+      "external_ids": [
+        "555932",
+        "555935",
+        "555937",
+        "555940",
+        "555941",
+        "555943",
+        "555949"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "怪怪狂歡系列",
+      "line_name": "怪怪狂歡系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 7,
+      "koca_ips": [
+        "Dimoo",
+        "LABUBU",
+        "Molly",
+        "PUCKY"
+      ],
+      "external_ids": [
+        "691689",
+        "729313",
+        "729315",
+        "729319",
+        "729326",
+        "729332",
+        "729337"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "比奇堡的居民們-2-0-吊飾",
+      "line_name": "比奇堡的居民們 2.0 吊飾",
+      "ip_slug": "spongebob",
+      "ip_name": "SpongeBob",
+      "product_count": 7,
+      "koca_ips": [
+        "SpongeBob"
+      ],
+      "external_ids": [
+        "719218",
+        "719219",
+        "719220",
+        "719228",
+        "719230",
+        "719232",
+        "719234"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "犬夜叉聯名-手辦盲盒-公仔",
+      "line_name": "犬夜叉聯名 手辦盲盒 公仔",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 7,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "924068",
+        "924074",
+        "924077",
+        "924081",
+        "924083",
+        "924085",
+        "924096"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "狂歡週年慶-扭蛋盲盒",
+      "line_name": "狂歡週年慶 扭蛋盲盒",
+      "ip_slug": "spongebob",
+      "ip_name": "SpongeBob",
+      "product_count": 7,
+      "koca_ips": [
+        "SpongeBob"
+      ],
+      "external_ids": [
+        "516804",
+        "516810",
+        "516813",
+        "516818",
+        "516821",
+        "516823",
+        "516825"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "肯德基聯名-手辦盲盒-公仔",
+      "line_name": "肯德基聯名 手辦盲盒 公仔",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 7,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "934984",
+        "934986",
+        "934987",
+        "934989",
+        "934990",
+        "934992",
+        "934997"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "葬送的芙莉蓮系列",
+      "line_name": "葬送的芙莉蓮系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 7,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "653078",
+        "653089",
+        "653112",
+        "653122",
+        "653128",
+        "653132",
+        "653138"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "詭樂園-十代-公仔",
+      "line_name": "詭樂園 十代 公仔",
+      "ip_slug": "hirono",
+      "ip_name": "Hirono",
+      "product_count": 7,
+      "koca_ips": [
+        "Hirono"
+      ],
+      "external_ids": [
+        "556890",
+        "556891",
+        "556893",
+        "556894",
+        "556896",
+        "556897",
+        "556898"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "進退之門-香氛蠟燭",
+      "line_name": "進退之門 香氛蠟燭",
+      "ip_slug": "skullpanda",
+      "ip_name": "SKULLPANDA",
+      "product_count": 7,
+      "koca_ips": [
+        "SKULLPANDA"
+      ],
+      "external_ids": [
+        "395844",
+        "395845",
+        "395846",
+        "395847",
+        "395848",
+        "395849",
+        "395850"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "邸語-觀中景-擺件-車載香氛",
+      "line_name": "邸語-觀中景 擺件 車載香氛",
+      "ip_slug": "skullpanda",
+      "ip_name": "SKULLPANDA",
+      "product_count": 7,
+      "koca_ips": [
+        "SKULLPANDA"
+      ],
+      "external_ids": [
+        "391201",
+        "391202",
+        "391203",
+        "391206",
+        "391207",
+        "391208",
+        "391209"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "餐桌-香氛蠟燭",
+      "line_name": "餐桌 香氛蠟燭",
+      "ip_slug": "skullpanda",
+      "ip_name": "SKULLPANDA",
+      "product_count": 7,
+      "koca_ips": [
+        "SKULLPANDA"
+      ],
+      "external_ids": [
+        "390710",
+        "390711",
+        "390713",
+        "390714",
+        "390715",
+        "390716",
+        "390717"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "餐桌系列",
+      "line_name": "餐桌系列",
+      "ip_slug": "skullpanda",
+      "ip_name": "SKULLPANDA",
+      "product_count": 7,
+      "koca_ips": [
+        "SKULLPANDA"
+      ],
+      "external_ids": [
+        "717188",
+        "717195",
+        "717201",
+        "717205",
+        "717212",
+        "717213",
+        "717223"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "馬力全開系列",
+      "line_name": "馬力全開系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 7,
+      "koca_ips": [
+        "CRYBABY",
+        "Dimoo",
+        "Hirono",
+        "LABUBU",
+        "Molly",
+        "SKULLPANDA",
+        "星星人"
+      ],
+      "external_ids": [
+        "485303",
+        "485314",
+        "485317",
+        "485319",
+        "485322",
+        "485327",
+        "485329"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "baby-molly-口袋朋友系列",
+      "line_name": "Baby Molly 口袋朋友系列",
+      "ip_slug": "baby-molly",
+      "ip_name": "Baby Molly",
+      "product_count": 6,
+      "koca_ips": [
+        "Baby Molly"
+      ],
+      "external_ids": [
+        "576083",
+        "576084",
+        "576085",
+        "576086",
+        "576090",
+        "576091"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "da-all-out-系列",
+      "line_name": "DA ALL OUT 系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 6,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "684130",
+        "750769",
+        "750774",
+        "750777",
+        "750780",
+        "750782"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "sweet-treat-series",
+      "line_name": "Sweet Treat Series",
+      "ip_slug": "disney",
+      "ip_name": "迪士尼",
+      "product_count": 6,
+      "koca_ips": [
+        "迪士尼"
+      ],
+      "external_ids": [
+        "757826",
+        "757830",
+        "757834",
+        "757838",
+        "757853",
+        "757855"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "小野熊-系列",
+      "line_name": "小野熊 系列",
+      "ip_slug": "hirono",
+      "ip_name": "Hirono",
+      "product_count": 6,
+      "koca_ips": [
+        "Hirono"
+      ],
+      "external_ids": [
+        "564828",
+        "569992",
+        "569996",
+        "570005",
+        "570007",
+        "624362"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "比奇堡的居民們-二代-吊飾",
+      "line_name": "比奇堡的居民們 二代 吊飾",
+      "ip_slug": "spongebob",
+      "ip_name": "SpongeBob",
+      "product_count": 6,
+      "koca_ips": [
+        "SpongeBob"
+      ],
+      "external_ids": [
+        "660623",
+        "660626",
+        "660629",
+        "660630",
+        "660632",
+        "660634"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "molly二代-公仔",
+      "line_name": "Molly二代 公仔",
+      "ip_slug": "molly",
+      "ip_name": "Molly",
+      "product_count": 5,
+      "koca_ips": [
+        "Molly"
+      ],
+      "external_ids": [
+        "570755",
+        "570758",
+        "570762",
+        "570769",
+        "570773"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "約會日系列",
+      "line_name": "約會日系列",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 5,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "461386",
+        "461403",
+        "609655",
+        "609659",
+        "878461"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "飛天小女警聯名-吊飾",
+      "line_name": "飛天小女警聯名 吊飾",
+      "ip_slug": "crybaby",
+      "ip_name": "CRYBABY",
+      "product_count": 5,
+      "koca_ips": [
+        "CRYBABY"
+      ],
+      "external_ids": [
+        "506873",
+        "506876",
+        "538187",
+        "538191",
+        "862398"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "100-三代",
+      "line_name": "100%三代",
+      "ip_slug": "molly",
+      "ip_name": "Molly",
+      "product_count": 4,
+      "koca_ips": [
+        "Molly"
+      ],
+      "external_ids": [
+        "730149",
+        "761311",
+        "859218",
+        "859220"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "fluffy",
+      "line_name": "Fluffy",
+      "ip_slug": "molly",
+      "ip_name": "Molly",
+      "product_count": 4,
+      "koca_ips": [
+        "Molly"
+      ],
+      "external_ids": [
+        "801158",
+        "801164",
+        "801167",
+        "801171"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "公仔-海綿寶寶-搞怪系列",
+      "line_name": "公仔 海綿寶寶 搞怪系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 4,
+      "koca_ips": [
+        "SpongeBob",
+        "其他 IP"
+      ],
+      "external_ids": [
+        "503095",
+        "503149",
+        "503151",
+        "503153"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "叛桃朋克-朋克仙子-公仔",
+      "line_name": "叛桃朋克 朋克仙子 公仔",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 4,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "759852",
+        "759855",
+        "759858",
+        "759862"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "搪膠毛絨-公仔",
+      "line_name": "搪膠毛絨 公仔",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 4,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "626254",
+        "664315",
+        "756654",
+        "795642"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "歡迎來到月球表面系列",
+      "line_name": "歡迎來到月球表面系列",
+      "ip_slug": "twinkle-twinkle",
+      "ip_name": "星星人",
+      "product_count": 4,
+      "koca_ips": [
+        "星星人"
+      ],
+      "external_ids": [
+        "756197",
+        "756198",
+        "756201",
+        "756298"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "2024-zsiga雙子系列",
+      "line_name": "2024 Zsiga雙子系列",
+      "ip_slug": "zsiga",
+      "ip_name": "Zsiga",
+      "product_count": 3,
+      "koca_ips": [
+        "Zsiga"
+      ],
+      "external_ids": [
+        "879788",
+        "879811",
+        "879814"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "fifa系列",
+      "line_name": "FIFA系列",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 3,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "755028",
+        "755032",
+        "756306"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "the-monsters-十週年系列",
+      "line_name": "THE MONSTERS 十週年系列",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 3,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "756645",
+        "756647",
+        "756648"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "the-monsters-可口可樂系列",
+      "line_name": "THE MONSTERS 可口可樂系列",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 3,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "606561",
+        "757013",
+        "757016"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "磁鐵-冰箱貼",
+      "line_name": "磁鐵 冰箱貼",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 3,
+      "koca_ips": [
+        "SKULLPANDA",
+        "其他 IP"
+      ],
+      "external_ids": [
+        "390658",
+        "759974",
+        "794482"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "馬卡龍-公仔",
+      "line_name": "馬卡龍 公仔",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 3,
+      "koca_ips": [
+        "Molly",
+        "其他 IP",
+        "星星人"
+      ],
+      "external_ids": [
+        "457965",
+        "516600",
+        "900374"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "azura-公仔",
+      "line_name": "AZURA 公仔",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 2,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "811696",
+        "811697"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "dimoo-world-系列",
+      "line_name": "DIMOO WORLD 系列",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 2,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "756608",
+        "756615"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "dimoo去哪兒系列",
+      "line_name": "DIMOO去哪兒系列",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 2,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "640951",
+        "929805"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "hirono小野兔毛绒公仔挂件",
+      "line_name": "HIRONO小野兔毛绒公仔挂件",
+      "ip_slug": "hirono",
+      "ip_name": "Hirono",
+      "product_count": 2,
+      "koca_ips": [
+        "Hirono"
+      ],
+      "external_ids": [
+        "754859",
+        "754860"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "mega-400-公仔",
+      "line_name": "MEGA 400% 公仔",
+      "ip_slug": "molly",
+      "ip_name": "Molly",
+      "product_count": 2,
+      "koca_ips": [
+        "Molly"
+      ],
+      "external_ids": [
+        "596510",
+        "795611"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "molly-100-第二代",
+      "line_name": "MOLLY 100% 第二代",
+      "ip_slug": "molly",
+      "ip_name": "Molly",
+      "product_count": 2,
+      "koca_ips": [
+        "Molly"
+      ],
+      "external_ids": [
+        "504358",
+        "504365"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "molly-100-第四代",
+      "line_name": "MOLLY 100% 第四代",
+      "ip_slug": "molly",
+      "ip_name": "Molly",
+      "product_count": 2,
+      "koca_ips": [
+        "Molly"
+      ],
+      "external_ids": [
+        "504352",
+        "504360"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "sp-吊卡-公仔",
+      "line_name": "SP 吊卡 公仔",
+      "ip_slug": "skullpanda",
+      "ip_name": "SKULLPANDA",
+      "product_count": 2,
+      "koca_ips": [
+        "SKULLPANDA"
+      ],
+      "external_ids": [
+        "487309",
+        "767522"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "the-monsters择味便利店系列",
+      "line_name": "THE MONSTERS择味便利店系列",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 2,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "436368",
+        "436369"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "一代-公仔",
+      "line_name": "一代 公仔",
+      "ip_slug": "molly",
+      "ip_name": "Molly",
+      "product_count": 2,
+      "koca_ips": [
+        "Molly"
+      ],
+      "external_ids": [
+        "570687",
+        "570695"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "公仔-oipippi-小樂子系列",
+      "line_name": "公仔 OIPIPPI 小樂子系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 2,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "498582",
+        "498583"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "特別盲盒-你最珍貴系列",
+      "line_name": "特別盲盒 你最珍貴系列",
+      "ip_slug": "hirono",
+      "ip_name": "Hirono",
+      "product_count": 2,
+      "koca_ips": [
+        "Hirono"
+      ],
+      "external_ids": [
+        "556988",
+        "556989"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "特別盲盒-點金奔騰系列",
+      "line_name": "特別盲盒 點金奔騰系列",
+      "ip_slug": "hirono",
+      "ip_name": "Hirono",
+      "product_count": 2,
+      "koca_ips": [
+        "Hirono"
+      ],
+      "external_ids": [
+        "556991",
+        "556992"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "特別盲盒-龍吟獻瑞系列",
+      "line_name": "特別盲盒 龍吟獻瑞系列",
+      "ip_slug": "hirono",
+      "ip_name": "Hirono",
+      "product_count": 2,
+      "koca_ips": [
+        "Hirono"
+      ],
+      "external_ids": [
+        "556921",
+        "556924"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "123星星人-懶蟲起床啦-吊飾",
+      "line_name": "123星星人 懶蟲起床啦 吊飾",
+      "ip_slug": "twinkle-twinkle",
+      "ip_name": "星星人",
+      "product_count": 1,
+      "koca_ips": [
+        "星星人"
+      ],
+      "external_ids": [
+        "747568"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "acura暖冬聖誕-公仔",
+      "line_name": "Acura暖冬聖誕 公仔",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 1,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "722201"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "care-bears-扭蛋盲盒",
+      "line_name": "Care Bears 扭蛋盲盒",
+      "ip_slug": "zsiga",
+      "ip_name": "Zsiga",
+      "product_count": 1,
+      "koca_ips": [
+        "Zsiga"
+      ],
+      "external_ids": [
+        "388212"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "dimoo稻草人-公仔",
+      "line_name": "DIMOO稻草人 公仔",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 1,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "457920"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "duckoo-農場系列",
+      "line_name": "DUCKOO 農場系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 1,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "671118"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "flip-with-me系列",
+      "line_name": "FLIP WITH ME系列",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 1,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "795626"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "have-a-seat-坐坐系列",
+      "line_name": "Have a Seat (坐坐系列",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 1,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "562858"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "hello-thailand-金屬鏈條徽章盲盒-吊飾",
+      "line_name": "Hello Thailand 金屬鏈條徽章盲盒 吊飾",
+      "ip_slug": "crybaby",
+      "ip_name": "CRYBABY",
+      "product_count": 1,
+      "koca_ips": [
+        "CRYBABY"
+      ],
+      "external_ids": [
+        "762711"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "kubo-海盜船長-公仔",
+      "line_name": "KUBO 海盜船長 公仔",
+      "ip_slug": "kubo",
+      "ip_name": "KUBO",
+      "product_count": 1,
+      "koca_ips": [
+        "KUBO"
+      ],
+      "external_ids": [
+        "461405"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "labubu-搞怪便利店-炸蝦耳機包-擺件",
+      "line_name": "LABUBU 搞怪便利店 炸蝦耳機包 擺件",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 1,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "447134"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "labubu心動馬卡龍-娃娃",
+      "line_name": "Labubu心動馬卡龍 娃娃",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 1,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "397584"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "pino-jelly-嫉妒-公仔",
+      "line_name": "PINO JELLY 嫉妒 公仔",
+      "ip_slug": "pino-jelly",
+      "ip_name": "PINO JELLY",
+      "product_count": 1,
+      "koca_ips": [
+        "PINO JELLY"
+      ],
+      "external_ids": [
+        "461396"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "pucky-肉肉龍-公仔",
+      "line_name": "PUCKY 肉肉龍 公仔",
+      "ip_slug": "pucky",
+      "ip_name": "PUCKY",
+      "product_count": 1,
+      "koca_ips": [
+        "PUCKY"
+      ],
+      "external_ids": [
+        "461397"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "pucky精靈們在做什麼系列",
+      "line_name": "PUCKY精靈們在做什麼系列",
+      "ip_slug": "pucky",
+      "ip_name": "PUCKY",
+      "product_count": 1,
+      "koca_ips": [
+        "PUCKY"
+      ],
+      "external_ids": [
+        "768020"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "pucky精靈動物茶話會系列",
+      "line_name": "PUCKY精靈動物茶話會系列",
+      "ip_slug": "pucky",
+      "ip_name": "PUCKY",
+      "product_count": 1,
+      "koca_ips": [
+        "PUCKY"
+      ],
+      "external_ids": [
+        "768024"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "pucky精靈沉睡之森系列",
+      "line_name": "PUCKY精靈沉睡之森系列",
+      "ip_slug": "pucky",
+      "ip_name": "PUCKY",
+      "product_count": 1,
+      "koca_ips": [
+        "PUCKY"
+      ],
+      "external_ids": [
+        "768019"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "pin-for-love-吊飾",
+      "line_name": "Pin for love 吊飾",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 1,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "424866"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "sad-club-場景手辦盲盒-擺件",
+      "line_name": "SAD CLUB 場景手辦盲盒 擺件",
+      "ip_slug": "crybaby",
+      "ip_name": "CRYBABY",
+      "product_count": 1,
+      "koca_ips": [
+        "CRYBABY"
+      ],
+      "external_ids": [
+        "935126"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "sad-club-盲盒毛絨花朵-娃娃",
+      "line_name": "SAD CLUB 盲盒毛絨花朵 娃娃",
+      "ip_slug": "crybaby",
+      "ip_name": "CRYBABY",
+      "product_count": 1,
+      "koca_ips": [
+        "CRYBABY"
+      ],
+      "external_ids": [
+        "930078"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "skullpanda聲音系列",
+      "line_name": "SKULLPANDA聲音系列",
+      "ip_slug": "skullpanda",
+      "ip_name": "SKULLPANDA",
+      "product_count": 1,
+      "koca_ips": [
+        "SKULLPANDA"
+      ],
+      "external_ids": [
+        "504411"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "the-monster-angel-in-clouds-公仔",
+      "line_name": "THE MONSTER ANGEL IN CLOUDS 公仔",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 1,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "756624"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "the-monsters-pin-for-love-字母掛件盲盒-吊飾",
+      "line_name": "THE MONSTERS PIN FOR LOVE - 字母掛件盲盒 吊飾",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 1,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "396651"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "the-monsters-一起玩遊戲系列",
+      "line_name": "THE MONSTERS 一起玩遊戲系列",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 1,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "688338"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "the-monsters-凌晨一點系列",
+      "line_name": "THE MONSTERS 凌晨一點系列",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 1,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "474609"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "ted2-泰迪熊-可動毛絨掛件盲盒-吊飾",
+      "line_name": "Ted2 泰迪熊 可動毛絨掛件盲盒 吊飾",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 1,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "529510"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "the-monsters-time-to-chill-初代-公仔",
+      "line_name": "The Monsters - Time to Chill 初代 公仔",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 1,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "562459"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "x-柯達聯名-小野熊毛絨掛飾-公仔",
+      "line_name": "x 柯達聯名 小野熊毛絨掛飾 公仔",
+      "ip_slug": "hirono",
+      "ip_name": "Hirono",
+      "product_count": 1,
+      "koca_ips": [
+        "Hirono"
+      ],
+      "external_ids": [
+        "810178"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "三角巧克力-公仔",
+      "line_name": "三角巧克力 公仔",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 1,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "457948"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "公仔-sp-亞當斯一家系列",
+      "line_name": "公仔 SP 亞當斯一家系列",
+      "ip_slug": "skullpanda",
+      "ip_name": "SKULLPANDA",
+      "product_count": 1,
+      "koca_ips": [
+        "SKULLPANDA"
+      ],
+      "external_ids": [
+        "503185"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "公仔-zsiga-允許這一切系列",
+      "line_name": "公仔 ZSIGA 允許這一切系列",
+      "ip_slug": "zsiga",
+      "ip_name": "Zsiga",
+      "product_count": 1,
+      "koca_ips": [
+        "Zsiga"
+      ],
+      "external_ids": [
+        "503169"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "公仔-zsiga-小手拉小手系列",
+      "line_name": "公仔 ZSIGA 小手拉小手系列",
+      "ip_slug": "zsiga",
+      "ip_name": "Zsiga",
+      "product_count": 1,
+      "koca_ips": [
+        "Zsiga"
+      ],
+      "external_ids": [
+        "503177"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "加拿大限定河狸寶寶吊卡-公仔",
+      "line_name": "加拿大限定河狸寶寶吊卡 公仔",
+      "ip_slug": "pucky",
+      "ip_name": "PUCKY",
+      "product_count": 1,
+      "koca_ips": [
+        "PUCKY"
+      ],
+      "external_ids": [
+        "931648"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "叛桃成名在望系列",
+      "line_name": "叛桃成名在望系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 1,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "436131"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "叛桃朋克-扭蛋盲盒",
+      "line_name": "叛桃朋克 扭蛋盲盒",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 1,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "726240"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "吉量手辦-公仔",
+      "line_name": "吉量手辦 公仔",
+      "ip_slug": "skullpanda",
+      "ip_name": "SKULLPANDA",
+      "product_count": 1,
+      "koca_ips": [
+        "SKULLPANDA"
+      ],
+      "external_ids": [
+        "756660"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "吊飾-餅乾系列",
+      "line_name": "吊飾 餅乾系列",
+      "ip_slug": "twinkle-twinkle",
+      "ip_name": "星星人",
+      "product_count": 1,
+      "koca_ips": [
+        "星星人"
+      ],
+      "external_ids": [
+        "631743"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "和平主義號-公仔",
+      "line_name": "和平主義號 公仔",
+      "ip_slug": "molly",
+      "ip_name": "Molly",
+      "product_count": 1,
+      "koca_ips": [
+        "Molly"
+      ],
+      "external_ids": [
+        "938368"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "哭娃-吊飾",
+      "line_name": "哭娃 吊飾",
+      "ip_slug": "crybaby",
+      "ip_name": "CRYBABY",
+      "product_count": 1,
+      "koca_ips": [
+        "CRYBABY"
+      ],
+      "external_ids": [
+        "784633"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "哭熊-吊飾-耳機包",
+      "line_name": "哭熊 吊飾 耳機包",
+      "ip_slug": "crybaby",
+      "ip_name": "CRYBABY",
+      "product_count": 1,
+      "koca_ips": [
+        "CRYBABY"
+      ],
+      "external_ids": [
+        "441714"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "大久保-公仔",
+      "line_name": "大久保 公仔",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 1,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "457911"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "小熊軟體-扭蛋盲盒",
+      "line_name": "小熊軟體 扭蛋盲盒",
+      "ip_slug": "hacipupu",
+      "ip_name": "HACIPUPU",
+      "product_count": 1,
+      "koca_ips": [
+        "HACIPUPU"
+      ],
+      "external_ids": [
+        "425699"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "小甜豆-動物寶寶系列",
+      "line_name": "小甜豆 動物寶寶系列",
+      "ip_slug": "sweet-bean",
+      "ip_name": "小甜豆",
+      "product_count": 1,
+      "koca_ips": [
+        "小甜豆"
+      ],
+      "external_ids": [
+        "504382"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "小甜豆-迎兔接福-公仔",
+      "line_name": "小甜豆 迎兔接福 公仔",
+      "ip_slug": "sweet-bean",
+      "ip_name": "小甜豆",
+      "product_count": 1,
+      "koca_ips": [
+        "小甜豆"
+      ],
+      "external_ids": [
+        "461391"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "愛的抱抱系列",
+      "line_name": "愛的抱抱系列",
+      "ip_slug": "sweet-bean",
+      "ip_name": "小甜豆",
+      "product_count": 1,
+      "koca_ips": [
+        "小甜豆"
+      ],
+      "external_ids": [
+        "778380"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "慵懶瑜伽係-扭蛋盲盒",
+      "line_name": "慵懶瑜伽係 扭蛋盲盒",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 1,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "543662"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "扭蛋盲盒-baby-molly-抱抱探索計劃",
+      "line_name": "扭蛋盲盒 Baby MOLLY 抱抱探索計劃",
+      "ip_slug": "molly",
+      "ip_name": "Molly",
+      "product_count": 1,
+      "koca_ips": [
+        "Molly"
+      ],
+      "external_ids": [
+        "418601"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "扭蛋盲盒-crybaby落日歌會",
+      "line_name": "扭蛋盲盒 CRYBABY落日歌會",
+      "ip_slug": "crybaby",
+      "ip_name": "CRYBABY",
+      "product_count": 1,
+      "koca_ips": [
+        "CRYBABY"
+      ],
+      "external_ids": [
+        "594950"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "扭蛋盲盒-labubu-慵懶瑜伽",
+      "line_name": "扭蛋盲盒 LABUBU 慵懶瑜伽",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 1,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "418617"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "扭蛋盲盒-labubu-看不見我",
+      "line_name": "扭蛋盲盒 LABUBU 看不見我",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 1,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "418613"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "扭蛋盲盒-molly-抱抱",
+      "line_name": "扭蛋盲盒 MOLLY 抱抱",
+      "ip_slug": "baby-molly",
+      "ip_name": "Baby Molly",
+      "product_count": 1,
+      "koca_ips": [
+        "Baby Molly"
+      ],
+      "external_ids": [
+        "418616"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "扭蛋盲盒-molly-放空的一天",
+      "line_name": "扭蛋盲盒 MOLLY 放空的一天",
+      "ip_slug": "molly",
+      "ip_name": "Molly",
+      "product_count": 1,
+      "koca_ips": [
+        "Molly"
+      ],
+      "external_ids": [
+        "418596"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "扭蛋盲盒-pino-jelly-在你生活裡",
+      "line_name": "扭蛋盲盒 PINO JELLY 在你生活裡",
+      "ip_slug": "pino-jelly",
+      "ip_name": "PINO JELLY",
+      "product_count": 1,
+      "koca_ips": [
+        "PINO JELLY"
+      ],
+      "external_ids": [
+        "418612"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "扭蛋盲盒-zsiga-樹大招風",
+      "line_name": "扭蛋盲盒 Zsiga 樹大招風",
+      "ip_slug": "zsiga",
+      "ip_name": "Zsiga",
+      "product_count": 1,
+      "koca_ips": [
+        "Zsiga"
+      ],
+      "external_ids": [
+        "418600"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "扭蛋盲盒-chaka琉光曲",
+      "line_name": "扭蛋盲盒 chaka琉光曲",
+      "ip_slug": "chaka",
+      "ip_name": "CHAKA",
+      "product_count": 1,
+      "koca_ips": [
+        "CHAKA"
+      ],
+      "external_ids": [
+        "689921"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "扭蛋盲盒-公主-座駕系列",
+      "line_name": "扭蛋盲盒 公主 座駕系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 1,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "418603"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "扭蛋盲盒-玩具總動員-萬聖節驚魂夜",
+      "line_name": "扭蛋盲盒 玩具總動員 萬聖節驚魂夜",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 1,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "418605"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "扭蛋盲盒-畢奇-美食大酒樓",
+      "line_name": "扭蛋盲盒 畢奇 美食大酒樓",
+      "ip_slug": "pucky",
+      "ip_name": "PUCKY",
+      "product_count": 1,
+      "koca_ips": [
+        "PUCKY"
+      ],
+      "external_ids": [
+        "418607"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "掉了天大的牙-吊飾",
+      "line_name": "掉了天大的牙 吊飾",
+      "ip_slug": "twinkle-twinkle",
+      "ip_name": "星星人",
+      "product_count": 1,
+      "koca_ips": [
+        "星星人"
+      ],
+      "external_ids": [
+        "736161"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "星星人怦然星動系列",
+      "line_name": "星星人怦然星動系列",
+      "ip_slug": "molly",
+      "ip_name": "Molly",
+      "product_count": 1,
+      "koca_ips": [
+        "Molly"
+      ],
+      "external_ids": [
+        "946967"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "春天野在家-公仔",
+      "line_name": "春天野在家 公仔",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 1,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "591422"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "春天野在家-搪膠毛絨公仔掛件-吊飾",
+      "line_name": "春天野在家 搪膠毛絨公仔掛件 吊飾",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 1,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "618507"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "曉組織盲盒-扭蛋盲盒",
+      "line_name": "曉組織盲盒 扭蛋盲盒",
+      "ip_slug": "molly",
+      "ip_name": "Molly",
+      "product_count": 1,
+      "koca_ips": [
+        "Molly"
+      ],
+      "external_ids": [
+        "931232"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "極夜-公仔",
+      "line_name": "極夜 公仔",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 1,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "457969"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "橫山宏ma-k-系列-擺件",
+      "line_name": "橫山宏Ma.k.系列 擺件",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 1,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "555145"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "沉睡系列",
+      "line_name": "沉睡系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 1,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "671159"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "泡泡瑪特派對系列",
+      "line_name": "泡泡瑪特派對系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 1,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "634796"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "漫威-扭蛋盲盒",
+      "line_name": "漫威 扭蛋盲盒",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 1,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "521122"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "爵士樂吊卡-吊飾",
+      "line_name": "爵士樂吊卡 吊飾",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 1,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "755050"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "牡蠣寶寶-娃娃",
+      "line_name": "牡蠣寶寶 娃娃",
+      "ip_slug": "disney",
+      "ip_name": "迪士尼",
+      "product_count": 1,
+      "koca_ips": [
+        "迪士尼"
+      ],
+      "external_ids": [
+        "654712"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "特別盲盒-吃著不盡-公仔",
+      "line_name": "特別盲盒 吃著不盡 公仔",
+      "ip_slug": "hirono",
+      "ip_name": "Hirono",
+      "product_count": 1,
+      "koca_ips": [
+        "Hirono"
+      ],
+      "external_ids": [
+        "556909"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "特別盲盒-尋找mokoko系列",
+      "line_name": "特別盲盒 尋找MOKOKO系列",
+      "ip_slug": "hirono",
+      "ip_name": "Hirono",
+      "product_count": 1,
+      "koca_ips": [
+        "Hirono"
+      ],
+      "external_ids": [
+        "556942"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "特別盲盒-小手拉小手系列",
+      "line_name": "特別盲盒 小手拉小手系列",
+      "ip_slug": "hirono",
+      "ip_name": "Hirono",
+      "product_count": 1,
+      "koca_ips": [
+        "Hirono"
+      ],
+      "external_ids": [
+        "556955"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "特別盲盒-慶祝一刻15周年-公仔",
+      "line_name": "特別盲盒 慶祝一刻15周年 公仔",
+      "ip_slug": "hirono",
+      "ip_name": "Hirono",
+      "product_count": 1,
+      "koca_ips": [
+        "Hirono"
+      ],
+      "external_ids": [
+        "556969"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "特別盲盒-樂園限定-公仔",
+      "line_name": "特別盲盒 樂園限定 公仔",
+      "ip_slug": "hirono",
+      "ip_name": "Hirono",
+      "product_count": 1,
+      "koca_ips": [
+        "Hirono"
+      ],
+      "external_ids": [
+        "556914"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "特別盲盒-無雙陣14周年-公仔",
+      "line_name": "特別盲盒 無雙陣14周年 公仔",
+      "ip_slug": "hirono",
+      "ip_name": "Hirono",
+      "product_count": 1,
+      "koca_ips": [
+        "Hirono"
+      ],
+      "external_ids": [
+        "556936"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "特別盲盒-聚光燈下-公仔",
+      "line_name": "特別盲盒 聚光燈下 公仔",
+      "ip_slug": "hirono",
+      "ip_name": "Hirono",
+      "product_count": 1,
+      "koca_ips": [
+        "Hirono"
+      ],
+      "external_ids": [
+        "556916"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "畢業季-耳機包-扭蛋盲盒",
+      "line_name": "畢業季 耳機包 扭蛋盲盒",
+      "ip_slug": "crybaby",
+      "ip_name": "CRYBABY",
+      "product_count": 1,
+      "koca_ips": [
+        "CRYBABY"
+      ],
+      "external_ids": [
+        "425698"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "瞬間飛行-公仔",
+      "line_name": "瞬間飛行 公仔",
+      "ip_slug": "molly",
+      "ip_name": "Molly",
+      "product_count": 1,
+      "koca_ips": [
+        "Molly"
+      ],
+      "external_ids": [
+        "730153"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "禁錮-公仔",
+      "line_name": "禁錮 公仔",
+      "ip_slug": "hirono",
+      "ip_name": "Hirono",
+      "product_count": 1,
+      "koca_ips": [
+        "Hirono"
+      ],
+      "external_ids": [
+        "457974"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "米蘭聯名-一代-搪膠-公仔",
+      "line_name": "米蘭聯名 一代 搪膠 公仔",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 1,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "729362"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "米蘭聯名-二代-搪膠毛絨-公仔",
+      "line_name": "米蘭聯名 二代 搪膠毛絨 公仔",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 1,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "729367"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "米蘭聯名-搪膠毛絨公仔-吊飾",
+      "line_name": "米蘭聯名 搪膠毛絨公仔 吊飾",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 1,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "729370"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "精靈們的茶話會-公仔",
+      "line_name": "精靈們的茶話會 公仔",
+      "ip_slug": "pucky",
+      "ip_name": "PUCKY",
+      "product_count": 1,
+      "koca_ips": [
+        "PUCKY"
+      ],
+      "external_ids": [
+        "938472"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "航海王偉大航路系列",
+      "line_name": "航海王偉大航路系列",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 1,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "561106"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "英雄聯盟中路對決-公仔",
+      "line_name": "英雄聯盟中路對決 公仔",
+      "ip_slug": "other-ip",
+      "ip_name": "其他 IP",
+      "product_count": 1,
+      "koca_ips": [
+        "其他 IP"
+      ],
+      "external_ids": [
+        "582953"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "象棋大冒險-盲盒-香氛蠟燭",
+      "line_name": "象棋大冒險 盲盒 香氛蠟燭",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 1,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "562436"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "象棋大冒險-盲盒冰箱-磁鐵",
+      "line_name": "象棋大冒險 盲盒冰箱 磁鐵",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 1,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "562438"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "象棋大冒險-盲盒掛件-吊飾",
+      "line_name": "象棋大冒險 盲盒掛件 吊飾",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 1,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "562447"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "象棋大冒險-醣膠絨毛-吊飾",
+      "line_name": "象棋大冒險 醣膠絨毛 吊飾",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 1,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "562435"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "象棋大冒險-醣膠絨毛玩偶-公仔",
+      "line_name": "象棋大冒險 醣膠絨毛玩偶 公仔",
+      "ip_slug": "labubu",
+      "ip_name": "LABUBU",
+      "product_count": 1,
+      "koca_ips": [
+        "LABUBU"
+      ],
+      "external_ids": [
+        "562432"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "迪士尼100週年皮克斯-公仔",
+      "line_name": "迪士尼100週年皮克斯 公仔",
+      "ip_slug": "disney",
+      "ip_name": "迪士尼",
+      "product_count": 1,
+      "koca_ips": [
+        "迪士尼"
+      ],
+      "external_ids": [
+        "532545"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "野外拾遺-公仔",
+      "line_name": "野外拾遺 公仔",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 1,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "461377"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "金鏟鏟-公仔",
+      "line_name": "金鏟鏟 公仔",
+      "ip_slug": "molly",
+      "ip_name": "Molly",
+      "product_count": 1,
+      "koca_ips": [
+        "Molly"
+      ],
+      "external_ids": [
+        "821392"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "雕塑回歸系列",
+      "line_name": "雕塑回歸系列",
+      "ip_slug": "molly",
+      "ip_name": "Molly",
+      "product_count": 1,
+      "koca_ips": [
+        "Molly"
+      ],
+      "external_ids": [
+        "570805"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "雪人的來信系列",
+      "line_name": "雪人的來信系列",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 1,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "795511"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "電氣星人-公仔",
+      "line_name": "電氣星人 公仔",
+      "ip_slug": "dimoo",
+      "ip_name": "Dimoo",
+      "product_count": 1,
+      "koca_ips": [
+        "Dimoo"
+      ],
+      "external_ids": [
+        "457960"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "飛天小女警聯名-公仔",
+      "line_name": "飛天小女警聯名 公仔",
+      "ip_slug": "crybaby",
+      "ip_name": "CRYBABY",
+      "product_count": 1,
+      "koca_ips": [
+        "CRYBABY"
+      ],
+      "external_ids": [
+        "626827"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "飛天小女警聯名-泡泡兔-扭蛋盲盒",
+      "line_name": "飛天小女警聯名 泡泡兔 扭蛋盲盒",
+      "ip_slug": "crybaby",
+      "ip_name": "CRYBABY",
+      "product_count": 1,
+      "koca_ips": [
+        "CRYBABY"
+      ],
+      "external_ids": [
+        "553696"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "飛天小女警聯名-飛天小女警-公仔",
+      "line_name": "飛天小女警聯名 飛天小女警 公仔",
+      "ip_slug": "crybaby",
+      "ip_name": "CRYBABY",
+      "product_count": 1,
+      "koca_ips": [
+        "CRYBABY"
+      ],
+      "external_ids": [
+        "568832"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "香草脆-吊飾",
+      "line_name": "香草脆 吊飾",
+      "ip_slug": "twinkle-twinkle",
+      "ip_name": "星星人",
+      "product_count": 1,
+      "koca_ips": [
+        "星星人"
+      ],
+      "external_ids": [
+        "463891"
+      ]
+    },
+    {
+      "brand_slug": "pop-mart",
+      "line_slug": "龍吟獻瑞-盲盒-公仔",
+      "line_name": "龍吟獻瑞 盲盒 公仔",
+      "ip_slug": "molly",
+      "ip_name": "Molly",
+      "product_count": 1,
+      "koca_ips": [
+        "Molly"
+      ],
+      "external_ids": [
+        "562887"
+      ]
+    }
+  ]
+}

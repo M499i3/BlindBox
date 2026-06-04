@@ -2,6 +2,7 @@ import type {
   BrandRow,
   CatalogProduct,
   CatalogSearchResult,
+  IpRow,
   SeriesRow,
   StyleRow,
 } from '../../domain/entities/catalog';
@@ -15,6 +16,8 @@ type ApiProduct = {
   source_url: string;
   brand_slug?: string | null;
   brand_name?: string | null;
+  ip_slug?: string | null;
+  ip_name?: string | null;
   series_slug?: string | null;
   series_name?: string | null;
 };
@@ -27,6 +30,7 @@ type ApiSearchSeries = {
   count?: number;
   brand_slug: string;
   brand_name: string;
+  ip_name?: string;
 };
 
 function toFrontend(p: ApiProduct): CatalogProduct {
@@ -38,6 +42,8 @@ function toFrontend(p: ApiProduct): CatalogProduct {
     sourceUrl: p.source_url,
     brandSlug: p.brand_slug ?? undefined,
     brandName: p.brand_name ?? undefined,
+    ipSlug: p.ip_slug ?? undefined,
+    ipName: p.ip_name ?? undefined,
     seriesSlug: p.series_slug ?? undefined,
     seriesName: p.series_name ?? undefined,
   };
@@ -52,6 +58,7 @@ function toSeriesRow(s: ApiSearchSeries): SeriesRow {
     count: s.count,
     brandSlug: s.brand_slug,
     brandName: s.brand_name,
+    ipName: s.ip_name,
   };
 }
 
@@ -72,11 +79,13 @@ export async function getCatalogSearch(query: string): Promise<CatalogSearchResu
 export async function getCatalogProducts(opts?: {
   q?: string;
   brand?: string;
+  ip?: string;
   series?: string;
 }): Promise<CatalogProduct[]> {
   const params = new URLSearchParams();
   if (opts?.q) params.set('q', opts.q);
   if (opts?.brand) params.set('brand', opts.brand);
+  if (opts?.ip) params.set('ip', opts.ip);
   if (opts?.series) params.set('series', opts.series);
   const qs = params.toString();
   const items = await apiFetch<ApiProduct[]>(`/api/catalog/products${qs ? `?${qs}` : ''}`);
@@ -92,12 +101,27 @@ export function getCatalogBrands(): Promise<BrandRow[]> {
   return apiFetch<BrandRow[]>('/api/catalog/brands');
 }
 
-export function getCatalogSeries(brandSlug: string): Promise<SeriesRow[]> {
+export function getCatalogIps(brandSlug: string): Promise<IpRow[]> {
   const qs = new URLSearchParams({ brand: brandSlug }).toString();
-  return apiFetch<SeriesRow[]>(`/api/catalog/series?${qs}`);
+  return apiFetch<IpRow[]>(`/api/catalog/ips?${qs}`);
 }
 
-export function getCatalogStyles(brandSlug: string, seriesSlug: string): Promise<StyleRow[]> {
-  const qs = new URLSearchParams({ brand: brandSlug, series: seriesSlug }).toString();
+/** 產品線系列（可選依 IP 篩選） */
+export function getCatalogSeries(brandSlug: string, ipSlug?: string): Promise<SeriesRow[]> {
+  const params = new URLSearchParams({ brand: brandSlug });
+  if (ipSlug) params.set('ip', ipSlug);
+  return apiFetch<SeriesRow[]>(`/api/catalog/series?${params.toString()}`);
+}
+
+export function getCatalogStyles(
+  brandSlug: string,
+  seriesSlug: string,
+  ipSlug: string
+): Promise<StyleRow[]> {
+  const qs = new URLSearchParams({
+    brand: brandSlug,
+    series: seriesSlug,
+    ip: ipSlug,
+  }).toString();
   return apiFetch<StyleRow[]>(`/api/catalog/styles?${qs}`);
 }

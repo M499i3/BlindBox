@@ -12,8 +12,8 @@ import {
 } from '@/frontend/lib/popmartShowcase';
 import {
   useCatalogBrands,
+  useCatalogIps,
   useCatalogProducts,
-  useCatalogSeries,
 } from '@/frontend/presentation/hooks/useCatalog';
 import { brandLogoForSlug } from '@/frontend/lib/brandLogos';
 
@@ -36,7 +36,7 @@ export default function BrandDetail() {
   const dbBrands = useCatalogBrands();
   const brandSlug = decodeURIComponent(slug).toLowerCase().replace(/\s+/g, '-');
   const { products: apiProducts } = useCatalogProducts({ brand: mock ? undefined : brandSlug });
-  const { series: dbSeries } = useCatalogSeries(mock ? undefined : brandSlug);
+  const { ips: dbIps } = useCatalogIps(mock ? undefined : brandSlug);
 
   const displayName = useMemo(() => {
     const fromDb = dbBrands.find((b) => (b.slug ?? '') === brandSlug || b.name.toLowerCase() === brandSlug);
@@ -60,22 +60,22 @@ export default function BrandDetail() {
     matched[0]?.image ||
     'https://global-static.popmart.com/globalAdmin/1776844373939____pc____.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp';
 
-  const seriesGrid = useMemo(() => {
-    const productIdsBySeries = new Map<string, string[]>();
+  const ipGrid = useMemo(() => {
+    const productIdsByIpSlug = new Map<string, string[]>();
     for (const p of matched) {
-      const key = p.seriesSlug ?? p.id;
-      if (!productIdsBySeries.has(key)) productIdsBySeries.set(key, []);
-      productIdsBySeries.get(key)!.push(p.id);
+      const key = p.ipSlug ?? p.ipName ?? p.id;
+      if (!productIdsByIpSlug.has(key)) productIdsByIpSlug.set(key, []);
+      productIdsByIpSlug.get(key)!.push(p.id);
     }
 
-    if (!mock && dbSeries.length > 0) {
-      return dbSeries.map((s) => ({
-        key: s.slug,
-        title: s.name,
-        image: s.image || hero,
-        count: s.count ?? productIdsBySeries.get(s.slug)?.length ?? 0,
-        href: `/subseries?brand=${encodeURIComponent(brandSlug)}&series=${encodeURIComponent(s.slug)}&name=${encodeURIComponent(s.name)}`,
-        productIds: productIdsBySeries.get(s.slug) ?? [],
+    if (!mock && dbIps.length > 0) {
+      return dbIps.map((ip) => ({
+        key: ip.slug,
+        title: ip.name,
+        image: ip.image || hero,
+        count: ip.count ?? productIdsByIpSlug.get(ip.slug)?.length ?? 0,
+        href: `/series/${encodeURIComponent(ip.slug)}?brand=${encodeURIComponent(brandSlug)}`,
+        productIds: productIdsByIpSlug.get(ip.slug) ?? [],
       }));
     }
     const map = new Map<string, { key: string; title: string; image: string; count: number; href: string; productIds: string[] }>();
@@ -93,7 +93,7 @@ export default function BrandDetail() {
       }
     }
     return Array.from(map.values()).slice(0, 30);
-  }, [mock, dbSeries, matched, brandSlug, hero]);
+  }, [mock, dbIps, matched, brandSlug, hero]);
 
   return (
     <div className="w-full min-w-0 max-w-full overflow-x-hidden animate-in fade-in duration-500 min-h-full pb-32">
@@ -102,19 +102,19 @@ export default function BrandDetail() {
       <main className="mx-auto w-full min-w-0 max-w-full space-y-8 px-container-margin pt-topbar-content">
         <CatalogHero
           title={displayName}
-          subtitle="瀏覽此品牌下的系列，點選進入圖鑑詳情。"
+          subtitle="瀏覽此品牌下的 IP，點選進入系列與款式。"
           breadcrumb={['圖鑑', '品牌']}
           coverImage={hero}
           stats={[
-            { label: '系列', value: seriesGrid.length },
+            { label: 'IP', value: ipGrid.length },
             { label: '相關商品', value: matched.length },
           ]}
         />
 
         <section>
-          <CatalogSectionHeading label="Series" title="系列一覽" count={seriesGrid.length} />
+          <CatalogSectionHeading label="IP" title="IP 一覽" count={ipGrid.length} />
           <div className="space-y-3">
-            {seriesGrid.map((item) => (
+            {ipGrid.map((item) => (
               <CatalogBrowseRow
                 key={item.key}
                 title={item.title}

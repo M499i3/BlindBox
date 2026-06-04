@@ -8,75 +8,109 @@ from typing import Any
 from catalog_seed_lib import SeedProduct, build_seed_products, load_showcase
 
 
+def _upsert_brand(cur, slug: str, name: str, logo: str | None) -> str:
+    cur.execute(
+        """
+        INSERT INTO brands (slug, name, logo_url)
+        VALUES (%s, %s, %s)
+        ON CONFLICT (slug) DO UPDATE SET
+            name = EXCLUDED.name,
+            logo_url = COALESCE(EXCLUDED.logo_url, brands.logo_url),
+            updated_at = now()
+        RETURNING id
+        """,
+        (slug, name, logo),
+    )
+    return str(cur.fetchone()["id"])
+
+
+def _upsert_ip(cur, brand_id: str, slug: str, name: str, cover: str | None) -> str:
+    cur.execute(
+        """
+        INSERT INTO ips (brand_id, slug, name, cover_url)
+        VALUES (%s, %s, %s, %s)
+        ON CONFLICT (brand_id, slug) DO UPDATE SET
+            name = EXCLUDED.name,
+            cover_url = COALESCE(EXCLUDED.cover_url, ips.cover_url),
+            updated_at = now()
+        RETURNING id
+        """,
+        (brand_id, slug, name, cover),
+    )
+    return str(cur.fetchone()["id"])
+
+
+def _upsert_product_series(
+    cur, brand_id: str, ip_id: str, slug: str, name: str, cover: str | None
+) -> str:
+    cur.execute(
+        """
+        INSERT INTO series (brand_id, ip_id, slug, name, cover_url, total_count)
+        VALUES (%s, %s, %s, %s, %s, 0)
+        ON CONFLICT (brand_id, ip_id, slug) DO UPDATE SET
+            name = EXCLUDED.name,
+            cover_url = COALESCE(EXCLUDED.cover_url, series.cover_url),
+            updated_at = now()
+        RETURNING id
+        """,
+        (brand_id, ip_id, slug, name, cover),
+    )
+    return str(cur.fetchone()["id"])
+
+
 def seed_catalog_on_cursor(cur, products: list[SeedProduct]) -> dict[str, int]:
-    """在既有 transaction 的 cursor 上寫入 brands / series / catalog_products。"""
     brand_logos: dict[str, str | None] = {}
-    series_covers: dict[tuple[str, str], str | None] = {}
+    ip_covers: dict[tuple[str, str], str | None] = {}
+    line_covers: dict[tuple[str, str, str], str | None] = {}
     for p in products:
         if p.brand_slug not in brand_logos and p.image_url:
             brand_logos[p.brand_slug] = p.image_url
-        key = (p.brand_slug, p.series_slug)
-        if key not in series_covers and p.image_url:
-            series_covers[key] = p.image_url
-
-    brands_meta: dict[str, tuple[str, str]] = {}
-    series_meta: dict[tuple[str, str], tuple[str, str, str]] = {}
-    for p in products:
-        brands_meta[p.brand_slug] = (p.brand_slug, p.brand_name)
-        series_meta[(p.brand_slug, p.series_slug)] = (
-            p.brand_slug,
-            p.series_slug,
-            p.series_name,
-        )
+        ik = (p.brand_slug, p.ip_slug)
+        if ik not in ip_covers and p.image_url:
+            ip_covers[ik] = p.image_url
+        lk = (p.brand_slug, p.ip_slug, p.line_slug)
+        if lk not in line_covers and p.image_url:
+            line_covers[lk] = p.image_url
 
     brand_ids: dict[str, str] = {}
-    for slug, (_, name) in brands_meta.items():
-        cur.execute(
-            """
-            INSERT INTO brands (slug, name, logo_url)
-            VALUES (%s, %s, %s)
-            ON CONFLICT (slug) DO UPDATE SET
-                name = EXCLUDED.name,
-                logo_url = COALESCE(EXCLUDED.logo_url, brands.logo_url),
-                updated_at = now()
-            RETURNING id
-            """,
-            (slug, name, brand_logos.get(slug)),
-        )
-        row = cur.fetchone()
-        assert row
-        brand_ids[slug] = str(row["id"])
+    ip_ids: dict[tuple[str, str], str] = {}
+    series_ids: dict[tuple[str, str, str], str] = {}
 
-    series_ids: dict[tuple[str, str], str] = {}
-    for key, (brand_slug, series_slug, series_name) in series_meta.items():
-        brand_id = brand_ids[brand_slug]
-        cur.execute(
-            """
-            INSERT INTO series (brand_id, slug, name, cover_url, total_count)
-            VALUES (%s, %s, %s, %s, 0)
-            ON CONFLICT (brand_id, slug) DO UPDATE SET
-                name = EXCLUDED.name,
-                cover_url = COALESCE(EXCLUDED.cover_url, series.cover_url),
-                updated_at = now()
-            RETURNING id
-            """,
-            (brand_id, series_slug, series_name, series_covers.get(key)),
-        )
-        row = cur.fetchone()
-        assert row
-        series_ids[key] = str(row["id"])
+    brands_meta = {(p.brand_slug, p.brand_name) for p in products}
+    for slug, name in brands_meta:
+        brand_ids[slug] = _upsert_brand(cur, slug, name, brand_logos.get(slug))
 
     for p in products:
-        sid = series_ids[(p.brand_slug, p.series_slug)]
+        brand_id = brand_ids[p.brand_slug]
+        ip_key = (p.brand_slug, p.ip_slug)
+        if ip_key not in ip_ids:
+            ip_ids[ip_key] = _upsert_ip(
+                cur, brand_id, p.ip_slug, p.ip_name, ip_covers.get(ip_key)
+            )
+        line_key = (p.brand_slug, p.ip_slug, p.line_slug)
+        if line_key not in series_ids:
+            series_ids[line_key] = _upsert_product_series(
+                cur,
+                brand_id,
+                ip_ids[ip_key],
+                p.line_slug,
+                p.line_name,
+                line_covers.get(line_key),
+            )
+
+    for p in products:
+        line_key = (p.brand_slug, p.ip_slug, p.line_slug)
+        ip_key = (p.brand_slug, p.ip_slug)
         cur.execute(
             """
             INSERT INTO catalog_products (
-                external_id, series_id, title,
+                external_id, ip_id, series_id, title,
                 official_price_amount, official_price_currency,
                 image_url, source_url, is_secret
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
             ON CONFLICT (external_id) DO UPDATE SET
+                ip_id = EXCLUDED.ip_id,
                 series_id = EXCLUDED.series_id,
                 title = EXCLUDED.title,
                 official_price_amount = EXCLUDED.official_price_amount,
@@ -88,7 +122,8 @@ def seed_catalog_on_cursor(cur, products: list[SeedProduct]) -> dict[str, int]:
             """,
             (
                 p.external_id,
-                sid,
+                ip_ids[ip_key],
+                series_ids[line_key],
                 p.title,
                 p.price_amount,
                 p.price_currency,
@@ -113,11 +148,30 @@ def seed_catalog_on_cursor(cur, products: list[SeedProduct]) -> dict[str, int]:
     )
     series_updated = cur.rowcount
 
+    cur.execute(
+        """
+        UPDATE ips i
+        SET total_count = sub.cnt, updated_at = now()
+        FROM (
+            SELECT ip_id, COUNT(*)::int AS cnt
+            FROM catalog_products
+            WHERE ip_id IS NOT NULL
+            GROUP BY ip_id
+        ) sub
+        WHERE i.id = sub.ip_id
+        """
+    )
+    ips_updated = cur.rowcount
+
+    ip_slugs = {p.ip_slug for p in products}
+    line_slugs = {p.line_slug for p in products}
     return {
         "brands": len(brands_meta),
-        "series": len(series_meta),
+        "ips": len(ip_slugs),
+        "series": len(line_slugs),
         "products": len(products),
         "series_counts_updated": series_updated,
+        "ip_counts_updated": ips_updated,
     }
 
 

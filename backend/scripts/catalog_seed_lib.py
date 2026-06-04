@@ -1,7 +1,4 @@
-"""從 KOCA showcase JSON 解析圖鑑種子：品牌（Pop Mart）→ 系列（IP）→ 盲盒商品。
-
-僅匯入 typeId === gatcha_goods（KOCA 盲盒類）。
-"""
+"""從 KOCA showcase JSON 解析圖鑑種子：品牌 → 產品線系列 → IP（系列級）→ 款式。"""
 
 from __future__ import annotations
 
@@ -16,37 +13,18 @@ BACKEND_SRC = Path(__file__).resolve().parents[1] / "src"
 if str(BACKEND_SRC) not in sys.path:
     sys.path.insert(0, str(BACKEND_SRC))
 
-from domain.ip_rules import derive_ip_label  # noqa: E402
+from collections import defaultdict
+
+from domain.catalog_grouping import (  # noqa: E402
+    build_grouped_products,
+    build_series_groups,
+)
 
 KOCA_SHOWCASE_SOURCE = "koca"
 KOCA_BLIND_BOX_TYPE_ID = "gatcha_goods"
 
-# 廠牌 / 製造商（Explore 頂層：Pop Mart、Jellycat）
 POPMART_BRAND = ("pop-mart", "Pop Mart")
 JELLYCAT_BRAND = ("jellycat", "Jellycat")
-
-# IP（DB series 層；對齊 frontend catalogHierarchy 的 IpNode）
-IP_SLUGS: dict[str, tuple[str, str]] = {
-    "LABUBU": ("labubu", "LABUBU"),
-    "SKULLPANDA": ("skullpanda", "SKULLPANDA"),
-    "CRYBABY": ("crybaby", "CRYBABY"),
-    "星星人": ("twinkle-twinkle", "星星人"),
-    "Hirono": ("hirono", "Hirono"),
-    "Zsiga": ("zsiga", "Zsiga"),
-    "PINO JELLY": ("pino-jelly", "PINO JELLY"),
-    "HACIPUPU": ("hacipupu", "HACIPUPU"),
-    "PUCKY": ("pucky", "PUCKY"),
-    "Dimoo": ("dimoo", "Dimoo"),
-    "Molly": ("molly", "Molly"),
-    "Baby Molly": ("baby-molly", "Baby Molly"),
-    "CHAKA": ("chaka", "CHAKA"),
-    "小甜豆": ("sweet-bean", "小甜豆"),
-    "迪士尼": ("disney", "迪士尼"),
-    "KUBO": ("kubo", "KUBO"),
-    "SpongeBob": ("spongebob", "SpongeBob"),
-    "POLAR": ("polar", "POLAR"),
-    "其他 IP": ("other-ip", "其他 IP"),
-}
 
 
 @dataclass(frozen=True)
@@ -60,28 +38,16 @@ class SeedProduct:
     is_secret: bool
     brand_name: str
     brand_slug: str
-    series_name: str
-    series_slug: str
+    ip_name: str
+    ip_slug: str
+    line_name: str
+    line_slug: str
 
 
 def manufacturer_for_title(title: str) -> tuple[str, str]:
     if re.search(r"jellycat", title, re.I):
         return JELLYCAT_BRAND
     return POPMART_BRAND
-
-
-def ip_slug_and_name(label: str) -> tuple[str, str]:
-    if label in IP_SLUGS:
-        return IP_SLUGS[label]
-    slug = re.sub(r"[^a-z0-9]+", "-", label.lower()).strip("-") or "other-ip"
-    return slug, label
-
-
-def ip_label_from_raw(raw: dict[str, Any], title: str) -> str:
-    explicit = str(raw.get("ip") or "").strip()
-    if explicit:
-        return explicit
-    return derive_ip_label(title)
 
 
 def _price_from_raw(raw: dict[str, Any]) -> tuple[int | None, str | None]:
@@ -145,7 +111,7 @@ def summarize_koca_showcase(showcase: dict[str, Any]) -> dict[str, int]:
 
 def build_seed_products(showcase: dict[str, Any]) -> list[SeedProduct]:
     assert_koca_showcase(showcase)
-    products: list[SeedProduct] = []
+    rows: list[dict[str, Any]] = []
     for raw in showcase.get("products", []):
         if not is_koca_blind_box_product(raw):
             continue
@@ -153,25 +119,59 @@ def build_seed_products(showcase: dict[str, Any]) -> list[SeedProduct]:
         external_id = str(raw.get("id", "")).strip()
         if not title or not external_id:
             continue
-
         brand_slug, brand_name = manufacturer_for_title(title)
-        ip_label = ip_label_from_raw(raw, title)
-        series_slug, series_name = ip_slug_and_name(ip_label)
         amount, currency = _price_from_raw(raw)
+        raw_secret = raw.get("isSecret", raw.get("is_secret"))
+        rows.append(
+            {
+                "id": external_id,
+                "title": title,
+                "ip": raw.get("ip"),
+                "image": raw.get("image"),
+                "sourceUrl": raw.get("sourceUrl"),
+                "price_amount": amount,
+                "price_currency": currency,
+                "is_secret": bool(raw_secret),
+                "brand_slug": brand_slug,
+                "brand_name": brand_name,
+            }
+        )
 
+    by_brand: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for raw in rows:
+        by_brand[str(raw["brand_slug"])].append(raw)
+
+    all_grouped = []
+    for brand_slug, brand_rows in by_brand.items():
+        bn = str(brand_rows[0]["brand_name"])
+        all_grouped.extend(
+            build_grouped_products(brand_rows, brand_slug=brand_slug, brand_name=bn)
+        )
+
+    groups = build_series_groups(all_grouped)
+    ext_to_group = {eid: g for g in groups for eid in g.external_ids}
+
+    products: list[SeedProduct] = []
+    for raw in rows:
+        eid = str(raw["id"])
+        g = ext_to_group.get(eid)
+        if not g:
+            continue
         products.append(
             SeedProduct(
-                external_id=external_id,
-                title=title,
-                price_amount=amount,
-                price_currency=currency,
-                image_url=(raw.get("image") or None),
-                source_url=(raw.get("sourceUrl") or None),
-                is_secret="隱藏" in title or "secret" in title.lower(),
-                brand_name=brand_name,
-                brand_slug=brand_slug,
-                series_name=series_name,
-                series_slug=series_slug,
+                external_id=eid,
+                title=str(raw["title"]),
+                price_amount=raw.get("price_amount"),
+                price_currency=raw.get("price_currency"),
+                image_url=raw.get("image"),
+                source_url=raw.get("sourceUrl"),
+                is_secret=bool(raw.get("is_secret")),
+                brand_name=g.brand_name,
+                brand_slug=g.brand_slug,
+                ip_name=g.ip_name,
+                ip_slug=g.ip_slug,
+                line_name=g.line_name,
+                line_slug=g.line_slug,
             )
         )
     return products

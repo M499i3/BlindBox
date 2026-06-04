@@ -9,6 +9,7 @@ export type SplitBoxSlotInput = {
 export type CreateSplitBoxInput = {
   title: string;
   brand: string;
+  ip?: string;
   series: string;
   description?: string;
   coverImage?: string;

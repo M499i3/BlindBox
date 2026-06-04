@@ -2,16 +2,16 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { navigateWithReturn } from '@/frontend/shared/utils/routeNavigation';
 import TopBar from '@/frontend/presentation/components/TopBar';
-import { getCatalogBrands, getCatalogProducts, getCatalogSeries } from '@/frontend/infrastructure/api/catalogApi';
+import { getCatalogBrands, getCatalogProducts, getCatalogIps } from '@/frontend/infrastructure/api/catalogApi';
 import { fetchCached } from '@/frontend/shared/utils/fetchCache';
 import { invalidateMarketplaceCache } from '@/frontend/shared/utils/cacheInvalidation';
 import {
   CATALOG_BRANDS_KEY,
   catalogProductsKey,
-  catalogSeriesKey,
+  catalogIpsKey,
 } from '@/frontend/shared/utils/catalogCacheKeys';
 import { createSplitBox } from '@/frontend/infrastructure/api/splitBoxApi';
-import type { BrandRow, CatalogProduct, SeriesRow } from '@/frontend/domain/entities/catalog';
+import type { BrandRow, CatalogProduct, IpRow } from '@/frontend/domain/entities/catalog';
 import ListingWizardSteps from '@/frontend/presentation/components/listing/ListingWizardSteps';
 import {
   LISTING_FIELD,
@@ -43,7 +43,7 @@ export default function CreateSplitBox({ embedded = false, onBack }: Props) {
   const [brandSlug, setBrandSlug] = useState('');
   const [ipSlug, setIpSlug] = useState('');
   const [brandOptions, setBrandOptions] = useState<BrandRow[]>([]);
-  const [ipOptions, setIpOptions] = useState<SeriesRow[]>([]);
+  const [ipOptions, setIpOptions] = useState<IpRow[]>([]);
   const [brandProducts, setBrandProducts] = useState<CatalogProduct[]>([]);
   const [productsLoading, setProductsLoading] = useState(false);
   const [reservedIds, setReservedIds] = useState<Set<string>>(new Set());
@@ -72,7 +72,7 @@ export default function CreateSplitBox({ embedded = false, onBack }: Props) {
     if (!brandSlug) return;
     setProductsLoading(true);
     Promise.all([
-      fetchCached(catalogSeriesKey(brandSlug), () => getCatalogSeries(brandSlug)),
+      fetchCached(catalogIpsKey(brandSlug), () => getCatalogIps(brandSlug)),
       fetchCached(catalogProductsKey({ brand: brandSlug }), () =>
         getCatalogProducts({ brand: brandSlug })
       ),
@@ -167,7 +167,8 @@ export default function CreateSplitBox({ embedded = false, onBack }: Props) {
       const group = await createSplitBox({
         title: title.trim() || `${productLine} 拆盒團`,
         brand,
-        series: ip,
+        ip,
+        series: productLine,
         description: description.trim(),
         coverImage: styles.find((s) => !reservedIds.has(s.id))?.image,
         shipping,

@@ -13,6 +13,8 @@ class CatalogProduct(BaseModel):
     source_url: str
     brand_slug: str | None = None
     brand_name: str | None = None
+    ip_slug: str | None = None
+    ip_name: str | None = None
     series_slug: str | None = None
     series_name: str | None = None
 
@@ -63,6 +65,7 @@ class CreateListingInput(BaseModel):
     price: str
     description: str
     brand: str
+    ip: str = ""
     series: str
     condition: str
     trade_mode: str
@@ -267,6 +270,7 @@ class SplitBoxSlotInput(BaseModel):
 class CreateSplitBoxInput(BaseModel):
     title: str
     brand: str
+    ip: str = ""
     series: str
     description: str | None = None
     cover_image: str | None = None
