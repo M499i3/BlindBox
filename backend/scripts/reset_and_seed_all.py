@@ -28,6 +28,7 @@ sys.path.insert(0, str(SCRIPTS_DIR))
 
 from catalog_seed_lib import build_seed_products, load_showcase  # noqa: E402
 from catalog_seed_ops import load_catalog_products, seed_catalog_on_cursor  # noqa: E402
+from rich_demo_seed_lib import build_rich_seed_bundle, ensure_seed_users, load_catalog_products as load_db_catalog  # noqa: E402
 from seed_app_data import run_app_seed  # noqa: E402
 
 # 子表先清，降低鎖等待；每表獨立 TRUNCATE + autocommit 避免卡在大交易裡
@@ -284,7 +285,10 @@ def run(*, json_path: Path, dry_run: bool, do_reset: bool) -> None:
                 )
 
                 print("\n👤 匯入使用者與市集／社交資料…")
-                app_stats = run_app_seed(cur)
+                user_ids = ensure_seed_users(cur)
+                db_products = load_db_catalog(cur, limit=600)
+                bundle = build_rich_seed_bundle(user_ids, db_products)
+                app_stats = run_app_seed(cur, bundle)
                 for k, v in app_stats.items():
                     print(f"   {k}: {v}")
 
