@@ -36,6 +36,17 @@ _ORDER_SYSTEM_MESSAGES: dict[str, str] = {
 }
 
 
+def _listing_trade_kind(
+    trade_mode: str | None, allow_swap: bool | None, split_box_group_id: object
+) -> str:
+    tm = str(trade_mode or "")
+    if allow_swap or tm == "swap":
+        return "swap"
+    if tm == "group_buy" or split_box_group_id:
+        return "split"
+    return "sell"
+
+
 def _time_label(dt: datetime | None) -> str:
     if not dt:
         return ""
@@ -66,6 +77,11 @@ def _inbox_row_to_item(r: dict, user_id: str) -> ChatInboxItem:
         unread_count=int(r.get("unread_count") or 0),
         listing_image=r.get("listing_image") or "",
         listing_title=r.get("listing_title") or "",
+        listing_trade_kind=_listing_trade_kind(
+            r.get("listing_trade_mode"),
+            r.get("listing_allow_swap"),
+            r.get("split_box_group_id"),
+        ),
         online=status == "swapping",
     )
 
@@ -78,6 +94,9 @@ _INBOX_SELECT = """
         c.last_message_at,
         cp_me.unread_count,
         l.title AS listing_title,
+        l.trade_mode AS listing_trade_mode,
+        l.allow_swap AS listing_allow_swap,
+        l.split_box_group_id,
         (
             SELECT li.url FROM listing_images li
             WHERE li.listing_id = l.id
@@ -134,7 +153,7 @@ def get_listing_for_chat(
     with conn.cursor() as cur:
         cur.execute(
             """
-            SELECT id, seller_id, status, price_amount, price_currency, shipping_method
+            SELECT id, seller_id, status, price_amount, price_currency, shipping_method, shipping_methods
             FROM listings
             WHERE id = %s AND deleted_at IS NULL
             """,
@@ -394,6 +413,9 @@ def get_chat_context(
                 u_other.display_name AS counterparty_name,
                 l.title AS listing_title,
                 l.id AS listing_id,
+                l.trade_mode AS listing_trade_mode,
+                l.allow_swap AS listing_allow_swap,
+                l.split_box_group_id,
                 (
                     SELECT li.url FROM listing_images li
                     WHERE li.listing_id = l.id
@@ -416,12 +438,19 @@ def get_chat_context(
     r = dict(row)
     status = str(r.get("status") or "active")
     listing_id = r.get("listing_id")
+    split_gid = r.get("split_box_group_id")
     return ChatContext(
         id=str(r["id"]),
         counterparty_name=r.get("counterparty_name") or "",
         listing_title=r.get("listing_title") or "",
         listing_id=str(listing_id) if listing_id else None,
         listing_image=r.get("listing_image") or "",
+        listing_trade_kind=_listing_trade_kind(
+            r.get("listing_trade_mode"),
+            r.get("listing_allow_swap"),
+            split_gid,
+        ),
+        split_box_group_id=str(split_gid) if split_gid else None,
         status=status,
         status_label=_CHAT_STATUS_LABELS.get(status, ""),
         order_id=str(r["order_id"]) if r.get("order_id") else None,

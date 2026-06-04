@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { motion } from 'motion/react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import CartIcon from '@/frontend/presentation/components/CartIcon';
 import ListingCardImage from '@/frontend/presentation/components/ListingCardImage';
@@ -20,7 +20,9 @@ import { filterListingsByFuzzyQuery } from '@/frontend/shared/utils/searchListin
 import { isSwapListing, isTradeModeParam, listingMatchesTradeMode, parseTradeMode, tradeModeBadge, type TradeMode } from '@/frontend/shared/utils/tradeMode';
 import { APP_PAGE_CLASS, BOTTOM_NAV_OFFSET } from '@/frontend/presentation/constants/layout';
 import { TOPBAR_RIGHT_ICON_SIZE } from '@/frontend/presentation/constants/topbar';
+import { useListingCardActions } from '@/frontend/presentation/hooks/useListingCardActions';
 import { isOwnListing } from '@/frontend/shared/utils/listingOwnership';
+import { navigateWithReturn } from '@/frontend/shared/utils/routeNavigation';
 
 function isRealListing(item: Listing): boolean {
   if (item.isSeeded) return false;
@@ -54,8 +56,9 @@ function restoreHomeScroll() {
 
 export default function Marketplace() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { cartIds, posts, addToCart, isInCart, userId } = useAppState();
+  const { cartIds, posts, userId } = useAppState();
   const {
     toggleWishFromListing,
     toggleOwnedFromListing,
@@ -163,28 +166,7 @@ export default function Marketplace() {
     [listingPool]
   );
 
-  const showCartFor = useCallback(
-    (item: Pick<Listing, 'sellerId' | 'tradeMode' | 'allowSwap'>) =>
-      !isOwnListing(item, userId) && !isSwapListing(item),
-    [userId]
-  );
-
-  const renderCartProps = useCallback(
-    (item: Listing) => {
-      const show = showCartFor(item);
-      return {
-        showCart: show,
-        isInCart: isInCart(item.id),
-        cartDisabled: isInCart(item.id) || !item.price,
-        onAddToCart: (e: React.MouseEvent) => {
-          e.stopPropagation();
-          if (isInCart(item.id) || !item.price) return;
-          addToCart(item.id);
-        },
-      };
-    },
-    [showCartFor, isInCart, addToCart]
-  );
+  const { getActionProps } = useListingCardActions();
 
   const openListing = useCallback(
     (item: Pick<Listing, 'id'>) => {
@@ -284,7 +266,12 @@ export default function Marketplace() {
 
         {/* Hero Banner */}
         <section className="mb-section-gap">
-          <div className="flex h-[200px] flex-col overflow-hidden rounded-2xl border-[2.5px] border-outline bg-white shadow-[6px_6px_0_#111]">
+          <button
+            type="button"
+            onClick={() => navigate('/search')}
+            className="flex h-[200px] w-full flex-col overflow-hidden rounded-2xl border-[2.5px] border-outline bg-white text-left shadow-[6px_6px_0_#111] transition-transform active:scale-[0.99] active:shadow-[4px_4px_0_#111]"
+            aria-label="前往搜尋"
+          >
             <div className="relative min-h-0 flex-1 overflow-hidden">
               <img
                 className="absolute left-1/2 -top-24 h-full w-full max-w-none -translate-x-1/2 -translate-y-2 origin-top scale-180 object-contain"
@@ -299,7 +286,7 @@ export default function Marketplace() {
                 交換、拆盒、購買，一次完成你的收藏
               </p>
             </div>
-          </div>
+          </button>
         </section>
 
         {trendingTags.length > 0 && (
@@ -331,51 +318,56 @@ export default function Marketplace() {
 
         {showFilterView ? (
           <section className="mb-section-gap pb-6 space-y-6">
-            {mode === 'unbox' && splitBoxes.length > 0 ? (
+            {mode === 'unbox' ? (
               <div>
                 <h3 className="mb-3 text-sm font-extrabold text-on-surface">拆盒團</h3>
-                <div className="space-y-3">
-                  {splitBoxes.map((g) => {
-                    const claimable = g.targetCount - g.reservedCount;
-                    return (
-                      <button
-                        key={g.id}
-                        type="button"
-                        onClick={() => navigate(`/split-box/${g.id}`)}
-                        className="flex w-full items-center gap-3 rounded-2xl border-2 border-outline bg-white p-3 text-left shadow-[4px_4px_0_#111] active:opacity-95"
-                      >
-                        <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-neutral-50">
-                          {g.coverImage ? (
-                            <img src={g.coverImage} alt="" className="h-full w-full object-contain p-1" referrerPolicy="no-referrer" />
-                          ) : (
-                            <img src="/split-box.svg" alt="" className="h-full w-full object-contain p-2 opacity-70" />
-                          )}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-[10px] font-bold uppercase tracking-wider text-secondary">拆盒團</p>
-                          <p className="truncate text-sm font-extrabold">{g.title}</p>
-                          <p className="mt-0.5 text-[11px] text-on-surface-variant">
-                            {SPLIT_BOX_STATUS_LABEL[g.status] ?? g.status} · {g.claimedCount}/{claimable} · {g.pricePerSlot}/款
-                          </p>
-                        </div>
-                        <span className="material-symbols-outlined shrink-0 text-on-surface-variant">chevron_right</span>
-                      </button>
-                    );
-                  })}
-                </div>
+                {splitBoxes.length === 0 ? (
+                  <p className="py-16 text-center text-sm text-on-surface-variant">
+                    {query.trim() ? '找不到符合的拆盒團' : '暫無拆盒團，點右下角 ＋ 發起拆盒團'}
+                  </p>
+                ) : (
+                  <div className="space-y-3">
+                    {splitBoxes.map((g) => {
+                      const claimable = g.targetCount - g.reservedCount;
+                      return (
+                        <button
+                          key={g.id}
+                          type="button"
+                          onClick={() => {
+                            saveHomeScroll();
+                            navigateWithReturn(navigate, `/split-box/${g.id}`, location, {
+                              from: homeReturnPath,
+                            });
+                          }}
+                          className="flex w-full items-center gap-3 rounded-2xl border-2 border-outline bg-white p-3 text-left shadow-[4px_4px_0_#111] active:opacity-95"
+                        >
+                          <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-neutral-50">
+                            {g.coverImage ? (
+                              <img src={g.coverImage} alt="" className="h-full w-full object-contain p-1" referrerPolicy="no-referrer" />
+                            ) : (
+                              <img src="/split-box.svg" alt="" className="h-full w-full object-contain p-2 opacity-70" />
+                            )}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-[10px] font-bold uppercase tracking-wider text-secondary">拆盒團</p>
+                            <p className="truncate text-sm font-extrabold">{g.title}</p>
+                            <p className="mt-0.5 text-[11px] text-on-surface-variant">
+                              {SPLIT_BOX_STATUS_LABEL[g.status] ?? g.status} · {g.claimedCount}/{claimable} · {g.pricePerSlot}/款
+                            </p>
+                          </div>
+                          <span className="material-symbols-outlined shrink-0 text-on-surface-variant">chevron_right</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
-            ) : null}
-
-            {filteredListings.length === 0 && !(mode === 'unbox' && splitBoxes.length > 0) ? (
+            ) : filteredListings.length === 0 ? (
               <p className="py-16 text-center text-sm text-on-surface-variant">
                 {query.trim() ? '找不到符合的商品' : '此類型暫無商品'}
               </p>
-            ) : filteredListings.length > 0 ? (
-              <div>
-                {mode === 'unbox' && splitBoxes.length > 0 ? (
-                  <h3 className="mb-3 text-sm font-extrabold text-on-surface">拆盒款式貼文</h3>
-                ) : null}
-                <div className="grid grid-cols-2 items-stretch gap-grid-gutter">
+            ) : (
+              <div className="grid grid-cols-2 items-stretch gap-grid-gutter">
                 {filteredListings.map((item) => (
                   <ListingProductCard
                     key={item.id}
@@ -399,12 +391,11 @@ export default function Marketplace() {
                       e.stopPropagation();
                       toggleOwnedFromListing(item);
                     }}
-                    {...renderCartProps(item)}
+                    {...getActionProps(item)}
                   />
                 ))}
-                </div>
               </div>
-            ) : null}
+            )}
           </section>
         ) : (
           <>
@@ -420,7 +411,10 @@ export default function Marketplace() {
                 key={item.id}
                 type="button"
                 whileTap={{ scale: 0.98 }}
-                onClick={() => navigate(`/search?q=${encodeURIComponent(item.title)}`)}
+                onClick={() => {
+                  saveHomeScroll();
+                  navigate(`/catalog/${item.id}`);
+                }}
                 className="min-w-[160px] flex flex-col gap-stack-md text-left"
               >
                 <div className="relative aspect-square rounded-2xl overflow-hidden">
@@ -437,7 +431,7 @@ export default function Marketplace() {
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-sm text-on-surface truncate font-semibold">{item.title}</h3>
+                  <h3 className="card-title-2 text-sm font-semibold leading-snug text-on-surface">{item.title}</h3>
                 </div>
               </motion.button>
             ))}
@@ -484,7 +478,7 @@ export default function Marketplace() {
                       e.stopPropagation();
                       if (listing) toggleOwnedFromListing(listing);
                     }}
-                    {...(listing ? renderCartProps(listing) : { showCart: false })}
+                    {...(listing ? getActionProps(listing) : { showCart: false })}
                   />
                 );
               })}
@@ -523,7 +517,7 @@ export default function Marketplace() {
                       e.stopPropagation();
                       if (listing) toggleOwnedFromListing(listing);
                     }}
-                    {...(listing ? renderCartProps(listing) : { showCart: false })}
+                    {...(listing ? getActionProps(listing) : { showCart: false })}
                   />
                 );
               })}
@@ -537,14 +531,26 @@ export default function Marketplace() {
       </div>
 
       {/* FAB */}
-      <button 
-        onClick={() => navigate('/add-listing')}
-        className="fixed right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full premium-gradient text-white active:scale-90 transition-transform"
+      <div
+        className="group/fab fixed right-4 z-40 flex items-center"
         style={{ bottom: `calc(${BOTTOM_NAV_OFFSET} + 2.25rem)` }}
-        aria-label="新增商品"
       >
-        <span className="material-symbols-outlined text-3xl">add</span>
-      </button>
+        <span
+          className="pointer-events-none absolute right-full mr-2 whitespace-nowrap rounded-lg border border-black/10 bg-black/80 px-2.5 py-1.5 text-xs font-bold text-white opacity-0 shadow-sm transition-opacity duration-150 group-hover/fab:opacity-100"
+          aria-hidden
+        >
+          新增上架商品
+        </span>
+        <button
+          type="button"
+          onClick={() => navigate('/add-listing')}
+          className="flex h-14 w-14 items-center justify-center rounded-full premium-gradient text-white active:scale-90 transition-transform"
+          aria-label="新增上架商品"
+          title="新增上架商品"
+        >
+          <span className="material-symbols-outlined text-3xl">add</span>
+        </button>
+      </div>
     </div>
   );
 }

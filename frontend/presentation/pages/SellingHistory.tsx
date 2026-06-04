@@ -61,7 +61,7 @@ export default function SellingHistory() {
               ) : null}
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="text-sm font-bold text-on-surface line-clamp-2">{order.title}</h3>
+              <h3 className="card-title-2 text-sm font-bold leading-snug text-on-surface">{order.title}</h3>
               <div className="flex items-center gap-2 mt-2">
                 <UserAvatar size="sm" />
                 <span className="text-[10px] text-on-surface-variant truncate">{order.counterpartyName}</span>

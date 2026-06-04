@@ -1,0 +1,200 @@
+{
+  "scrapedAt": "2026-06-03T07:47:55.793Z",
+  "sourceUrl": "https://www.popmart.com/hk/popnow/goods/list",
+  "ips": [
+    {
+      "slug": "baby-molly",
+      "name": "Baby Molly",
+      "image": "https://global-static.popmart.com/globalAdmin/1751339115792____baby-molly____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp",
+      "imageHover": "https://global-static.popmart.com/globalAdmin/1751339118875____baby-molly____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp"
+    },
+    {
+      "slug": "crybaby",
+      "name": "CRYBABY",
+      "image": "https://global-static.popmart.com/globalAdmin/1751338966701____crybaby____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp",
+      "imageHover": "https://global-static.popmart.com/globalAdmin/1751338970924____crybaby____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp"
+    },
+    {
+      "slug": "dimoo",
+      "name": "Dimoo",
+      "image": "https://global-static.popmart.com/globalAdmin/1751338872233____dimoo____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp",
+      "imageHover": "https://global-static.popmart.com/globalAdmin/1751338876487____dimoo____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp"
+    },
+    {
+      "slug": "disney",
+      "name": "迪士尼",
+      "image": "https://global-static.popmart.com/globalAdmin/1751339040403____disney____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp",
+      "imageHover": "https://global-static.popmart.com/globalAdmin/1751339044079____disney____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp"
+    },
+    {
+      "slug": "hacipupu",
+      "name": "HACIPUPU",
+      "image": "https://global-static.popmart.com/globalAdmin/1751339025844____hacipupu____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp",
+      "imageHover": "https://global-static.popmart.com/globalAdmin/1751339030477____hacipupu____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp"
+    },
+    {
+      "slug": "hirono",
+      "name": "Hirono",
+      "image": "https://global-static.popmart.com/globalAdmin/1751339008174____hirono____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp",
+      "imageHover": "https://global-static.popmart.com/globalAdmin/1751339012271____hirono____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp"
+    },
+    {
+      "slug": "kubo",
+      "name": "KUBO",
+      "image": "https://global-static.popmart.com/globalAdmin/1751339066822____kubo____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp",
+      "imageHover": "https://global-static.popmart.com/globalAdmin/1751339071083____kubo____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp"
+    },
+    {
+      "slug": "labubu",
+      "name": "LABUBU",
+      "image": "https://global-static.popmart.com/globalAdmin/1751338887918____labubu____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp",
+      "imageHover": "https://global-static.popmart.com/globalAdmin/1751338892438____labubu____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp"
+    },
+    {
+      "slug": "molly",
+      "name": "Molly",
+      "image": "https://global-static.popmart.com/globalAdmin/1751338801906____molly____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp",
+      "imageHover": "https://global-static.popmart.com/globalAdmin/1751338806244____molly____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp"
+    },
+    {
+      "slug": "pino-jelly",
+      "name": "PINO JELLY",
+      "image": "https://global-static.popmart.com/globalAdmin/1751339189743____pino-jelly____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp",
+      "imageHover": "https://global-static.popmart.com/globalAdmin/1751339194743____pino-jelly____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp"
+    },
+    {
+      "slug": "pucky",
+      "name": "PUCKY",
+      "image": "https://global-static.popmart.com/globalAdmin/1751338979554____pucky____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp",
+      "imageHover": "https://global-static.popmart.com/globalAdmin/1751338983608____pucky____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp"
+    },
+    {
+      "slug": "skullpanda",
+      "name": "SKULLPANDA",
+      "image": "https://global-static.popmart.com/globalAdmin/1751338953107____skullpanda____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp",
+      "imageHover": "https://global-static.popmart.com/globalAdmin/1751338956751____skullpanda____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp"
+    },
+    {
+      "slug": "spongebob",
+      "name": "SpongeBob",
+      "image": "https://global-static.popmart.com/globalAdmin/1751339220555____spongebob____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp",
+      "imageHover": "https://global-static.popmart.com/globalAdmin/1751339224354____spongebob____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp"
+    },
+    {
+      "slug": "sweet-bean",
+      "name": "小甜豆",
+      "image": "https://global-static.popmart.com/globalAdmin/1751338991264____sweet-bean____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp",
+      "imageHover": "https://global-static.popmart.com/globalAdmin/1751338996256____sweet-bean____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp"
+    },
+    {
+      "slug": "twinkle-twinkle",
+      "name": "星星人",
+      "image": "https://global-static.popmart.com/globalAdmin/1751339098952____twinkle-twinkle____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp",
+      "imageHover": "https://global-static.popmart.com/globalAdmin/1751339102801____twinkle-twinkle____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp"
+    },
+    {
+      "slug": "zsiga",
+      "name": "Zsiga",
+      "image": "https://global-static.popmart.com/globalAdmin/1751339302359____zsiga____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp",
+      "imageHover": "https://global-static.popmart.com/globalAdmin/1751339305983____zsiga____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp"
+    }
+  ],
+  "bySlug": {
+    "baby-molly": {
+      "slug": "baby-molly",
+      "name": "Baby Molly",
+      "image": "https://global-static.popmart.com/globalAdmin/1751339115792____baby-molly____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp",
+      "imageHover": "https://global-static.popmart.com/globalAdmin/1751339118875____baby-molly____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp"
+    },
+    "crybaby": {
+      "slug": "crybaby",
+      "name": "CRYBABY",
+      "image": "https://global-static.popmart.com/globalAdmin/1751338966701____crybaby____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp",
+      "imageHover": "https://global-static.popmart.com/globalAdmin/1751338970924____crybaby____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp"
+    },
+    "dimoo": {
+      "slug": "dimoo",
+      "name": "Dimoo",
+      "image": "https://global-static.popmart.com/globalAdmin/1751338872233____dimoo____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp",
+      "imageHover": "https://global-static.popmart.com/globalAdmin/1751338876487____dimoo____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp"
+    },
+    "disney": {
+      "slug": "disney",
+      "name": "迪士尼",
+      "image": "https://global-static.popmart.com/globalAdmin/1751339040403____disney____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp",
+      "imageHover": "https://global-static.popmart.com/globalAdmin/1751339044079____disney____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp"
+    },
+    "hacipupu": {
+      "slug": "hacipupu",
+      "name": "HACIPUPU",
+      "image": "https://global-static.popmart.com/globalAdmin/1751339025844____hacipupu____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp",
+      "imageHover": "https://global-static.popmart.com/globalAdmin/1751339030477____hacipupu____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp"
+    },
+    "hirono": {
+      "slug": "hirono",
+      "name": "Hirono",
+      "image": "https://global-static.popmart.com/globalAdmin/1751339008174____hirono____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp",
+      "imageHover": "https://global-static.popmart.com/globalAdmin/1751339012271____hirono____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp"
+    },
+    "kubo": {
+      "slug": "kubo",
+      "name": "KUBO",
+      "image": "https://global-static.popmart.com/globalAdmin/1751339066822____kubo____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp",
+      "imageHover": "https://global-static.popmart.com/globalAdmin/1751339071083____kubo____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp"
+    },
+    "labubu": {
+      "slug": "labubu",
+      "name": "LABUBU",
+      "image": "https://global-static.popmart.com/globalAdmin/1751338887918____labubu____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp",
+      "imageHover": "https://global-static.popmart.com/globalAdmin/1751338892438____labubu____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp"
+    },
+    "molly": {
+      "slug": "molly",
+      "name": "Molly",
+      "image": "https://global-static.popmart.com/globalAdmin/1751338801906____molly____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp",
+      "imageHover": "https://global-static.popmart.com/globalAdmin/1751338806244____molly____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp"
+    },
+    "pino-jelly": {
+      "slug": "pino-jelly",
+      "name": "PINO JELLY",
+      "image": "https://global-static.popmart.com/globalAdmin/1751339189743____pino-jelly____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp",
+      "imageHover": "https://global-static.popmart.com/globalAdmin/1751339194743____pino-jelly____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp"
+    },
+    "pucky": {
+      "slug": "pucky",
+      "name": "PUCKY",
+      "image": "https://global-static.popmart.com/globalAdmin/1751338979554____pucky____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp",
+      "imageHover": "https://global-static.popmart.com/globalAdmin/1751338983608____pucky____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp"
+    },
+    "skullpanda": {
+      "slug": "skullpanda",
+      "name": "SKULLPANDA",
+      "image": "https://global-static.popmart.com/globalAdmin/1751338953107____skullpanda____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp",
+      "imageHover": "https://global-static.popmart.com/globalAdmin/1751338956751____skullpanda____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp"
+    },
+    "spongebob": {
+      "slug": "spongebob",
+      "name": "SpongeBob",
+      "image": "https://global-static.popmart.com/globalAdmin/1751339220555____spongebob____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp",
+      "imageHover": "https://global-static.popmart.com/globalAdmin/1751339224354____spongebob____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp"
+    },
+    "sweet-bean": {
+      "slug": "sweet-bean",
+      "name": "小甜豆",
+      "image": "https://global-static.popmart.com/globalAdmin/1751338991264____sweet-bean____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp",
+      "imageHover": "https://global-static.popmart.com/globalAdmin/1751338996256____sweet-bean____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp"
+    },
+    "twinkle-twinkle": {
+      "slug": "twinkle-twinkle",
+      "name": "星星人",
+      "image": "https://global-static.popmart.com/globalAdmin/1751339098952____twinkle-twinkle____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp",
+      "imageHover": "https://global-static.popmart.com/globalAdmin/1751339102801____twinkle-twinkle____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp"
+    },
+    "zsiga": {
+      "slug": "zsiga",
+      "name": "Zsiga",
+      "image": "https://global-static.popmart.com/globalAdmin/1751339302359____zsiga____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp",
+      "imageHover": "https://global-static.popmart.com/globalAdmin/1751339305983____zsiga____.webp?x-oss-process=image/resize,w_256/quality,q_85/format,webp"
+    }
+  }
+}

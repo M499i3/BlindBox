@@ -12,10 +12,12 @@ type Props = {
   fallbackName: string;
   listingCreatedAt?: string;
   activeListingCount?: number;
+  onActiveListingsClick?: () => void;
   showContact?: boolean;
   onContact?: () => void;
   contactDisabled?: boolean;
   contacting?: boolean;
+  contactLabel?: string;
 };
 
 function getAppShellPortalRoot(): HTMLElement {
@@ -30,10 +32,12 @@ export default function SellerInfoModal({
   fallbackName,
   listingCreatedAt,
   activeListingCount,
+  onActiveListingsClick,
   showContact = false,
   onContact,
   contactDisabled = false,
   contacting = false,
+  contactLabel = '聯絡賣家',
 }: Props) {
   const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null);
 
@@ -116,14 +120,29 @@ export default function SellerInfoModal({
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-2xl border-2 border-outline bg-white p-4 text-center shadow-none">
-                    <p className="text-2xl font-bold text-primary">
-                      {String(activeListingCount ?? 0).padStart(2, '0')}
-                    </p>
-                    <p className="mt-1 text-[10px] font-bold uppercase tracking-tighter text-on-surface-variant">
-                      上架中
-                    </p>
-                  </div>
+                  {onActiveListingsClick && (activeListingCount ?? 0) > 0 ? (
+                    <button
+                      type="button"
+                      onClick={onActiveListingsClick}
+                      className="rounded-2xl border-2 border-outline bg-white p-4 text-center shadow-none transition-colors active:bg-black/[0.03]"
+                    >
+                      <p className="text-2xl font-bold text-primary">
+                        {String(activeListingCount ?? 0).padStart(2, '0')}
+                      </p>
+                      <p className="mt-1 text-[10px] font-bold uppercase tracking-tighter text-on-surface-variant">
+                        上架中
+                      </p>
+                    </button>
+                  ) : (
+                    <div className="rounded-2xl border-2 border-outline bg-white p-4 text-center shadow-none">
+                      <p className="text-2xl font-bold text-primary">
+                        {String(activeListingCount ?? 0).padStart(2, '0')}
+                      </p>
+                      <p className="mt-1 text-[10px] font-bold uppercase tracking-tighter text-on-surface-variant">
+                        上架中
+                      </p>
+                    </div>
+                  )}
                   <div className="rounded-2xl border-2 border-outline bg-white p-4 text-center shadow-none">
                     <p className="text-2xl font-bold text-primary">
                       {String(transactionCount).padStart(2, '0')}
@@ -159,7 +178,7 @@ export default function SellerInfoModal({
                     onClick={onContact}
                     className="w-full rounded-full border-2 border-outline bg-white py-4 text-sm font-bold text-on-surface shadow-[4px_4px_0_#111] transition-transform active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-50"
                   >
-                    {contacting ? '開啟中…' : '聯絡賣家'}
+                    {contacting ? '開啟中…' : contactLabel}
                   </button>
                 ) : null}
               </div>

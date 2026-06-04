@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { navigateBack, navigateWithReturn } from '@/frontend/shared/utils/routeNavigation';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import {
-  claimSplitBoxSlot,
   completeSplitBox,
   getSplitBox,
   shipSplitBox,
@@ -12,20 +12,23 @@ import {
   type SplitBoxGroupDetail,
   type SplitBoxSlot,
 } from '@/frontend/domain/entities/splitBox';
+import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
 import { cn } from '@/frontend/shared/utils/cn';
 
 function SlotCard({
   slot,
   disabled,
   onClaim,
-  claiming,
-  onViewListing,
+  onOpenListing,
+  isInCart,
+  onAddToCart,
 }: {
   slot: SplitBoxSlot;
   disabled: boolean;
   onClaim: () => void;
-  claiming: boolean;
-  onViewListing?: (listingId: string) => void;
+  onOpenListing?: (listingId: string) => void;
+  isInCart: boolean;
+  onAddToCart?: () => void;
 }) {
   const statusLabel =
     slot.status === 'reserved'
@@ -34,11 +37,25 @@ function SlotCard({
         ? '已認領'
         : '可認領';
 
+  const canOpenListing = Boolean(slot.listingId && slot.status !== 'reserved');
+
   return (
     <div
+      role={canOpenListing ? 'button' : undefined}
+      tabIndex={canOpenListing ? 0 : undefined}
+      onClick={() => {
+        if (canOpenListing && slot.listingId) onOpenListing?.(slot.listingId);
+      }}
+      onKeyDown={(e) => {
+        if (canOpenListing && slot.listingId && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          onOpenListing?.(slot.listingId!);
+        }
+      }}
       className={cn(
-        'overflow-hidden rounded-2xl border-2 bg-white shadow-[3px_3px_0_#111]',
-        slot.status === 'available' ? 'border-outline' : 'border-black/15'
+        'overflow-hidden rounded-2xl border-2 bg-white shadow-[3px_3px_0_#111] text-left',
+        slot.status === 'available' ? 'border-outline' : 'border-black/15',
+        canOpenListing && 'cursor-pointer active:opacity-95'
       )}
     >
       <div className="relative aspect-square bg-neutral-50">
@@ -55,7 +72,7 @@ function SlotCard({
         </span>
       </div>
       <div className="space-y-2 p-3">
-        <p className="line-clamp-2 text-xs font-bold leading-snug">{slot.productTitle}</p>
+        <p className="card-title-2 text-xs font-bold leading-snug">{slot.productTitle}</p>
         <p className="text-sm font-extrabold text-primary">{slot.price}</p>
         {slot.claimedByName ? (
           <p className="text-[10px] text-on-surface-variant">認領：{slot.claimedByName}</p>
@@ -63,23 +80,26 @@ function SlotCard({
         {slot.status === 'available' && !disabled ? (
           <button
             type="button"
-            disabled={claiming}
-            onClick={onClaim}
-            className="w-full rounded-full border-2 border-black bg-black py-2 text-xs font-extrabold text-white disabled:opacity-50"
+            onClick={(e) => {
+              e.stopPropagation();
+              onClaim();
+            }}
+            className="w-full rounded-full border-2 border-black bg-black py-2 text-xs font-extrabold text-white"
           >
-            {claiming ? '認領中…' : '認領此款'}
+            認領此款
           </button>
         ) : null}
         {slot.listingId && slot.status !== 'reserved' ? (
           <button
             type="button"
+            disabled={isInCart}
             onClick={(e) => {
               e.stopPropagation();
-              onViewListing?.(slot.listingId!);
+              onAddToCart?.();
             }}
-            className="w-full text-[10px] font-bold text-primary underline"
+            className="w-full rounded-full border-2 border-outline bg-white py-2 text-xs font-extrabold text-on-surface shadow-[2px_2px_0_#111] disabled:opacity-50"
           >
-            查看貼文
+            {isInCart ? '已在購物車' : '加入購物車'}
           </button>
         ) : null}
       </div>
@@ -89,7 +109,9 @@ function SlotCard({
 
 export default function SplitBoxDetail() {
   const { id } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
+  const { addToCart, isInCart } = useAppState();
   const [group, setGroup] = useState<SplitBoxGroupDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [claimingId, setClaimingId] = useState<string | null>(null);
@@ -112,17 +134,12 @@ export default function SplitBoxDetail() {
     load();
   }, [load]);
 
-  const handleClaim = async (slotId: string) => {
+  const handleClaim = (slotId: string) => {
     if (!id) return;
-    setClaimingId(slotId);
-    setError('');
-    try {
-      setGroup(await claimSplitBoxSlot(id, slotId));
-    } catch (e) {
-      setError(e instanceof Error ? e.message : '認領失敗');
-    } finally {
-      setClaimingId(null);
-    }
+    const params = new URLSearchParams({ slotId });
+    const slot = group?.slots.find((s) => s.id === slotId);
+    if (slot?.listingId) params.set('listingId', slot.listingId);
+    navigateWithReturn(navigate, `/split-box/${id}/apply?${params.toString()}`, location);
   };
 
   const handleShip = async () => {
@@ -161,7 +178,11 @@ export default function SplitBoxDetail() {
     return (
       <div className="px-6 pt-24 text-center">
         <p className="text-sm text-on-surface-variant">{error || '找不到拆盒團'}</p>
-        <button type="button" onClick={() => navigate('/profile')} className="mt-4 text-sm font-bold text-primary">
+        <button
+          type="button"
+          onClick={() => navigateBack(navigate, location)}
+          className="mt-4 text-sm font-bold text-primary"
+        >
           返回
         </button>
       </div>
@@ -174,7 +195,7 @@ export default function SplitBoxDetail() {
 
   return (
     <div className="animate-in fade-in min-h-full pb-32 duration-500">
-      <TopBar showBack title="拆盒團" onBack={() => navigate('/profile')} rightElement={<></>} />
+      <TopBar showBack title="拆盒團" rightElement={<></>} />
 
       <main className="space-y-6 px-container-margin pt-topbar-content">
         <section className="overflow-hidden rounded-2xl border-2 border-outline bg-white shadow-[4px_4px_0_#111]">
@@ -249,9 +270,16 @@ export default function SplitBoxDetail() {
                 key={slot.id}
                 slot={slot}
                 disabled={!canClaim}
-                claiming={claimingId === slot.id}
                 onClaim={() => handleClaim(slot.id)}
-                onViewListing={(listingId) => navigate(`/listing/${listingId}`)}
+                onOpenListing={(listingId) => navigate(`/listing/${listingId}`)}
+                isInCart={slot.listingId ? isInCart(slot.listingId) : false}
+                onAddToCart={
+                  slot.listingId
+                    ? () => {
+                        if (!isInCart(slot.listingId!)) addToCart(slot.listingId!);
+                      }
+                    : undefined
+                }
               />
             ))}
           </div>

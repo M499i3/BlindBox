@@ -67,7 +67,7 @@ export default function CatalogBrowseRow({
           {subtitle ? (
             <p className="text-[10px] font-bold uppercase tracking-wide text-primary">{subtitle}</p>
           ) : null}
-          <p className="line-clamp-2 text-sm font-extrabold leading-snug text-on-surface">{title}</p>
+          <p className="card-title-2 text-sm font-extrabold leading-snug text-on-surface">{title}</p>
           {count != null && count > 0 ? (
             <p className="mt-0.5 text-[11px] font-semibold text-on-surface-variant">{count} 款</p>
           ) : null}

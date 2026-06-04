@@ -21,6 +21,12 @@ _IP_RULES: list[tuple[str, str, str]] = [
     ("DIMOO", "Dimoo", "upper"),
     ("MOLLY", "Molly", "upper"),
     ("CHAKA", "CHAKA", "upper"),
+    ("BABY MOLLY", "Baby Molly", "upper"),
+    ("KUBO", "KUBO", "upper"),
+    ("小甜豆", "小甜豆", "title"),
+    ("迪士尼", "迪士尼", "title"),
+    ("SPONGEBOB", "SpongeBob", "upper"),
+    ("POLAR", "POLAR", "upper"),
 ]
 
 

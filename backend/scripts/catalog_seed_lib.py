@@ -1,8 +1,7 @@
-"""從 popmart-hk-showcase.json 解析圖鑑種子資料（與前端 CatalogService 規則對齊）"""
+"""從 showcase JSON 解析圖鑑種子：品牌（廠牌）→ 系列（IP）→ 商品"""
 
 from __future__ import annotations
 
-import hashlib
 import json
 import re
 import sys
@@ -14,7 +13,34 @@ BACKEND_SRC = Path(__file__).resolve().parents[1] / "src"
 if str(BACKEND_SRC) not in sys.path:
     sys.path.insert(0, str(BACKEND_SRC))
 
-from domain.ip_rules import derive_brand_label  # noqa: E402
+from domain.ip_rules import derive_ip_label  # noqa: E402
+
+# 廠牌 / 製造商（Explore 頂層：Pop Mart、Jellycat）
+POPMART_BRAND = ("pop-mart", "Pop Mart")
+JELLYCAT_BRAND = ("jellycat", "Jellycat")
+
+# IP（DB series 層；對齊 frontend catalogHierarchy 的 IpNode）
+IP_SLUGS: dict[str, tuple[str, str]] = {
+    "LABUBU": ("labubu", "LABUBU"),
+    "SKULLPANDA": ("skullpanda", "SKULLPANDA"),
+    "CRYBABY": ("crybaby", "CRYBABY"),
+    "星星人": ("twinkle-twinkle", "星星人"),
+    "Hirono": ("hirono", "Hirono"),
+    "Zsiga": ("zsiga", "Zsiga"),
+    "PINO JELLY": ("pino-jelly", "PINO JELLY"),
+    "HACIPUPU": ("hacipupu", "HACIPUPU"),
+    "PUCKY": ("pucky", "PUCKY"),
+    "Dimoo": ("dimoo", "Dimoo"),
+    "Molly": ("molly", "Molly"),
+    "Baby Molly": ("baby-molly", "Baby Molly"),
+    "CHAKA": ("chaka", "CHAKA"),
+    "小甜豆": ("sweet-bean", "小甜豆"),
+    "迪士尼": ("disney", "迪士尼"),
+    "KUBO": ("kubo", "KUBO"),
+    "SpongeBob": ("spongebob", "SpongeBob"),
+    "POLAR": ("polar", "POLAR"),
+    "其他 IP": ("other-ip", "其他 IP"),
+}
 
 
 @dataclass(frozen=True)
@@ -32,40 +58,37 @@ class SeedProduct:
     series_slug: str
 
 
-BRAND_SLUGS: dict[str, tuple[str, str]] = {
-    "LABUBU": ("labubu", "LABUBU"),
-    "SKULLPANDA": ("skullpanda", "SKULLPANDA"),
-    "CRYBABY": ("crybaby", "CRYBABY"),
-    "星星人": ("twinkle-twinkle", "星星人"),
-    "Hirono": ("hirono", "Hirono"),
-    "Zsiga": ("zsiga", "Zsiga"),
-    "PINO JELLY": ("pino-jelly", "PINO JELLY"),
-    "HACIPUPU": ("hacipupu", "HACIPUPU"),
-    "PUCKY": ("pucky", "PUCKY"),
-    "Dimoo": ("dimoo", "Dimoo"),
-    "Molly": ("molly", "Molly"),
-    "CHAKA": ("chaka", "CHAKA"),
-    "其他 IP": ("other-ip", "其他 IP"),
-}
+def manufacturer_for_title(title: str) -> tuple[str, str]:
+    if re.search(r"jellycat", title, re.I):
+        return JELLYCAT_BRAND
+    return POPMART_BRAND
 
 
-def brand_slug_and_name(label: str) -> tuple[str, str]:
-    if label in BRAND_SLUGS:
-        return BRAND_SLUGS[label]
-    slug = re.sub(r"[^a-z0-9]+", "-", label.lower()).strip("-") or "other"
+def ip_slug_and_name(label: str) -> tuple[str, str]:
+    if label in IP_SLUGS:
+        return IP_SLUGS[label]
+    slug = re.sub(r"[^a-z0-9]+", "-", label.lower()).strip("-") or "other-ip"
     return slug, label
 
 
-def extract_series_name(title: str, brand_label: str) -> str:
-    m = re.search(r"(.+?系列)", title)
-    if m:
-        return m.group(1).strip()
-    return f"{brand_label} 精選"
+def ip_label_from_raw(raw: dict[str, Any], title: str) -> str:
+    explicit = str(raw.get("ip") or "").strip()
+    if explicit:
+        return explicit
+    return derive_ip_label(title)
 
 
-def stable_series_slug(brand_slug: str, series_name: str) -> str:
-    digest = hashlib.sha1(f"{brand_slug}:{series_name}".encode("utf-8")).hexdigest()[:12]
-    return f"{brand_slug}-{digest}"
+def _price_from_raw(raw: dict[str, Any]) -> tuple[int | None, str | None]:
+    mp = raw.get("marketPrice")
+    if isinstance(mp, dict) and mp.get("avg") is not None:
+        try:
+            major = float(mp["avg"])
+        except (TypeError, ValueError):
+            major = None
+        if major is not None:
+            currency = str(mp.get("currency") or "TWD").upper()
+            return int(round(major * 100)), currency
+    return parse_price(str(raw.get("price", "")))
 
 
 def parse_price(price: str) -> tuple[int | None, str | None]:
@@ -99,11 +122,10 @@ def build_seed_products(showcase: dict[str, Any]) -> list[SeedProduct]:
         if not title or not external_id:
             continue
 
-        brand_label = derive_brand_label(title)
-        brand_slug, brand_name = brand_slug_and_name(brand_label)
-        series_name = extract_series_name(title, brand_label)
-        series_slug = stable_series_slug(brand_slug, series_name)
-        amount, currency = parse_price(str(raw.get("price", "")))
+        brand_slug, brand_name = manufacturer_for_title(title)
+        ip_label = ip_label_from_raw(raw, title)
+        series_slug, series_name = ip_slug_and_name(ip_label)
+        amount, currency = _price_from_raw(raw)
 
         products.append(
             SeedProduct(

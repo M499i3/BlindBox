@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
+import { navigateWithReturn } from '@/frontend/shared/utils/routeNavigation';
 import {
   listMyJoinedSplitBoxes,
   listMyOrganizedSplitBoxes,
@@ -35,6 +36,7 @@ function GroupRow({ group, onClick }: { group: SplitBoxGroupSummary; onClick: ()
 }
 
 export default function MySplitBoxes() {
+  const location = useLocation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const tab = searchParams.get('tab') === 'joined' ? 'joined' : 'organized';
@@ -111,7 +113,11 @@ export default function MySplitBoxes() {
         ) : (
           <div className="space-y-3">
             {items.map((g) => (
-              <GroupRow key={g.id} group={g} onClick={() => navigate(`/split-box/${g.id}`)} />
+              <GroupRow
+                key={g.id}
+                group={g}
+                onClick={() => navigateWithReturn(navigate, `/split-box/${g.id}`, location)}
+              />
             ))}
           </div>
         )}

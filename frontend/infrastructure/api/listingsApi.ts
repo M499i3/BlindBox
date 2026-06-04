@@ -1,4 +1,5 @@
 import type { CreateListingInput, Listing } from '../../domain/entities/listing';
+import { coerceShippingMethods } from '../../shared/utils/listingShipping';
 import { apiFetch } from './apiClient';
 
 /** snake_case shape returned by the FastAPI backend */
@@ -13,6 +14,7 @@ type ApiListing = {
   condition: string;
   trade_mode: string;
   shipping: string;
+  shipping_methods?: string[];
   allow_swap: boolean;
   allow_bargain: boolean;
   image: string;
@@ -20,6 +22,8 @@ type ApiListing = {
   created_at: string;
   seller_name: string;
   seller_id?: string;
+  split_box_group_id?: string | null;
+  split_box_slot_id?: string | null;
   quantity: number;
 };
 
@@ -36,6 +40,10 @@ function toFrontend(l: ApiListing): Listing {
     condition: l.condition,
     tradeMode: l.trade_mode,
     shipping: l.shipping,
+    shippingMethods: (() => {
+      const methods = coerceShippingMethods(l.shipping_methods);
+      return methods.length ? methods : undefined;
+    })(),
     allowSwap: l.allow_swap,
     allowBargain: l.allow_bargain,
     image: l.image || images[0] || '',
@@ -44,6 +52,8 @@ function toFrontend(l: ApiListing): Listing {
     sellerName: l.seller_name,
     quantity: l.quantity ?? 1,
     sellerId: l.seller_id,
+    splitBoxGroupId: l.split_box_group_id ?? null,
+    splitBoxSlotId: l.split_box_slot_id ?? null,
   };
 }
 
@@ -59,6 +69,11 @@ function toApi(input: CreateListingInput): Record<string, unknown> {
     condition: input.condition,
     trade_mode: input.tradeMode,
     shipping: input.shipping,
+    shipping_methods: input.shippingMethods?.length
+      ? input.shippingMethods
+      : input.shipping
+        ? [input.shipping]
+        : [],
     allow_swap: input.allowSwap,
     allow_bargain: input.allowBargain,
     image: input.image,

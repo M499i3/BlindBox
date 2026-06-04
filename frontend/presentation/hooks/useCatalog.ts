@@ -45,9 +45,16 @@ export function buildBrandRow(products: CatalogProduct[], limit = 6): BrandRow[]
   return Array.from(seen, ([name, image]) => ({ name, image }));
 }
 
-export function useCatalogProducts(opts?: { q?: string; brand?: string; series?: string }) {
+export function useCatalogProducts(opts?: {
+  q?: string;
+  brand?: string;
+  series?: string;
+  /** API mode: skip fetch when false (avoids loading full catalog). */
+  enabled?: boolean;
+}) {
   const mock = isMockDataEnabled();
-  const cacheKey = mock ? null : catalogProductsKey(opts);
+  const enabled = opts?.enabled !== false;
+  const cacheKey = mock || !enabled ? null : catalogProductsKey(opts);
 
   const mockProducts = useMemo(
     () => (mock ? filterMockProducts(opts) : []),
@@ -57,15 +64,19 @@ export function useCatalogProducts(opts?: { q?: string; brand?: string; series?:
   const { data, loading } = useCachedFetch(
     cacheKey,
     () => getCatalogProducts(opts).catch(() => filterMockProducts(opts)),
-    [opts?.q, opts?.brand, opts?.series],
+    [opts?.q, opts?.brand, opts?.series, enabled],
     {
-      enabled: !mock,
+      enabled: !mock && enabled,
       initial: mock ? mockProducts : [],
     }
   );
 
   if (mock) {
     return { products: mockProducts, loading: false };
+  }
+
+  if (!enabled) {
+    return { products: [], loading: false };
   }
 
   return { products: data ?? [], loading };

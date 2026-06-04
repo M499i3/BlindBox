@@ -259,14 +259,14 @@ export default function SwapOfferSection({
                   <div className="mx-auto mb-2 aspect-square w-16 overflow-hidden rounded-lg">
                     <ListingCardImage src={proposal.offeredListing.image} alt={proposal.offeredListing.title} />
                   </div>
-                  <p className="line-clamp-2 text-[11px] font-semibold text-on-surface">{proposal.offeredListing.title}</p>
+                  <p className="card-title-2 text-[11px] font-semibold leading-snug text-on-surface">{proposal.offeredListing.title}</p>
                 </div>
                 <span className="material-symbols-outlined text-primary">swap_horiz</span>
                 <div className="rounded-xl bg-neutral-50 p-2 text-center">
                   <div className="mx-auto mb-2 aspect-square w-16 overflow-hidden rounded-lg">
                     <ListingCardImage src={proposal.wantedListing.image} alt={proposal.wantedListing.title} />
                   </div>
-                  <p className="line-clamp-2 text-[11px] font-semibold text-on-surface">{proposal.wantedListing.title}</p>
+                  <p className="card-title-2 text-[11px] font-semibold leading-snug text-on-surface">{proposal.wantedListing.title}</p>
                 </div>
               </div>
               {proposal.message ? (
@@ -315,14 +315,14 @@ export default function SwapOfferSection({
               <div className="mx-auto mb-2 aspect-square w-16 overflow-hidden rounded-lg">
                 <ListingCardImage src={myProposal.offeredListing.image} alt={myProposal.offeredListing.title} />
               </div>
-              <p className="line-clamp-2 text-[11px] font-semibold">{myProposal.offeredListing.title}</p>
+              <p className="card-title-2 text-[11px] font-semibold leading-snug">{myProposal.offeredListing.title}</p>
             </div>
             <span className="material-symbols-outlined text-primary">swap_horiz</span>
             <div className="text-center">
               <div className="mx-auto mb-2 aspect-square w-16 overflow-hidden rounded-lg">
                 <ListingCardImage src={myProposal.wantedListing.image} alt={myProposal.wantedListing.title} />
               </div>
-              <p className="line-clamp-2 text-[11px] font-semibold">{myProposal.wantedListing.title}</p>
+              <p className="card-title-2 text-[11px] font-semibold leading-snug">{myProposal.wantedListing.title}</p>
             </div>
           </div>
           <button

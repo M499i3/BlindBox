@@ -5,6 +5,7 @@ import ListingProductCard from '@/frontend/presentation/components/ListingProduc
 import { useProductCollection } from '@/frontend/presentation/hooks/useProductCollection';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
 import { filterListingsByFuzzyQuery } from '@/frontend/shared/utils/searchListings';
+import { useListingCardActions } from '@/frontend/presentation/hooks/useListingCardActions';
 import { isOwnListing } from '@/frontend/shared/utils/listingOwnership';
 import { isSwapListing } from '@/frontend/shared/utils/tradeMode';
 import type { Listing } from '@/frontend/domain/entities/listing';
@@ -17,8 +18,10 @@ export default function SearchResults() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const initialQ = searchParams.get('q') ?? '';
+  const sellerId = searchParams.get('seller') ?? '';
   const [draft, setDraft] = useState(initialQ);
-  const { posts, addToCart, isInCart, userId } = useAppState();
+  const { posts, userId } = useAppState();
+  const { getActionProps } = useListingCardActions();
   const {
     toggleWishFromListing,
     toggleOwnedFromListing,
@@ -30,10 +33,18 @@ export default function SearchResults() {
     setDraft(initialQ);
   }, [initialQ]);
 
-  const listingResults = useMemo(
-    () => filterListingsByFuzzyQuery(posts, initialQ),
-    [posts, initialQ]
-  );
+  const sellerName = useMemo(() => {
+    if (!sellerId) return null;
+    const match = posts.find((p) => p.sellerId === sellerId);
+    return match?.sellerName ?? null;
+  }, [posts, sellerId]);
+
+  const listingResults = useMemo(() => {
+    if (sellerId) {
+      return posts.filter((item) => item.sellerId === sellerId);
+    }
+    return filterListingsByFuzzyQuery(posts, initialQ);
+  }, [posts, initialQ, sellerId]);
 
   const recommendations = useMemo(() => {
     let pool = posts;
@@ -46,7 +57,11 @@ export default function SearchResults() {
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     const q = draft.trim();
-    setSearchParams(q ? { q } : {});
+    if (sellerId) {
+      setSearchParams(q ? { seller: sellerId, q } : { seller: sellerId });
+    } else {
+      setSearchParams(q ? { q } : {});
+    }
   };
 
   const renderListingCard = (item: Listing) => (
@@ -74,37 +89,34 @@ export default function SearchResults() {
         e.stopPropagation();
         toggleOwnedFromListing(item);
       }}
-      showCart={!isOwnListing(item, userId) && !isSwapListing(item)}
-      isInCart={isInCart(item.id)}
-      cartDisabled={isInCart(item.id) || !item.price}
-      onAddToCart={(e) => {
-        e.stopPropagation();
-        if (isInCart(item.id) || !item.price) return;
-        addToCart(item.id);
-      }}
+      {...getActionProps(item)}
     />
   );
 
+  const pageTitle = sellerId ? (sellerName ? `${sellerName} 的上架` : '賣家上架') : '搜尋';
+
   return (
     <div className="animate-in fade-in duration-500 pb-28">
-      <TopBar title="搜尋" showBack />
+      <TopBar title={pageTitle} showBack />
 
       <main className="pt-topbar-content px-container-margin space-y-8 w-full min-w-0 max-w-full">
-        <form onSubmit={submit} className="ui-search">
-          <span className="material-symbols-outlined ui-search-icon">search</span>
-          <input
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            className="text-sm"
-            placeholder="搜尋貼文名稱…"
-            type="search"
-          />
-        </form>
+        {!sellerId ? (
+          <form onSubmit={submit} className="ui-search">
+            <span className="material-symbols-outlined ui-search-icon">search</span>
+            <input
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              className="text-sm"
+              placeholder="搜尋貼文名稱…"
+              type="search"
+            />
+          </form>
+        ) : null}
 
-        {initialQ ? (
+        {sellerId || initialQ ? (
           <section>
             <h2 className="mb-3 text-sm font-bold text-on-surface">
-              貼文結果
+              {sellerId ? '上架中' : '貼文結果'}
               <span className="ml-2 text-on-surface-variant font-semibold">({listingResults.length})</span>
             </h2>
             <div className="grid grid-cols-2 items-stretch gap-grid-gutter">
@@ -112,7 +124,7 @@ export default function SearchResults() {
             </div>
             {listingResults.length === 0 && (
               <p className="py-12 text-center text-sm text-on-surface-variant">
-                沒有符合的貼文，請試試其他關鍵字。
+                {sellerId ? '此賣家目前沒有上架中的貼文。' : '沒有符合的貼文，請試試其他關鍵字。'}
               </p>
             )}
           </section>

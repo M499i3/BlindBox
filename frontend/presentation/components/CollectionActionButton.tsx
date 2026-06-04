@@ -45,39 +45,53 @@ export default function CollectionActionButton({
         ? '從收藏冊移除'
         : '加入收藏冊';
 
+  const hoverHint = kind === 'wish' ? '想要' : '已擁有';
+  const showHoverHint = variant === 'overlay';
+
   return (
-    <button
-      type="button"
-      data-no-scroll-top="true"
-      onClick={(e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        onClick?.(e);
-      }}
-      className={cn(
-        'flex items-center justify-center rounded-full border backdrop-blur-md transition-colors active:scale-90',
-        btnSize,
-        variant === 'overlay'
-          ? active
-            ? 'border-white/30 bg-black/55'
-            : 'border-white/15 bg-black/45'
-          : active
-            ? 'border-black/10 bg-white'
-            : 'border-black/10 bg-white',
-        className
-      )}
-      aria-label={label ?? defaultLabel}
-      aria-pressed={active}
-    >
-      <span
-        className={cn('material-symbols-outlined leading-none', iconClass)}
-        style={{
-          color: active ? activeColor : inactiveColor,
-          fontVariationSettings: active ? "'FILL' 1" : "'FILL' 0",
+    <div className={cn('group/btn relative', showHoverHint && 'flex items-center')}>
+      {showHoverHint ? (
+        <span
+          className="pointer-events-none absolute right-full mr-1.5 top-1/2 z-20 -translate-y-1/2 whitespace-nowrap rounded-lg border border-black/10 bg-black/80 px-2 py-1 text-[10px] font-bold text-white opacity-0 shadow-sm transition-opacity duration-150 group-hover/btn:opacity-100"
+          aria-hidden
+        >
+          {hoverHint}
+        </span>
+      ) : null}
+      <button
+        type="button"
+        data-no-scroll-top="true"
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          onClick?.(e);
         }}
+        className={cn(
+          'flex items-center justify-center rounded-full border backdrop-blur-md transition-colors active:scale-90',
+          btnSize,
+          variant === 'overlay'
+            ? active
+              ? 'border-white/30 bg-black/55'
+              : 'border-white/15 bg-black/45'
+            : active
+              ? 'border-black/10 bg-white'
+              : 'border-black/10 bg-white',
+          className
+        )}
+        aria-label={label ?? defaultLabel}
+        aria-pressed={active}
+        title={hoverHint}
       >
-        {icon}
-      </span>
-    </button>
+        <span
+          className={cn('material-symbols-outlined leading-none', iconClass)}
+          style={{
+            color: active ? activeColor : inactiveColor,
+            fontVariationSettings: active ? "'FILL' 1" : "'FILL' 0",
+          }}
+        >
+          {icon}
+        </span>
+      </button>
+    </div>
   );
 }

@@ -15,6 +15,7 @@ import {
   useCatalogProducts,
   useCatalogSeries,
 } from '@/frontend/presentation/hooks/useCatalog';
+import { brandLogoForSlug } from '@/frontend/lib/brandLogos';
 
 function titleCase(slug: string) {
   return decodeURIComponent(slug)
@@ -54,6 +55,7 @@ export default function BrandDetail() {
   }, [apiProducts, isPopmartBrand, mock, slug]);
 
   const hero =
+    brandLogoForSlug(brandSlug) ||
     dbBrands.find((b) => (b.slug ?? '') === brandSlug)?.image ||
     matched[0]?.image ||
     'https://global-static.popmart.com/globalAdmin/1776844373939____pc____.jpg?x-oss-process=image/resize,w_800/quality,q_85/format,webp';

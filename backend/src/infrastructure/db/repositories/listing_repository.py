@@ -18,8 +18,11 @@ _LIST_SELECT = """
         l.condition,
         l.trade_mode,
         l.shipping_method,
+        l.shipping_methods,
         l.allow_swap,
         l.allow_bargain,
+        l.split_box_group_id,
+        l.split_box_slot_id,
         l.created_at,
         l.seller_id,
         u.display_name AS seller_name,
@@ -56,8 +59,11 @@ _MY_LISTINGS_SELECT = """
         l.condition,
         l.trade_mode,
         l.shipping_method,
+        l.shipping_methods,
         l.allow_swap,
         l.allow_bargain,
+        l.split_box_group_id,
+        l.split_box_slot_id,
         l.created_at,
         l.seller_id,
         u.display_name AS seller_name,
@@ -94,8 +100,11 @@ _LISTING_BY_ID = """
         l.condition,
         l.trade_mode,
         l.shipping_method,
+        l.shipping_methods,
         l.allow_swap,
         l.allow_bargain,
+        l.split_box_group_id,
+        l.split_box_slot_id,
         l.created_at,
         l.seller_id,
         u.display_name AS seller_name,
@@ -141,6 +150,33 @@ _SHIPPING_MAP = {
 _CONDITION_UI = {v: k for k, v in _CONDITION_MAP.items()}
 _TRADE_MODE_UI = {v: k for k, v in _TRADE_MODE_MAP.items()}
 _SHIPPING_UI = {v: k for k, v in _SHIPPING_MAP.items()}
+
+
+def _parse_shipping_methods_raw(raw) -> list:
+    if raw is None:
+        return []
+    if isinstance(raw, list):
+        return raw
+    if isinstance(raw, str):
+        s = raw.strip()
+        if s.startswith("{") and s.endswith("}"):
+            inner = s[1:-1].strip()
+            if not inner:
+                return []
+            return [part.strip().strip('"') for part in inner.split(",") if part.strip()]
+        return [s]
+    return list(raw)
+
+
+def _shipping_labels_from_row(row: dict) -> list[str]:
+    raw = _parse_shipping_methods_raw(row.get("shipping_methods"))
+    if raw:
+        labels = [_SHIPPING_UI.get(str(m), str(m)) for m in raw]
+        return [label for label in labels if label]
+    single = row.get("shipping_method")
+    if single:
+        return [_SHIPPING_UI.get(str(single), str(single))]
+    return ["7-11 店到店"]
 
 
 def _format_price(amount: int | None, currency: str | None) -> str:
@@ -222,7 +258,8 @@ def _row_to_listing(row: dict) -> Listing:
         series=row.get("series_name") or "",
         condition=_CONDITION_UI.get(str(row.get("condition") or ""), str(row.get("condition") or "")),
         trade_mode=_TRADE_MODE_UI.get(str(row.get("trade_mode") or ""), str(row.get("trade_mode") or "")),
-        shipping=_SHIPPING_UI.get(str(row.get("shipping_method") or ""), str(row.get("shipping_method") or "")),
+        shipping_methods=_shipping_labels_from_row(row),
+        shipping=_shipping_labels_from_row(row)[0],
         allow_swap=bool(row.get("allow_swap", False)),
         allow_bargain=bool(row.get("allow_bargain", False)),
         image=image_url,
@@ -230,6 +267,8 @@ def _row_to_listing(row: dict) -> Listing:
         created_at=str(row.get("created_at") or ""),
         seller_name=row.get("seller_name") or "Unknown",
         seller_id=str(row.get("seller_id") or ""),
+        split_box_group_id=str(row["split_box_group_id"]) if row.get("split_box_group_id") else None,
+        split_box_slot_id=str(row["split_box_slot_id"]) if row.get("split_box_slot_id") else None,
     )
 
 
@@ -272,7 +311,11 @@ def create_listing(
     amount = _parse_price_amount(data.price)
     condition_db = _CONDITION_MAP.get(data.condition, "sealed")
     trade_mode_db = _TRADE_MODE_MAP.get(data.trade_mode, "sell")
-    shipping_db = _SHIPPING_MAP.get(data.shipping or "", "711_store")
+    ui_methods = [m for m in (data.shipping_methods or []) if m]
+    if not ui_methods and data.shipping:
+        ui_methods = [data.shipping]
+    methods_db = [_SHIPPING_MAP.get(m, "711_store") for m in ui_methods] or ["711_store"]
+    shipping_db = methods_db[0]
 
     with conn.cursor() as cur:
         brand_id, series_id = _ensure_brand_and_series_ids(cur, data.brand, data.series)
@@ -280,7 +323,7 @@ def create_listing(
             """
             INSERT INTO listings
               (id, seller_id, brand_id, series_id, title, item_name, quantity, price_amount, price_currency,
-               description, condition, trade_mode, shipping_method,
+               description, condition, trade_mode, shipping_method, shipping_methods,
                allow_swap, allow_bargain, status,
                split_box_group_id, split_box_slot_id)
             VALUES
@@ -288,6 +331,7 @@ def create_listing(
                %s::listing_condition_enum,
                %s::trade_mode_enum,
                %s::shipping_method_enum,
+               %s::shipping_method_enum[],
                %s, %s, 'active',
                %s, %s)
             """,
@@ -305,6 +349,7 @@ def create_listing(
                 condition_db,
                 trade_mode_db,
                 shipping_db,
+                methods_db,
                 data.allow_swap,
                 data.allow_bargain,
                 split_box_group_id,

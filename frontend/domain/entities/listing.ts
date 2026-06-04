@@ -10,6 +10,7 @@ export type Listing = {
   condition: string;
   tradeMode: string;
   shipping: string;
+  shippingMethods?: string[];
   allowSwap: boolean;
   allowBargain: boolean;
   quantity: number; 
@@ -18,6 +19,8 @@ export type Listing = {
   createdAt: string;
   sellerId?: string;
   sellerName: string;
+  splitBoxGroupId?: string | null;
+  splitBoxSlotId?: string | null;
   isSeeded?: boolean;
 };
 

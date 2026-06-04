@@ -44,6 +44,7 @@ class Listing(BaseModel):
     condition: str
     trade_mode: str
     shipping: str
+    shipping_methods: list[str] = Field(default_factory=list)
     allow_swap: bool
     allow_bargain: bool
     quantity: int = 1
@@ -52,6 +53,8 @@ class Listing(BaseModel):
     created_at: str
     seller_name: str
     seller_id: str
+    split_box_group_id: str | None = None
+    split_box_slot_id: str | None = None
 
 
 class CreateListingInput(BaseModel):
@@ -64,6 +67,7 @@ class CreateListingInput(BaseModel):
     condition: str
     trade_mode: str
     shipping: str
+    shipping_methods: list[str] = Field(default_factory=list)
     allow_swap: bool
     allow_bargain: bool
     quantity: int = 1
@@ -228,6 +232,8 @@ class ChatContext(BaseModel):
     listing_title: str
     listing_id: str | None = None
     listing_image: str = ""
+    listing_trade_kind: str = "sell"
+    split_box_group_id: str | None = None
     status: str = "active"
     status_label: str = ""
     order_id: str | None = None
@@ -235,6 +241,7 @@ class ChatContext(BaseModel):
 
 class CreateOrderRequest(BaseModel):
     listing_id: str
+    shipping: str | None = None
 
 
 class UpdateOrderStatusRequest(BaseModel):

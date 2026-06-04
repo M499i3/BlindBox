@@ -7,7 +7,7 @@ import { cn } from '@/frontend/shared/utils/cn';
 
 /**
  * 卡片內容區固定高度（px）：
- * p-3(24) + badge h-6+mb-2(32) + title h-10(40) + gap h-2(8) + price h-6(24) + btn mt-2+h-11(52) = 180
+ * p-3(24) + badge h-6+mb-2(32) + title 2lh + gap h-2(8) + price h-6(24) + btn mt-2+h-11(52)
  */
 const BODY_HEIGHT = 'h-[11.25rem]';
 
@@ -28,6 +28,9 @@ type Props = {
   isInCart?: boolean;
   cartDisabled?: boolean;
   onAddToCart?: (e: React.MouseEvent) => void;
+  actionLabel?: string;
+  actionDisabled?: boolean;
+  onAction?: (e: React.MouseEvent) => void;
   className?: string;
   /** 橫向捲動列中的固定寬度卡片 */
   scrollItem?: boolean;
@@ -50,6 +53,9 @@ export default function ListingProductCard({
   isInCart = false,
   cartDisabled = false,
   onAddToCart,
+  actionLabel,
+  actionDisabled = false,
+  onAction,
   className,
   scrollItem = false,
 }: Props) {
@@ -102,8 +108,8 @@ export default function ListingProductCard({
         </div>
 
         {/* 3. 商品名稱：固定兩行高度，一行時保留第二行空白 */}
-        <div className="h-10 shrink-0 overflow-hidden">
-          <h3 className="line-clamp-2 text-sm font-semibold leading-5 text-on-surface">{title}</h3>
+        <div className="shrink-0 overflow-hidden">
+          <h3 className="card-title-2 text-sm font-semibold leading-5 text-on-surface">{title}</h3>
         </div>
 
         {/* 固定間距，取代 flex-1 避免高度飄移 */}
@@ -116,7 +122,17 @@ export default function ListingProductCard({
 
         {/* 5. 按鈕區：無購物車時以 placeholder 維持高度 */}
         <div className="mt-2 flex h-11 shrink-0 items-center">
-          {showCart && onAddToCart ? (
+          {actionLabel && onAction ? (
+            <button
+              type="button"
+              data-no-scroll-top="true"
+              onClick={onAction}
+              disabled={actionDisabled}
+              className="h-11 w-full rounded-full border-2 border-outline bg-white px-3 text-xs font-extrabold text-on-background shadow-[3px_3px_0_#111] transition-transform hover:bg-secondary/10 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-60"
+            >
+              {actionLabel}
+            </button>
+          ) : showCart && onAddToCart ? (
             <button
               type="button"
               data-no-scroll-top="true"
