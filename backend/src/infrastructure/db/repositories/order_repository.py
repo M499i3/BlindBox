@@ -8,8 +8,7 @@ import psycopg2.extensions
 from domain.entities import OrderSummary
 
 _STATUS_LABELS: dict[str, str] = {
-    "pending_payment": "待付款",
-    "paid": "待出貨",
+    "pending": "待出貨",
     "shipped": "已寄出",
     "delivered": "已送達",
     "completed": "已完成",
@@ -129,7 +128,7 @@ def create_order(
                 amount, currency, shipping_method, created_at, updated_at
             )
             VALUES (
-                %s, %s, %s, %s, 'pending_payment',
+                %s, %s, %s, %s, 'pending',
                 %s, %s, %s::shipping_method_enum, %s, %s
             )
             RETURNING id, listing_id, buyer_id, seller_id, status

@@ -230,8 +230,9 @@ CREATE INDEX idx_cart_items_user ON cart_items(user_id);
 -- ============================================================
 
 CREATE TYPE order_status_enum AS ENUM (
-    'pending_payment',  -- 待付款
-    'paid',
+    'pending',          -- 待出貨
+    'pending_payment',  -- legacy
+    'paid',             -- legacy
     'shipped',          -- 已寄出
     'delivered',
     'completed',        -- 已完成，開放雙向評價
@@ -244,7 +245,7 @@ CREATE TABLE orders (
     listing_id      UUID NOT NULL REFERENCES listings(id) ON DELETE RESTRICT,
     buyer_id        UUID NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
     seller_id       UUID NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
-    status          order_status_enum NOT NULL DEFAULT 'pending_payment',
+    status          order_status_enum NOT NULL DEFAULT 'pending',
     -- 快照下單時的價格，與 listing 無關聯
     amount          INT NOT NULL,
     currency        CHAR(3) NOT NULL,

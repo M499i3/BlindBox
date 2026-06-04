@@ -303,7 +303,7 @@ def seed_orders(
                 shipping,
                 created,
                 created,
-                created if status != "pending_payment" else None,
+                created if status != "pending" else None,
                 created if status in ("shipped", "completed") else None,
                 created if status == "completed" else None,
             ),

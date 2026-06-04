@@ -142,14 +142,14 @@ def build_order_specs(
     if len(sell_rows) < 2:
         return []
     statuses = (
-        "pending_payment",
-        "paid",
+        "pending",
+        "pending",
         "shipped",
         "completed",
         "completed",
-        "paid",
+        "pending",
         "shipped",
-        "pending_payment",
+        "pending",
     )
     buyers = [u[0] for u in DEMO_USERS]
     orders: list[tuple[str, str, str, str]] = []
@@ -170,7 +170,7 @@ def build_cart_specs(
     """(buyer_email, seller_email, listing_external_id)."""
     out: list[tuple[str, str, str]] = []
     for buyer, seller, ext_id, status in order_specs[:3]:
-        if status in ("pending_payment", "paid"):
+        if status == "pending":
             out.append((buyer, seller, ext_id))
     return out
 
@@ -188,7 +188,7 @@ def build_chat_specs(
             p2 = participants[(i + 2) % len(participants)]
         if p2 == seller_email:
             p2 = participants[(i + 3) % len(participants)]
-        status = "swapping" if i == 0 else "pending_payment"
+        status = "swapping" if i == 0 else "active"
         chats.append((p1, p2, seller_email, ext_id, status))
     return chats
 

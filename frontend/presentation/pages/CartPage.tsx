@@ -15,7 +15,7 @@ const CART_TABS: { key: ListingTradeKind; label: string }[] = [
 ];
 
 const TAB_HINTS: Record<ListingTradeKind, string> = {
-  sell: '勾選商品後可一次結帳購買。',
+  sell: '勾選商品後可一次下單。',
   split: '點擊貼文前往認領申請，完成拆盒團流程。',
   swap: '點擊貼文填寫交換申請表單。',
 };
@@ -172,7 +172,7 @@ export default function CartPage() {
     setSelectedIds((prev) => prev.filter((id) => sellIdSet.has(id)));
   }, [sellItems]);
 
-  const handleCheckout = () => {
+  const handlePlaceOrder = () => {
     if (selectedSellItems.length === 0) return;
     navigate(`/checkout?ids=${selectedSellItems.map((i) => i.id).join(',')}`);
   };
@@ -298,10 +298,10 @@ export default function CartPage() {
                 <button
                   type="button"
                   disabled={selectedSellItems.length === 0}
-                  onClick={handleCheckout}
+                  onClick={handlePlaceOrder}
                   className="w-full py-3 rounded-full border-2 border-outline bg-primary text-on-primary font-bold text-sm shadow-none disabled:opacity-60"
                 >
-                  前往結帳
+                  下單
                   {selectedSellItems.length > 0 ? `（${selectedSellItems.length} 件）` : ''}
                 </button>
               </section>

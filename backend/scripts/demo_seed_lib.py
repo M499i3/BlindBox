@@ -48,17 +48,17 @@ LISTING_SPECS: list[tuple[str, str, str, str, bool, int]] = [
 
 ORDER_STATUS_SPECS: list[tuple[str, str, str, str]] = [
     # buyer_email, seller_email, listing_external_id (seller's), status
-    ("user2@test.com", "user1@test.com", "2084", "pending_payment"),
+    ("user2@test.com", "user1@test.com", "2084", "pending"),
     ("user2@test.com", "user1@test.com", "2085", "shipped"),
     ("user2@test.com", "user3@test.com", "2067", "completed"),
-    ("user3@test.com", "user2@test.com", "2090", "paid"),
+    ("user3@test.com", "user2@test.com", "2090", "pending"),
     ("user1@test.com", "user2@test.com", "1961", "completed"),
 ]
 
 CHAT_SPECS: list[tuple[str, str, str, str]] = [
     # participant emails (sorted), listing seller + external_id, chat status
     ("user1@test.com", "user2@test.com", "user1@test.com", "2086", "swapping"),
-    ("user1@test.com", "user3@test.com", "user3@test.com", "2072", "pending_payment"),
+    ("user1@test.com", "user3@test.com", "user3@test.com", "2072", "pending"),
 ]
 
 # (chat_index 0|1, sender_email, content) — chat_index matches CHAT_SPECS order
@@ -106,8 +106,7 @@ COLLECTION_SPECS: list[tuple[str, str, str]] = [
 ]
 
 ORDER_STATUS_UI: dict[str, str] = {
-    "pending_payment": "待付款",
-    "paid": "待出貨",
+    "pending": "待出貨",
     "shipped": "已寄出",
     "delivered": "已送達",
     "completed": "已完成",

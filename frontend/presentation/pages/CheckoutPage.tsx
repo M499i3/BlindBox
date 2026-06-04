@@ -97,7 +97,7 @@ export default function CheckoutPage() {
   const handleConfirm = async () => {
     if (!items.length || submitting) return;
     if (mock && items.some((item) => isSeededListingId(item.id))) {
-      alert('示範商品無法結帳，請改用市集上的真實貼文');
+      alert('示範商品無法下單，請改用市集上的真實貼文');
       return;
     }
     setSubmitting(true);
@@ -116,7 +116,7 @@ export default function CheckoutPage() {
       }
     } catch (e) {
       console.error(e);
-      alert(e instanceof Error ? e.message : '結帳失敗，請稍後再試');
+      alert(e instanceof Error ? e.message : '下單失敗，請稍後再試');
     } finally {
       setSubmitting(false);
     }
@@ -125,9 +125,9 @@ export default function CheckoutPage() {
   if (!listingIds.length) {
     return (
       <div className="pb-28">
-        <TopBar showBack title="確認訂單" />
+        <TopBar showBack title="確認下單" />
         <main className="px-5 pt-topbar-content text-center">
-          <p className="text-sm text-on-surface-variant py-16">沒有可結帳的商品</p>
+          <p className="text-sm text-on-surface-variant py-16">沒有可下單的商品</p>
           <button
             type="button"
             onClick={() => navigate('/cart')}
@@ -142,7 +142,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="animate-in fade-in pb-32 duration-500">
-      <TopBar showBack title="確認訂單" />
+      <TopBar showBack title="確認下單" />
       <main className="space-y-5 px-5 pt-topbar-content">
         {loading && <p className="text-sm text-on-surface-variant">載入訂單資料…</p>}
         {!loading && items.length === 0 && (
@@ -227,7 +227,7 @@ export default function CheckoutPage() {
               <span className="text-lg font-black text-primary">NT$ {total.toLocaleString()}</span>
             </div>
             <p className="mt-2 text-xs text-on-surface-variant">
-              確認後將建立訂單，並可於購買紀錄或聊天室追蹤進度。
+              確認後將成立訂單（待出貨），付款請與賣家另行約定；可於購買紀錄或聊天室追蹤進度。
             </p>
           </section>
         )}
@@ -239,7 +239,7 @@ export default function CheckoutPage() {
             onClick={() => void handleConfirm()}
             className="w-full rounded-full premium-gradient py-4 text-sm font-bold text-white disabled:opacity-60"
           >
-            {submitting ? '處理中…' : '確認結帳'}
+            {submitting ? '處理中…' : '確認下單'}
           </button>
         )}
       </main>

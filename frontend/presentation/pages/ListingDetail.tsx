@@ -556,7 +556,7 @@ export default function ListingDetail() {
                 onClick={handleBuyNow}
                 className="w-full rounded-full premium-gradient py-4 text-sm font-bold text-white"
               >
-                立即購買
+                下單
               </button>
               <button
                 type="button"

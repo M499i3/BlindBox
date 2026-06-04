@@ -16,8 +16,7 @@ _CHAT_STATUS_LABELS: dict[str, str] = {
 }
 
 _ORDER_TO_CHAT_STATUS: dict[str, str] = {
-    "pending_payment": "pending_payment",
-    "paid": "active",
+    "pending": "active",
     "shipped": "active",
     "delivered": "active",
     "completed": "completed",
@@ -26,8 +25,7 @@ _ORDER_TO_CHAT_STATUS: dict[str, str] = {
 }
 
 _ORDER_SYSTEM_MESSAGES: dict[str, str] = {
-    "pending_payment": "訂單已建立，待付款",
-    "paid": "買家已付款",
+    "pending": "訂單已成立，待出貨",
     "shipped": "賣家已出貨",
     "delivered": "商品已送達",
     "completed": "交易已完成",

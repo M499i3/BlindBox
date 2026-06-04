@@ -17,11 +17,13 @@ from infrastructure.db.repositories.order_repository import (
 )
 
 _BUYER_TRANSITIONS: dict[str, set[str]] = {
-    "pending_payment": {"paid", "cancelled"},
+    "pending": {"cancelled"},
+    "shipped": {"completed"},
+    "delivered": {"completed"},
 }
 
 _SELLER_TRANSITIONS: dict[str, set[str]] = {
-    "paid": {"shipped", "cancelled"},
+    "pending": {"shipped", "cancelled"},
     "shipped": {"delivered", "completed"},
     "delivered": {"completed"},
 }

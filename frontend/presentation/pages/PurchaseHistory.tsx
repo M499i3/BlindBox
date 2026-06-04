@@ -3,13 +3,17 @@ import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import UserAvatar from '@/frontend/presentation/components/UserAvatar';
-import { getMyOrders, type OrderSummary } from '@/frontend/infrastructure/api/ordersApi';
+import {
+  getMyOrders,
+  updateOrderStatus,
+  type OrderSummary,
+} from '@/frontend/infrastructure/api/ordersApi';
 
-type FilterTab = 'all' | 'pending_payment' | 'shipped' | 'completed';
+type FilterTab = 'all' | 'pending' | 'shipped' | 'completed';
 
 const TABS: { key: FilterTab; label: string }[] = [
   { key: 'all', label: '全部' },
-  { key: 'pending_payment', label: '待付款' },
+  { key: 'pending', label: '待出貨' },
   { key: 'shipped', label: '已寄出' },
   { key: 'completed', label: '已完成' },
 ];
@@ -30,10 +34,18 @@ function formatDate(iso: string): string {
 }
 
 function statusColor(status: string): string {
-  if (status === 'pending_payment') return 'text-primary';
-  if (status === 'shipped') return 'text-blue-500';
+  if (status === 'pending') return 'text-primary';
+  if (status === 'shipped' || status === 'delivered') return 'text-blue-500';
   if (status === 'completed') return 'text-emerald-600';
   return 'text-on-surface-variant';
+}
+
+function matchesShippedTab(status: string): boolean {
+  return status === 'shipped' || status === 'delivered';
+}
+
+function canBuyerComplete(status: string): boolean {
+  return matchesShippedTab(status);
 }
 
 export default function PurchaseHistory() {
@@ -41,6 +53,7 @@ export default function PurchaseHistory() {
   const [orders, setOrders] = useState<OrderSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<FilterTab>('all');
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   useEffect(() => {
     getMyOrders('buyer')
@@ -51,8 +64,34 @@ export default function PurchaseHistory() {
 
   const filteredOrders = useMemo(() => {
     if (activeTab === 'all') return orders;
+    if (activeTab === 'pending') {
+      return orders.filter((o) => o.status === 'pending');
+    }
+    if (activeTab === 'shipped') {
+      return orders.filter((o) => matchesShippedTab(o.status));
+    }
     return orders.filter((o) => o.status === activeTab);
   }, [orders, activeTab]);
+
+  const handleCompleteOrder = async (orderId: string) => {
+    if (updatingId) return;
+    setUpdatingId(orderId);
+    try {
+      const updated = await updateOrderStatus(orderId, 'completed');
+      setOrders((prev) =>
+        prev.map((o) =>
+          o.id === orderId
+            ? { ...o, status: updated.status, statusLabel: updated.statusLabel }
+            : o
+        )
+      );
+    } catch (e) {
+      console.error(e);
+      alert(e instanceof Error ? e.message : '更新失敗，請稍後再試');
+    } finally {
+      setUpdatingId(null);
+    }
+  };
 
   return (
     <div className="animate-in fade-in duration-500 bg-background min-h-screen pb-28">
@@ -124,18 +163,30 @@ export default function PurchaseHistory() {
                   {order.statusLabel}
                 </span>
               </div>
-              <div className="flex items-center justify-between pt-4 border-t border-black/[0.06]">
-                <div className="flex flex-col">
+              <div className="flex items-center justify-between gap-3 pt-4 border-t border-black/[0.06]">
+                <div className="flex flex-col min-w-0">
                   <span className="text-[10px] text-on-surface-variant uppercase font-bold tracking-widest">總計金額</span>
                   <span className="text-primary font-bold text-lg">{order.total}</span>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => navigate(`/listing/${order.listingId}`)}
-                  className="doodle-press px-6 py-2 rounded-full premium-gradient text-white text-xs font-bold transition-all"
-                >
-                  查看詳情
-                </button>
+                <div className="flex flex-wrap items-center justify-end gap-2 shrink-0">
+                  {activeTab === 'shipped' && canBuyerComplete(order.status) ? (
+                    <button
+                      type="button"
+                      disabled={updatingId === order.id}
+                      onClick={() => void handleCompleteOrder(order.id)}
+                      className="px-4 py-2 rounded-full border-2 border-black bg-black text-white text-xs font-bold disabled:opacity-50"
+                    >
+                      {updatingId === order.id ? '處理中…' : '完成訂單'}
+                    </button>
+                  ) : null}
+                  <button
+                    type="button"
+                    onClick={() => navigate(`/listing/${order.listingId}`)}
+                    className="doodle-press px-4 py-2 rounded-full premium-gradient text-white text-xs font-bold transition-all"
+                  >
+                    查看詳情
+                  </button>
+                </div>
               </div>
             </motion.div>
           ))}
