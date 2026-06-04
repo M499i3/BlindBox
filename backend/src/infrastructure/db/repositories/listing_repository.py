@@ -3,8 +3,9 @@ from __future__ import annotations
 import uuid
 
 import psycopg2.extensions
+from psycopg2.extras import execute_values
 
-from domain.entities import CreateListingInput, Listing
+from domain.entities import CreateListingInput, Listing, SplitBoxSlotInput
 from infrastructure.db.repositories.collection_repository import (
     _resolve_catalog_product_id,
 )
@@ -446,6 +447,119 @@ def create_listing(
     result = get_listing_by_id(conn, listing_id)
     assert result is not None
     return result
+
+
+def _catalog_product_uuids_by_external(
+    cur, external_ids: list[str]
+) -> dict[str, str | None]:
+    """external_id 或 catalog UUID 字串 → catalog_products.id (UUID)。"""
+    keys = list({e.strip() for e in external_ids if e and e.strip()})
+    if not keys:
+        return {}
+    cur.execute(
+        """
+        SELECT id, external_id
+        FROM catalog_products
+        WHERE external_id = ANY(%s) OR id::text = ANY(%s)
+        """,
+        (keys, keys),
+    )
+    by_key: dict[str, str] = {}
+    for row in cur.fetchall():
+        uuid_id = str(row["id"])
+        ext = row.get("external_id")
+        if ext:
+            by_key[str(ext)] = uuid_id
+        by_key[uuid_id] = uuid_id
+    return {key: by_key.get(key) for key in keys}
+
+
+def insert_split_box_slot_listings(
+    cur,
+    organizer_id: str,
+    group_id: str,
+    brand_id: str | None,
+    ip_id: str | None,
+    series_id: str | None,
+    *,
+    group_title: str,
+    description: str,
+    shipping_db: str,
+    methods_db: list[str],
+    entries: list[tuple[str, str, SplitBoxSlotInput, int]],
+) -> None:
+    """為拆盒團可認領款式批次建立 listing（不 commit、不 reload）。"""
+    if not entries:
+        return
+
+    catalog_ids = _catalog_product_uuids_by_external(
+        cur, [slot.catalog_product_id for _, _, slot, _ in entries]
+    )
+
+    desc_base = description or ""
+    listing_rows: list[tuple] = []
+    image_rows: list[tuple] = []
+
+    for listing_id, slot_id, slot, slot_amount in entries:
+        catalog_product_id = catalog_ids.get(slot.catalog_product_id)
+        listing_rows.append(
+            (
+                listing_id,
+                organizer_id,
+                catalog_product_id,
+                brand_id,
+                ip_id,
+                series_id,
+                f"{group_title} · {slot.product_title}",
+                slot.product_title,
+                1,
+                slot_amount,
+                "TWD",
+                desc_base or f"拆盒團認領：{group_title}",
+                "sealed",
+                "group_buy",
+                shipping_db,
+                methods_db,
+                False,
+                False,
+                group_id,
+                slot_id,
+            )
+        )
+        image_url = (slot.product_image or "").strip()
+        if image_url:
+            image_rows.append((listing_id, image_url, 0))
+
+    execute_values(
+        cur,
+        """
+        INSERT INTO listings
+          (id, seller_id, catalog_product_id, brand_id, ip_id, series_id, title, item_name, quantity, price_amount, price_currency,
+           description, condition, trade_mode, shipping_method, shipping_methods,
+           allow_swap, allow_bargain, status,
+           split_box_group_id, split_box_slot_id)
+        VALUES %s
+        """,
+        listing_rows,
+        template=(
+            "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,"
+            " %s::listing_condition_enum, %s::trade_mode_enum,"
+            " %s::shipping_method_enum, %s::shipping_method_enum[],"
+            " %s, %s, 'active', %s, %s)"
+        ),
+        page_size=200,
+    )
+    if image_rows:
+        execute_values(
+            cur,
+            """
+            INSERT INTO listing_images (listing_id, url, sort_order)
+            VALUES %s
+            """,
+            image_rows,
+            template="(%s, %s, %s)",
+            page_size=200,
+        )
 
 
 def _listing_owned_by_seller(

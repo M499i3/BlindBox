@@ -115,10 +115,10 @@ function createPayload(input: CreateSplitBoxInput) {
     closes_at: input.closesAt,
     slots: input.slots.map((s) => ({
       catalog_product_id: s.catalogProductId,
-      product_title: s.productTitle,
-      product_image: s.productImage,
+      ...(s.productTitle ? { product_title: s.productTitle } : {}),
+      ...(s.productImage ? { product_image: s.productImage } : {}),
       reserved_by_host: s.reservedByHost ?? false,
-      custom_price: s.customPrice,
+      ...(s.customPrice ? { custom_price: s.customPrice } : {}),
     })),
   };
 }

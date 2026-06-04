@@ -4,6 +4,7 @@ import uuid
 from datetime import datetime, timezone
 
 import psycopg2.extensions
+from psycopg2.extras import execute_values
 
 from domain.entities import (
     CreateSplitBoxInput,
@@ -16,9 +17,9 @@ from infrastructure.db.repositories.listing_repository import (
     _format_price,
     _parse_price_amount,
     _ensure_brand_ip_and_product_series_ids,
-    create_listing,
+    insert_split_box_slot_listings,
 )
-from domain.entities import CreateListingInput
+from domain.entities import SplitBoxSlotInput
 
 _GROUP_SUMMARY_SELECT = """
     SELECT
@@ -53,7 +54,7 @@ _SLOT_SELECT = """
         ss.group_id,
         ss.catalog_product_external_id,
         ss.product_title,
-        ss.product_image,
+        COALESCE(NULLIF(TRIM(ss.product_image), ''), cp.image_url, '') AS product_image,
         ss.listing_id,
         ss.reserved_by_host,
         ss.claimed_by_user_id,
@@ -63,6 +64,10 @@ _SLOT_SELECT = """
         ss.status
     FROM split_box_slots ss
     LEFT JOIN users cu ON cu.id = ss.claimed_by_user_id
+    LEFT JOIN catalog_products cp ON (
+        cp.external_id = ss.catalog_product_external_id
+        OR cp.id::text = ss.catalog_product_external_id
+    )
 """
 
 
@@ -83,6 +88,99 @@ def _row_to_summary(row: dict) -> SplitBoxGroupSummary:
         price_per_slot=_format_price(row.get("price_per_slot_amount"), "TWD"),
         closes_at=str(row["closes_at"]) if row.get("closes_at") else None,
         created_at=str(row.get("created_at") or ""),
+    )
+
+
+def _hydrate_slot_inputs_from_catalog(
+    cur, slots: list[SplitBoxSlotInput]
+) -> None:
+    ext_ids = list({s.catalog_product_id for s in slots if s.catalog_product_id})
+    if not ext_ids:
+        return
+    cur.execute(
+        """
+        SELECT external_id, title, image_url
+        FROM catalog_products
+        WHERE external_id = ANY(%s) OR id::text = ANY(%s)
+        """,
+        (ext_ids, ext_ids),
+    )
+    by_ext: dict[str, dict] = {}
+    for r in cur.fetchall():
+        row = dict(r)
+        if row.get("external_id"):
+            by_ext[str(row["external_id"])] = row
+        by_ext[str(r.get("id") or "")] = row
+    for slot in slots:
+        row = by_ext.get(slot.catalog_product_id)
+        if not row:
+            if not slot.product_title:
+                slot.product_title = slot.catalog_product_id
+            continue
+        if not (slot.product_title or "").strip():
+            slot.product_title = (row.get("title") or "").strip() or slot.catalog_product_id
+        if not (slot.product_image or "").strip():
+            slot.product_image = (row.get("image_url") or "").strip() or None
+
+
+def _detail_after_create(
+    *,
+    group_id: str,
+    organizer_id: str,
+    organizer_name: str,
+    data: CreateSplitBoxInput,
+    cover_image: str,
+    shipping_ui: str,
+    total_amount: int,
+    default_slot_amount: int,
+    reserved_count: int,
+    slot_specs: list[tuple[str, str | None, SplitBoxSlotInput, int, str]],
+) -> SplitBoxGroupDetail:
+    """由寫入資料組出回應，避免建立後再查整包 detail。"""
+    slots: list[SplitBoxSlot] = []
+    available_count = 0
+    for slot_id, listing_id, slot, slot_amount, slot_status in slot_specs:
+        if slot_status == "available":
+            available_count += 1
+        slots.append(
+            SplitBoxSlot(
+                id=slot_id,
+                group_id=group_id,
+                catalog_product_id=slot.catalog_product_id,
+                product_title=slot.product_title,
+                product_image=slot.product_image or "",
+                listing_id=listing_id,
+                reserved_by_host=slot.reserved_by_host,
+                price=_format_price(slot_amount, "TWD"),
+                status=slot_status,
+            )
+        )
+
+    created_at = datetime.now(timezone.utc).isoformat()
+    return SplitBoxGroupDetail(
+        id=group_id,
+        title=data.title,
+        cover_image=cover_image,
+        brand=data.brand,
+        series=data.series,
+        status="open",
+        organizer_id=organizer_id,
+        organizer_name=organizer_name,
+        target_count=len(data.slots),
+        reserved_count=reserved_count,
+        claimed_count=0,
+        available_count=available_count,
+        price_per_slot=_format_price(default_slot_amount, "TWD"),
+        closes_at=data.closes_at,
+        created_at=created_at,
+        description=data.description or "",
+        shipping=shipping_ui,
+        shipping_note=data.shipping_note or "",
+        total_price=_format_price(total_amount, "TWD"),
+        shipped_at=None,
+        slots=slots,
+        is_organizer=True,
+        my_claimed_slot_ids=[],
     )
 
 
@@ -254,8 +352,46 @@ def create_split_box_group(
     if not non_reserved:
         raise ValueError("至少需要一個可認領的款式")
     default_slot_amount = total_amount // len(non_reserved) if non_reserved else 0
+    shipping_ui = data.shipping or "7-11 店到店"
+    methods_db = [_SHIPPING_MAP.get(shipping_ui, "711_store")]
+
+    reserved_count = len(data.slots) - len(non_reserved)
 
     with conn.cursor() as cur:
+        _hydrate_slot_inputs_from_catalog(cur, data.slots)
+
+        listing_entries: list[tuple[str, str, SplitBoxSlotInput, int]] = []
+        slot_rows: list[tuple] = []
+        slot_specs: list[tuple[str, str | None, SplitBoxSlotInput, int, str]] = []
+        cover_image = data.cover_image or (non_reserved[0].product_image if non_reserved else "")
+
+        for slot in data.slots:
+            slot_id = str(uuid.uuid4())
+            slot_amount = (
+                _parse_price_amount(slot.custom_price)
+                if slot.custom_price
+                else default_slot_amount
+            )
+            slot_status = "reserved" if slot.reserved_by_host else "available"
+            listing_id: str | None = None
+            if not slot.reserved_by_host:
+                listing_id = str(uuid.uuid4())
+                listing_entries.append((listing_id, slot_id, slot, slot_amount))
+
+            slot_rows.append(
+                (
+                    slot_id,
+                    group_id,
+                    slot.catalog_product_id,
+                    slot.product_title,
+                    slot.product_image or "",
+                    slot.reserved_by_host,
+                    slot_amount,
+                    slot_status,
+                )
+            )
+            slot_specs.append((slot_id, listing_id, slot, slot_amount, slot_status))
+
         brand_id, ip_id, series_id = _ensure_brand_ip_and_product_series_ids(
             cur, data.brand, data.ip or None, data.series
         )
@@ -278,103 +414,76 @@ def create_split_box_group(
                 series_id,
                 data.title,
                 data.description or "",
-                data.cover_image or (non_reserved[0].product_image if non_reserved else ""),
+                cover_image,
                 shipping_db,
                 data.shipping_note or "",
                 total_amount,
                 default_slot_amount,
                 len(data.slots),
-                len(data.slots) - len(non_reserved),
+                reserved_count,
                 data.closes_at,
             ),
         )
 
-        for slot in data.slots:
-            slot_id = str(uuid.uuid4())
-            slot_amount = (
-                _parse_price_amount(slot.custom_price)
-                if slot.custom_price
-                else default_slot_amount
-            )
-            slot_status = "reserved" if slot.reserved_by_host else "available"
-
-            cur.execute(
-                """
-                INSERT INTO split_box_slots
-                  (id, group_id, catalog_product_external_id, product_title, product_image,
-                   listing_id, reserved_by_host, price_amount, status)
-                VALUES (%s, %s, %s, %s, %s, NULL, %s, %s, %s)
-                """,
-                (
-                    slot_id,
-                    group_id,
-                    slot.catalog_product_id,
-                    slot.product_title,
-                    slot.product_image or "",
-                    slot.reserved_by_host,
-                    slot_amount,
-                    slot_status,
-                ),
-            )
-
-        conn.commit()
-
-    for slot in data.slots:
-        if slot.reserved_by_host:
-            continue
-        slot_amount = (
-            _parse_price_amount(slot.custom_price)
-            if slot.custom_price
-            else default_slot_amount
+        execute_values(
+            cur,
+            """
+            INSERT INTO split_box_slots
+              (id, group_id, catalog_product_external_id, product_title, product_image,
+               listing_id, reserved_by_host, price_amount, status)
+            VALUES %s
+            """,
+            slot_rows,
+            template="(%s, %s, %s, %s, %s, NULL, %s, %s, %s)",
+            page_size=200,
         )
-        with conn.cursor() as cur:
-            cur.execute(
-                """
-                SELECT id FROM split_box_slots
-                WHERE group_id = %s AND catalog_product_external_id = %s
-                LIMIT 1
-                """,
-                (group_id, slot.catalog_product_id),
-            )
-            slot_row = cur.fetchone()
-            if not slot_row:
-                continue
-            slot_id = str(slot_row["id"])
 
-        listing_input = CreateListingInput(
-            title=f"{data.title} · {slot.product_title}",
-            item_name=slot.product_title,
-            price=_format_price(slot_amount, "TWD"),
-            description=data.description or f"拆盒團認領：{data.title}",
-            brand=data.brand,
-            ip=data.ip,
-            series=data.series,
-            condition="全新未拆",
-            trade_mode="加入拆盒團",
-            shipping=data.shipping or "7-11 店到店",
-            allow_swap=False,
-            allow_bargain=False,
-            quantity=1,
-            image=slot.product_image,
-            images=[slot.product_image] if slot.product_image else [],
-        )
-        created = create_listing(
-            conn,
+        insert_split_box_slot_listings(
+            cur,
             organizer_id,
-            listing_input,
-            split_box_group_id=group_id,
-            split_box_slot_id=slot_id,
+            group_id,
+            brand_id,
+            ip_id,
+            series_id,
+            group_title=data.title,
+            description=data.description or "",
+            shipping_db=shipping_db,
+            methods_db=methods_db,
+            entries=listing_entries,
         )
-        with conn.cursor() as cur:
-            cur.execute(
-                "UPDATE split_box_slots SET listing_id = %s WHERE id = %s",
-                (created.id, slot_id),
+        if listing_entries:
+            execute_values(
+                cur,
+                """
+                UPDATE split_box_slots AS ss
+                SET listing_id = v.listing_id::uuid
+                FROM (VALUES %s) AS v(listing_id, slot_id)
+                WHERE ss.id = v.slot_id::uuid
+                """,
+                [(listing_id, slot_id) for listing_id, slot_id, _, _ in listing_entries],
+                template="(%s, %s)",
+                page_size=200,
             )
-            conn.commit()
 
-    detail = get_split_box_group_detail(conn, group_id, organizer_id)
-    assert detail is not None
-    return detail
+        cur.execute(
+            "SELECT display_name FROM users WHERE id = %s",
+            (organizer_id,),
+        )
+        user_row = cur.fetchone()
+        organizer_name = (user_row or {}).get("display_name") or ""
+
+    return _detail_after_create(
+        group_id=group_id,
+        organizer_id=organizer_id,
+        organizer_name=organizer_name,
+        data=data,
+        cover_image=cover_image,
+        shipping_ui=shipping_ui,
+        total_amount=total_amount,
+        default_slot_amount=default_slot_amount,
+        reserved_count=reserved_count,
+        slot_specs=slot_specs,
+    )
 
 
 def claim_split_box_slot(

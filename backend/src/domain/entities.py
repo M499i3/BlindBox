@@ -264,7 +264,7 @@ class OrderCreated(BaseModel):
 
 class SplitBoxSlotInput(BaseModel):
     catalog_product_id: str
-    product_title: str
+    product_title: str = ""
     product_image: str | None = None
     reserved_by_host: bool = False
     custom_price: str | None = None

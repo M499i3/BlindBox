@@ -176,8 +176,6 @@ export default function CreateSplitBox({ embedded = false, onBack }: Props) {
         closesAt: closesAt ? new Date(closesAt).toISOString() : undefined,
         slots: styles.map((s) => ({
           catalogProductId: s.id,
-          productTitle: s.name,
-          productImage: s.image,
           reservedByHost: reservedIds.has(s.id),
         })),
       });
@@ -290,16 +288,40 @@ export default function CreateSplitBox({ embedded = false, onBack }: Props) {
                   onClick={() => toggleReserved(s.id)}
                   className={cn(
                     'overflow-hidden rounded-2xl border-2 text-left shadow-[2px_2px_0_#111] transition-colors',
-                    reserved ? 'border-primary bg-primary/5' : 'border-outline bg-white'
+                    reserved
+                      ? 'border-primary bg-neutral-300'
+                      : 'border-outline bg-white'
                   )}
                 >
-                  <div className="aspect-square bg-neutral-100">
+                  <div
+                    className={cn(
+                      'aspect-square',
+                      reserved ? 'bg-neutral-400/60' : 'bg-neutral-100'
+                    )}
+                  >
                     {s.image ? (
-                      <img src={s.image} alt="" className="h-full w-full object-contain p-2" referrerPolicy="no-referrer" />
+                      <img
+                        src={s.image}
+                        alt=""
+                        className={cn(
+                          'h-full w-full object-contain p-2',
+                          reserved && 'opacity-85'
+                        )}
+                        referrerPolicy="no-referrer"
+                      />
                     ) : null}
                   </div>
                   <p className="card-title-2 p-2 text-[10px] font-bold leading-snug">{s.name}</p>
-                  <p className="px-2 pb-2 text-[9px] font-bold text-primary">{reserved ? '自留' : '開放認領'}</p>
+                  <p
+                    className={cn(
+                      'px-2 pb-2 text-[9px] font-bold',
+                      reserved
+                        ? 'mx-2 mb-2 rounded-md bg-primary py-1 text-center text-on-primary'
+                        : 'text-on-surface-variant'
+                    )}
+                  >
+                    {reserved ? '自留' : '開放認領'}
+                  </p>
                 </button>
               );
             })}

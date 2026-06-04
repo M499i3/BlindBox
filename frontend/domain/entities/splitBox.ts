@@ -1,6 +1,6 @@
 export type SplitBoxSlotInput = {
   catalogProductId: string;
-  productTitle: string;
+  productTitle?: string;
   productImage?: string;
   reservedByHost?: boolean;
   customPrice?: string;
