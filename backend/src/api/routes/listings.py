@@ -7,10 +7,12 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from api.dependencies import get_current_user_id, get_db
 from application.listing_service import (
+    edit_listing,
     get_listing,
     list_active_listings,
     list_my_listings,
     new_listing,
+    remove_listing,
 )
 from domain.entities import CreateListingInput, Listing
 
@@ -50,3 +52,30 @@ def create_listing(
     conn: psycopg2.extensions.connection = Depends(get_db),
 ) -> Listing:
     return new_listing(conn, user_id, data)
+
+
+@router.patch("/{listing_id}", response_model=Listing)
+def update_listing_by_id(
+    listing_id: str,
+    data: CreateListingInput,
+    user_id: Annotated[str, Depends(get_current_user_id)],
+    conn: psycopg2.extensions.connection = Depends(get_db),
+) -> Listing:
+    listing = edit_listing(conn, listing_id, user_id, data)
+    if not listing:
+        raise HTTPException(status_code=404, detail="找不到貼文或無權限編輯")
+    return listing
+
+
+@router.delete("/{listing_id}", status_code=204)
+def delete_listing_by_id(
+    listing_id: str,
+    user_id: Annotated[str, Depends(get_current_user_id)],
+    conn: psycopg2.extensions.connection = Depends(get_db),
+) -> None:
+    try:
+        remove_listing(conn, listing_id, user_id)
+    except LookupError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc

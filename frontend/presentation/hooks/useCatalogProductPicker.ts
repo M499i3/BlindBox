@@ -33,11 +33,24 @@ export type CatalogProductPickerOptions = {
   initial?: Partial<CatalogProductPickerValue>;
 };
 
+function hasPickerInitial(initial?: Partial<CatalogProductPickerValue>): boolean {
+  if (!initial) return false;
+  return Boolean(
+    initial.brand?.trim() ||
+      initial.catalogProductId?.trim() ||
+      initial.productLine?.trim() ||
+      initial.itemName?.trim()
+  );
+}
+
 export function useCatalogProductPicker(options?: CatalogProductPickerOptions) {
   const initial = options?.initial;
-  const skipAutoBrand = useRef(Boolean(initial?.brandSlug));
-  const pendingHydrate = useRef(initial?.brandSlug ? { ...initial } : null);
+  const restoreMode = useRef(hasPickerInitial(initial));
+  const pendingHydrate = useRef<Partial<CatalogProductPickerValue> | null>(
+    restoreMode.current && initial ? { ...initial } : null
+  );
   const skipStyleReset = useRef(false);
+  const skipProductLineDefault = useRef(false);
 
   const [catalogProductId, setCatalogProductId] = useState(initial?.catalogProductId ?? '');
   const [itemName, setItemName] = useState(initial?.itemName ?? '');
@@ -51,23 +64,57 @@ export function useCatalogProductPicker(options?: CatalogProductPickerOptions) {
   const [brandProducts, setBrandProducts] = useState<CatalogProduct[]>([]);
   const [productsLoading, setProductsLoading] = useState(false);
 
+  const applyHydrate = (hydrate: Partial<CatalogProductPickerValue>, ips: IpRow[]) => {
+    skipStyleReset.current = true;
+    skipProductLineDefault.current = true;
+    if (hydrate.brand) setBrand(hydrate.brand);
+    if (hydrate.ip) {
+      const ipRow = ips.find((row) => row.name === hydrate.ip || row.slug === hydrate.ipSlug);
+      setIp(ipRow?.name ?? hydrate.ip);
+      setIpSlug(ipRow?.slug ?? hydrate.ipSlug ?? '');
+    }
+    if (hydrate.productLine) setProductLine(hydrate.productLine);
+    if (hydrate.catalogProductId) setCatalogProductId(hydrate.catalogProductId);
+    if (hydrate.itemName) setItemName(hydrate.itemName);
+  };
+
   useEffect(() => {
     fetchCached(CATALOG_BRANDS_KEY, getCatalogBrands)
       .then((rows) => {
         if (!rows.length) return;
         setBrandOptions(rows);
-        if (skipAutoBrand.current) return;
-        const first = rows[0];
-        const slug = first.slug ?? first.name.toLowerCase().replace(/\s+/g, '-');
-        setBrand(first.name);
-        setBrandSlug(slug);
+        if (!restoreMode.current) {
+          const first = rows[0];
+          const slug = first.slug ?? first.name.toLowerCase().replace(/\s+/g, '-');
+          setBrand(first.name);
+          setBrandSlug(slug);
+          return;
+        }
+        const seed = pendingHydrate.current ?? initial ?? {};
+        const match = rows.find((r) => r.name === seed.brand);
+        if (match) {
+          const slug = match.slug ?? match.name.toLowerCase().replace(/\s+/g, '-');
+          setBrand(match.name);
+          setBrandSlug(slug);
+          if (pendingHydrate.current) {
+            pendingHydrate.current = { ...pendingHydrate.current, brand: match.name, brandSlug: slug };
+          }
+          return;
+        }
+        if (seed.brand) {
+          setBrand(seed.brand);
+        }
+        if (seed.brandSlug) {
+          setBrandSlug(seed.brandSlug);
+        }
       })
       .catch(() => {
         const fallback = [{ name: 'Pop Mart', slug: 'pop-mart', image: '' }];
         setBrandOptions(fallback);
-        if (skipAutoBrand.current) return;
-        setBrand(fallback[0].name);
-        setBrandSlug(fallback[0].slug);
+        if (!restoreMode.current) {
+          setBrand(fallback[0].name);
+          setBrandSlug(fallback[0].slug);
+        }
       });
   }, []);
 
@@ -84,16 +131,13 @@ export function useCatalogProductPicker(options?: CatalogProductPickerOptions) {
         setIpOptions(ips);
         setBrandProducts(products);
         const hydrate = pendingHydrate.current;
-        if (hydrate?.brandSlug === brandSlug) {
+        if (hydrate && (hydrate.brandSlug === brandSlug || !hydrate.brandSlug)) {
           pendingHydrate.current = null;
-          skipStyleReset.current = true;
-          if (hydrate.ip) setIp(hydrate.ip);
-          if (hydrate.ipSlug) setIpSlug(hydrate.ipSlug);
-          if (hydrate.productLine) setProductLine(hydrate.productLine);
-          if (hydrate.catalogProductId) setCatalogProductId(hydrate.catalogProductId);
-          if (hydrate.itemName) setItemName(hydrate.itemName);
+          const merged = { ...hydrate, brandSlug };
+          applyHydrate(merged, ips);
           return;
         }
+        if (restoreMode.current) return;
         const first = ips[0];
         setIp(first?.name ?? '');
         setIpSlug(first?.slug ?? '');
@@ -104,8 +148,10 @@ export function useCatalogProductPicker(options?: CatalogProductPickerOptions) {
       .catch(() => {
         setIpOptions([]);
         setBrandProducts([]);
-        setIp('');
-        setIpSlug('');
+        if (!restoreMode.current) {
+          setIp('');
+          setIpSlug('');
+        }
       })
       .finally(() => setProductsLoading(false));
   }, [brandSlug]);
@@ -126,6 +172,12 @@ export function useCatalogProductPicker(options?: CatalogProductPickerOptions) {
   }, [productsForIp, productLine]);
 
   useEffect(() => {
+    if (skipProductLineDefault.current) {
+      skipProductLineDefault.current = false;
+      if (productLine && productLineOptions.includes(productLine)) return;
+      if (!productLineOptions.length) setProductLine('');
+      return;
+    }
     if (!productLineOptions.length) {
       setProductLine('');
       return;
@@ -163,6 +215,11 @@ export function useCatalogProductPicker(options?: CatalogProductPickerOptions) {
     productLine,
   };
 
+  const clearRestore = () => {
+    restoreMode.current = false;
+    pendingHydrate.current = null;
+  };
+
   return {
     value,
     catalogProductId,
@@ -170,15 +227,27 @@ export function useCatalogProductPicker(options?: CatalogProductPickerOptions) {
     brand,
     setBrand,
     brandSlug,
-    setBrandSlug,
+    setBrandSlug: (slug: string) => {
+      clearRestore();
+      setBrandSlug(slug);
+    },
     brandOptions,
     ip,
-    setIp,
+    setIp: (name: string) => {
+      clearRestore();
+      setIp(name);
+    },
     ipSlug,
-    setIpSlug,
+    setIpSlug: (slug: string) => {
+      clearRestore();
+      setIpSlug(slug);
+    },
     ipOptions,
     productLine,
-    setProductLine,
+    setProductLine: (line: string) => {
+      clearRestore();
+      setProductLine(line);
+    },
     productLineOptions,
     styleOptions,
     productsLoading,

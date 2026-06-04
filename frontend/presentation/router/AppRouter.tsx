@@ -21,6 +21,7 @@ import SellingHistory from '@/frontend/presentation/pages/SellingHistory';
 import MyListings from '@/frontend/presentation/pages/MyListings';
 import NotificationsHub from '@/frontend/presentation/pages/NotificationsHub';
 import ListingDetail from '@/frontend/presentation/pages/ListingDetail';
+import EditListing from '@/frontend/presentation/pages/EditListing';
 import CartPage from '@/frontend/presentation/pages/CartPage';
 import CheckoutPage from '@/frontend/presentation/pages/CheckoutPage';
 import Login from '@/frontend/presentation/pages/Login';
@@ -68,6 +69,7 @@ export default function AppRouter() {
           <Route element={<ScrollLayout />}>
             <Route path="/catalog/:id" element={<CatalogProductDetail />} />
             <Route path="/listing/:id" element={<ListingDetail />} />
+            <Route path="/listing/:id/edit" element={<EditListing />} />
             <Route path="/split-box/:groupId/apply" element={<SplitBoxClaimApply />} />
             <Route path="/split-box/:id" element={<SplitBoxDetail />} />
             <Route path="/brand/:id" element={<BrandDetail />} />

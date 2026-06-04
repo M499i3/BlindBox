@@ -26,6 +26,7 @@ _LIST_SELECT = """
         l.allow_bargain,
         l.split_box_group_id,
         l.split_box_slot_id,
+        l.catalog_product_id,
         l.created_at,
         l.seller_id,
         u.display_name AS seller_name,
@@ -69,6 +70,7 @@ _MY_LISTINGS_SELECT = """
         l.allow_bargain,
         l.split_box_group_id,
         l.split_box_slot_id,
+        l.catalog_product_id,
         l.created_at,
         l.seller_id,
         u.display_name AS seller_name,
@@ -112,6 +114,7 @@ _LISTING_BY_ID = """
         l.allow_bargain,
         l.split_box_group_id,
         l.split_box_slot_id,
+        l.catalog_product_id,
         l.created_at,
         l.seller_id,
         u.display_name AS seller_name,
@@ -314,7 +317,9 @@ def _row_to_listing(row: dict) -> Listing:
         price=_format_price(row.get("price_amount"), row.get("price_currency")),
         description=row.get("description") or "",
         brand=row.get("brand_name") or "",
+        ip=row.get("ip_name") or "",
         series=row.get("series_name") or "",
+        catalog_product_id=str(row["catalog_product_id"]) if row.get("catalog_product_id") else None,
         condition=_CONDITION_UI.get(str(row.get("condition") or ""), str(row.get("condition") or "")),
         trade_mode=_TRADE_MODE_UI.get(str(row.get("trade_mode") or ""), str(row.get("trade_mode") or "")),
         shipping_methods=_shipping_labels_from_row(row),
@@ -441,3 +446,167 @@ def create_listing(
     result = get_listing_by_id(conn, listing_id)
     assert result is not None
     return result
+
+
+def _listing_owned_by_seller(
+    cur: psycopg2.extensions.cursor, listing_id: str, user_id: str
+) -> dict | None:
+    cur.execute(
+        """
+        SELECT id, seller_id, split_box_slot_id
+        FROM listings
+        WHERE id = %s AND deleted_at IS NULL
+        """,
+        (listing_id,),
+    )
+    row = cur.fetchone()
+    if not row:
+        return None
+    row = dict(row)
+    if str(row.get("seller_id") or "") != user_id:
+        return None
+    return row
+
+
+def update_listing(
+    conn: psycopg2.extensions.connection,
+    listing_id: str,
+    user_id: str,
+    data: CreateListingInput,
+) -> Listing | None:
+    amount = _parse_price_amount(data.price)
+    condition_db = _CONDITION_MAP.get(data.condition, "sealed")
+    trade_mode_db = _TRADE_MODE_MAP.get(data.trade_mode, "sell")
+    ui_methods = [m for m in (data.shipping_methods or []) if m]
+    if not ui_methods and data.shipping:
+        ui_methods = [data.shipping]
+    methods_db = [_SHIPPING_MAP.get(m, "711_store") for m in ui_methods] or ["711_store"]
+    shipping_db = methods_db[0]
+
+    with conn.cursor() as cur:
+        owned = _listing_owned_by_seller(cur, listing_id, user_id)
+        if not owned:
+            return None
+
+        is_split_slot = bool(owned.get("split_box_slot_id"))
+        if is_split_slot:
+            cur.execute(
+                """
+                UPDATE listings
+                SET title = %s,
+                    item_name = %s,
+                    description = %s,
+                    shipping_method = %s::shipping_method_enum,
+                    shipping_methods = %s::shipping_method_enum[],
+                    updated_at = now()
+                WHERE id = %s
+                """,
+                (
+                    data.title,
+                    data.item_name,
+                    data.description,
+                    shipping_db,
+                    methods_db,
+                    listing_id,
+                ),
+            )
+        else:
+            brand_id, ip_id, series_id = _ensure_brand_ip_and_product_series_ids(
+                cur, data.brand, data.ip or None, data.series
+            )
+            catalog_product_id = None
+            raw_catalog_id = (data.catalog_product_id or "").strip()
+            if raw_catalog_id:
+                catalog_product_id = _resolve_catalog_product_id(cur, raw_catalog_id)
+            cur.execute(
+                """
+                UPDATE listings
+                SET catalog_product_id = %s,
+                    brand_id = %s,
+                    ip_id = %s,
+                    series_id = %s,
+                    title = %s,
+                    item_name = %s,
+                    quantity = %s,
+                    price_amount = %s,
+                    price_currency = %s,
+                    description = %s,
+                    condition = %s::listing_condition_enum,
+                    trade_mode = %s::trade_mode_enum,
+                    shipping_method = %s::shipping_method_enum,
+                    shipping_methods = %s::shipping_method_enum[],
+                    allow_swap = %s,
+                    allow_bargain = %s,
+                    updated_at = now()
+                WHERE id = %s
+                """,
+                (
+                    catalog_product_id,
+                    brand_id,
+                    ip_id,
+                    series_id,
+                    data.title,
+                    data.item_name,
+                    data.quantity,
+                    amount,
+                    "TWD",
+                    data.description,
+                    condition_db,
+                    trade_mode_db,
+                    shipping_db,
+                    methods_db,
+                    data.allow_swap,
+                    data.allow_bargain,
+                    listing_id,
+                ),
+            )
+
+        cur.execute("DELETE FROM listing_images WHERE listing_id = %s", (listing_id,))
+        raw_images = [img.strip() for img in (data.images or []) if isinstance(img, str) and img.strip()]
+        if not raw_images and data.image and data.image.strip():
+            raw_images = [data.image.strip()]
+        for sort_order, image_url in enumerate(raw_images[:9]):
+            cur.execute(
+                """
+                INSERT INTO listing_images (listing_id, url, sort_order)
+                VALUES (%s, %s, %s)
+                """,
+                (listing_id, image_url, sort_order),
+            )
+        conn.commit()
+
+    return get_listing_by_id(conn, listing_id)
+
+
+def soft_delete_listing(
+    conn: psycopg2.extensions.connection, listing_id: str, user_id: str
+) -> bool:
+    with conn.cursor() as cur:
+        owned = _listing_owned_by_seller(cur, listing_id, user_id)
+        if not owned:
+            return False
+        cur.execute(
+            """
+            SELECT 1 FROM orders
+            WHERE listing_id = %s
+              AND status NOT IN ('completed', 'cancelled')
+              AND deleted_at IS NULL
+            LIMIT 1
+            """,
+            (listing_id,),
+        )
+        if cur.fetchone():
+            raise ValueError("此貼文有進行中的訂單，無法刪除")
+        cur.execute("DELETE FROM cart_items WHERE listing_id = %s", (listing_id,))
+        cur.execute(
+            """
+            UPDATE listings
+            SET deleted_at = now(),
+                status = 'removed'::listing_status_enum,
+                updated_at = now()
+            WHERE id = %s
+            """,
+            (listing_id,),
+        )
+        conn.commit()
+    return True

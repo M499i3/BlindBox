@@ -14,8 +14,10 @@ import {
 } from '@/frontend/infrastructure/api/cartApi';
 import {
   createListing as apiCreateListing,
+  deleteListing as apiDeleteListing,
   getListings,
   getMyListings,
+  updateListing as apiUpdateListing,
 } from '@/frontend/infrastructure/api/listingsApi';
 import { getMyOrders } from '@/frontend/infrastructure/api/ordersApi';
 import { invalidateCachesAfterListingPublish } from '@/frontend/shared/utils/cacheInvalidation';
@@ -54,6 +56,8 @@ type AppStateValue = {
   posts: Listing[];
   getPostById: (id: string) => Listing | undefined;
   createListing: (input: CreateListingInput) => Promise<string>;
+  updateListing: (id: string, input: CreateListingInput) => Promise<void>;
+  deleteListing: (id: string) => Promise<void>;
   cartItems: Listing[];
   cartIds: string[];
   addToCart: (listingId: string) => void | Promise<void>;
@@ -329,6 +333,52 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     [mock, displayName, loadUserData]
   );
 
+  const updateListing = useCallback(
+    async (id: string, input: CreateListingInput) => {
+      if (mock) {
+        const patch = (prev: Listing[]) =>
+          prev.map((l) =>
+            l.id === id
+              ? {
+                  ...l,
+                  ...input,
+                  sellerName: l.sellerName,
+                }
+              : l
+          );
+        setListings(patch);
+        setPosts(patch);
+        return;
+      }
+      const listing = await apiUpdateListing(id, input);
+      const merge = (prev: Listing[]) =>
+        prev.map((l) => (l.id === id ? listing : l));
+      setListings(merge);
+      setPosts(merge);
+      invalidateCachesAfterListingPublish();
+      void loadUserData();
+    },
+    [mock, loadUserData]
+  );
+
+  const deleteListing = useCallback(
+    async (id: string) => {
+      if (mock) {
+        setListings((prev) => prev.filter((l) => l.id !== id));
+        setPosts((prev) => prev.filter((l) => l.id !== id));
+        setCartIds((prev) => prev.filter((x) => x !== id));
+        return;
+      }
+      await apiDeleteListing(id);
+      setListings((prev) => prev.filter((l) => l.id !== id));
+      setPosts((prev) => prev.filter((l) => l.id !== id));
+      setCartItems((prev) => prev.filter((l) => l.id !== id));
+      invalidateCachesAfterListingPublish();
+      void loadUserData();
+    },
+    [mock, loadUserData]
+  );
+
   const addToCart = useCallback(
     async (listingId: string) => {
       if (mock) {
@@ -511,6 +561,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       posts: allPosts,
       getPostById,
       createListing,
+      updateListing,
+      deleteListing,
       cartItems: mock ? allPosts.filter((p) => resolvedCartIds.includes(p.id)) : cartItems,
       cartIds: resolvedCartIds,
       addToCart,
@@ -552,6 +604,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       allPosts,
       getPostById,
       createListing,
+      updateListing,
+      deleteListing,
       cartItems,
       resolvedCartIds,
       addToCart,

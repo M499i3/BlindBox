@@ -10,7 +10,9 @@ type ApiListing = {
   price: string;
   description: string;
   brand: string;
+  ip?: string;
   series: string;
+  catalog_product_id?: string | null;
   condition: string;
   trade_mode: string;
   shipping: string;
@@ -36,7 +38,9 @@ function toFrontend(l: ApiListing): Listing {
     price: l.price,
     description: l.description,
     brand: l.brand,
+    ip: l.ip ?? '',
     series: l.series,
+    catalogProductId: l.catalog_product_id ?? undefined,
     condition: l.condition,
     tradeMode: l.trade_mode,
     shipping: l.shipping,
@@ -105,4 +109,21 @@ export async function createListing(input: CreateListingInput): Promise<Listing>
     body: JSON.stringify(toApi(input)),
   });
   return toFrontend(item);
+}
+
+export async function updateListing(
+  id: string,
+  input: CreateListingInput
+): Promise<Listing> {
+  const item = await apiFetch<ApiListing>(`/api/listings/${encodeURIComponent(id)}`, {
+    method: 'PATCH',
+    body: JSON.stringify(toApi(input)),
+  });
+  return toFrontend(item);
+}
+
+export async function deleteListing(id: string): Promise<void> {
+  await apiFetch<void>(`/api/listings/${encodeURIComponent(id)}`, {
+    method: 'DELETE',
+  });
 }

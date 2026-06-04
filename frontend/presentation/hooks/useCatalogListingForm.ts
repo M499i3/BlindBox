@@ -1,15 +1,24 @@
 import { useState } from 'react';
 import { uploadImageToStorage } from '@/frontend/infrastructure/storage/supabaseStorage';
-import { useCatalogProductPicker } from '@/frontend/presentation/hooks/useCatalogProductPicker';
+import {
+  useCatalogProductPicker,
+  type CatalogProductPickerValue,
+} from '@/frontend/presentation/hooks/useCatalogProductPicker';
 
 export type { CatalogStyleOption } from '@/frontend/presentation/hooks/useCatalogProductPicker';
 
-export function useCatalogListingForm() {
-  const picker = useCatalogProductPicker();
-  const [images, setImages] = useState<string[]>([]);
+export type CatalogListingFormOptions = {
+  initialPicker?: Partial<CatalogProductPickerValue>;
+  initialTitle?: string;
+  initialImages?: string[];
+};
+
+export function useCatalogListingForm(options?: CatalogListingFormOptions) {
+  const picker = useCatalogProductPicker({ initial: options?.initialPicker });
+  const [images, setImages] = useState<string[]>(options?.initialImages ?? []);
   const [localImageFiles, setLocalImageFiles] = useState<(File | null)[]>([]);
   const [recommendedImage, setRecommendedImage] = useState('');
-  const [title, setTitle] = useState('');
+  const [title, setTitle] = useState(options?.initialTitle ?? '');
 
   const onUploadImage = (index: number, file?: File | null) => {
     if (!file) return;

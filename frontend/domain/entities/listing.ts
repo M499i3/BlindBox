@@ -6,7 +6,9 @@ export type Listing = {
   price: string;
   description: string;
   brand: string;
+  ip?: string;
   series: string;
+  catalogProductId?: string;
   condition: string;
   tradeMode: string;
   shipping: string;

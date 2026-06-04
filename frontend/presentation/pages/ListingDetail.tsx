@@ -37,7 +37,18 @@ export default function ListingDetail() {
   const navigate = useNavigate();
   const location = useLocation();
   const { id = '' } = useParams();
-  const { addToCart, removeFromCart, isInCart, avatarDataUrl, userId, posts, listings, getPostById } = useAppState();
+  const {
+    addToCart,
+    removeFromCart,
+    isInCart,
+    avatarDataUrl,
+    userId,
+    posts,
+    listings,
+    getPostById,
+    deleteListing,
+  } = useAppState();
+  const [deleting, setDeleting] = useState(false);
   const [listing, setListing] = useState<Listing | undefined | null>(null);
   const [loading, setLoading] = useState(!!id);
   const [imageIndex, setImageIndex] = useState(0);
@@ -245,15 +256,33 @@ export default function ListingDetail() {
 
   const inCart = isInCart(listing.id);
 
-  const contactLabel = isOwnListingPost
-    ? '這是你的貼文'
-    : contacting
-      ? '開啟中…'
-      : contactBlockedBySwap
-        ? '需通過交換申請後才能聯絡'
-        : isSplitPost
-          ? '聯絡買家'
-          : '聯絡賣家';
+  const contactLabel = contacting
+    ? '開啟中…'
+    : contactBlockedBySwap
+      ? '需通過交換申請後才能聯絡'
+      : isSplitPost
+        ? '聯絡買家'
+        : '聯絡賣家';
+
+  const handleEditListing = () => {
+    if (!listing) return;
+    navigate(`/listing/${listing.id}/edit`);
+  };
+
+  const handleDeleteListing = async () => {
+    if (!listing || deleting) return;
+    if (!window.confirm('確定要刪除此貼文嗎？刪除後無法復原。')) return;
+    setDeleting(true);
+    try {
+      await deleteListing(listing.id);
+      navigate('/profile/listings', { replace: true });
+    } catch (e) {
+      console.error(e);
+      alert(e instanceof Error ? e.message : '刪除失敗，請稍後再試');
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   const cartButtonClass = inCart
     ? 'bg-white border border-black/[0.12] text-on-surface'
@@ -501,9 +530,23 @@ export default function ListingDetail() {
 
         <div className="flex flex-col gap-3">
           {isOwnListingPost ? (
-            <button type="button" disabled className={contactButtonClass}>
-              這是你的貼文
-            </button>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={handleEditListing}
+                className="w-full rounded-full border-2 border-black bg-white py-4 text-sm font-bold text-on-surface shadow-[4px_4px_0_#111] transition-transform active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+              >
+                編輯
+              </button>
+              <button
+                type="button"
+                disabled={deleting}
+                onClick={() => void handleDeleteListing()}
+                className="w-full rounded-full border-2 border-black bg-white py-4 text-sm font-bold text-red-600 shadow-[4px_4px_0_#111] transition-transform active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-50"
+              >
+                {deleting ? '刪除中…' : '刪除'}
+              </button>
+            </div>
           ) : null}
 
           {!isOwnListingPost && isSellPost ? (
