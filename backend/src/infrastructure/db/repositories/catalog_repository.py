@@ -21,9 +21,9 @@ _PRODUCT_SELECT = """
         ps.slug AS series_slug,
         ps.name AS series_name
     FROM catalog_products cp
-    LEFT JOIN series ps ON ps.id = cp.series_id
     LEFT JOIN ips i ON i.id = cp.ip_id
-    LEFT JOIN brands b ON b.id = COALESCE(ps.brand_id, i.brand_id)
+    LEFT JOIN brands b ON b.id = i.brand_id
+    LEFT JOIN series ps ON ps.id = cp.series_id
 """
 
 _PRODUCT_BY_EXTERNAL_ID = _PRODUCT_SELECT + """
