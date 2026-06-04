@@ -63,13 +63,18 @@ def main() -> None:
     if not args.json.is_file():
         raise SystemExit(f"找不到 {args.json}")
 
+    sys.path.insert(0, str(BACKEND_ROOT / "scripts"))
+    from catalog_seed_lib import is_koca_blind_box_product  # noqa: E402
+
     data = json.loads(args.json.read_text(encoding="utf-8"))
-    products = data.get("products") or []
+    products = [
+        p for p in (data.get("products") or []) if is_koca_blind_box_product(p)
+    ]
     if not products:
-        raise SystemExit(f"{args.json} 無 products")
+        raise SystemExit(f"{args.json} 無 gatcha_goods 盲盒商品")
 
     if args.dry_run:
-        print(f"[dry-run] 將匯入 {len(products)} 筆 KOCA 指標並重算 heat_score")
+        print(f"[dry-run] 將匯入 {len(products)} 筆 KOCA 盲盒指標並重算 heat_score")
         return
 
     import psycopg2

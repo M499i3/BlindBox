@@ -1,13 +1,19 @@
 #!/usr/bin/env python3
 """
-將 frontend/data/popmart-hk-showcase.json 匯入 PostgreSQL（brands → series → catalog_products）。
+將 KOCA 盲盒圖鑑（frontend/data/koca-popmart-showcase.json）匯入 PostgreSQL。
+
+僅匯入 typeId === gatcha_goods；不支援 popmart-hk-showcase。
 
 需已執行 alembic upgrade head。支援冪等 upsert（external_id / slug）。
 
 用法（專案根目錄）：
+  npm run db:seed
+  npm run db:seed:replace          # 先清空圖鑑與市集再匯入（建議首次篩盲盒後使用）
+  npm run db:seed:dry
+
   python3 backend/scripts/seed_catalog.py
+  python3 backend/scripts/seed_catalog.py --replace --no-dev-user
   python3 backend/scripts/seed_catalog.py --dry-run
-  python3 backend/scripts/seed_catalog.py --no-dev-user
 """
 
 from __future__ import annotations
@@ -15,10 +21,8 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from collections import defaultdict
 from pathlib import Path
 
-# backend/src → infrastructure.db.config
 BACKEND_ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS_DIR = Path(__file__).resolve().parent
 REPO_ROOT = BACKEND_ROOT.parent
@@ -28,13 +32,14 @@ from catalog_seed_lib import (  # noqa: E402
     SeedProduct,
     build_seed_products,
     load_showcase,
+    summarize_koca_showcase,
 )
 from marketplace_purge_lib import purge_catalog_and_marketplace  # noqa: E402
 
-DEFAULT_JSON = REPO_ROOT / "frontend" / "data" / "popmart-hk-showcase.json"
 KOCA_JSON = REPO_ROOT / "frontend" / "data" / "koca-popmart-showcase.json"
 IP_IMAGES_JSON = REPO_ROOT / "frontend" / "data" / "popmart-hk-ip-images.json"
 DEV_USER_EMAIL = "user1@test.com"
+DEV_USER_NAME = "Yu"
 
 
 def load_ip_cover_by_slug() -> dict[str, str]:
@@ -48,7 +53,6 @@ def load_ip_cover_by_slug() -> dict[str, str]:
         if slug and image:
             out[slug] = image
     return out
-DEV_USER_NAME = "Yu"
 
 
 def _pg_url() -> str:
@@ -133,11 +137,46 @@ def upsert_catalog_product(cur, product: SeedProduct, series_id: str) -> None:
     )
 
 
+def prune_catalog_products_not_in_seed(cur, external_ids: set[str]) -> int:
+    """刪除不在本次種子集合的圖鑑商品（清除舊 popmart-hk / 非盲盒殘留）。"""
+    if not external_ids:
+        return 0
+    cur.execute(
+        """
+        DELETE FROM catalog_products
+        WHERE external_id IS NULL
+           OR NOT (external_id = ANY(%s::text[]))
+        """,
+        (list(external_ids),),
+    )
+    return cur.rowcount
+
+
+def prune_orphan_series_and_brands(cur) -> tuple[int, int]:
+    cur.execute(
+        """
+        DELETE FROM series s
+        WHERE NOT EXISTS (
+            SELECT 1 FROM catalog_products cp WHERE cp.series_id = s.id
+        )
+        """
+    )
+    series_deleted = cur.rowcount
+    cur.execute(
+        """
+        DELETE FROM brands b
+        WHERE NOT EXISTS (SELECT 1 FROM series s WHERE s.brand_id = b.id)
+        """
+    )
+    brands_deleted = cur.rowcount
+    return series_deleted, brands_deleted
+
+
 def refresh_series_counts(cur) -> int:
     cur.execute(
         """
         UPDATE series s
-        SET total_count = sub.cnt,
+        SET total_count = COALESCE(sub.cnt, 0),
             updated_at = now()
         FROM (
             SELECT series_id, COUNT(*)::int AS cnt
@@ -148,7 +187,17 @@ def refresh_series_counts(cur) -> int:
         WHERE s.id = sub.series_id
         """
     )
-    return cur.rowcount
+    updated = cur.rowcount
+    cur.execute(
+        """
+        UPDATE series s
+        SET total_count = 0, updated_at = now()
+        WHERE NOT EXISTS (
+            SELECT 1 FROM catalog_products cp WHERE cp.series_id = s.id
+        )
+        """
+    )
+    return updated
 
 
 def seed_dev_user(cur) -> str:
@@ -171,16 +220,52 @@ def seed_dev_user(cur) -> str:
     return str(row["id"])
 
 
+def refresh_catalog_metrics_from_koca(json_path: Path) -> tuple[int, int]:
+    """圖鑑重種後依 KOCA JSON 重建 catalog_product_metrics（CASCADE 會清空舊列）。"""
+    import json
+
+    sys.path.insert(0, str(BACKEND_ROOT / "src"))
+    from application.catalog_heat_service import (  # noqa: E402
+        compute_catalog_heat,
+        import_koca_metrics,
+    )
+    from catalog_seed_lib import is_koca_blind_box_product  # noqa: E402
+
+    data = json.loads(json_path.read_text(encoding="utf-8"))
+    products = [p for p in (data.get("products") or []) if is_koca_blind_box_product(p)]
+    if not products:
+        return 0, 0
+
+    import psycopg2
+    from psycopg2.extras import RealDictCursor
+
+    conn = psycopg2.connect(_pg_url(), cursor_factory=RealDictCursor)
+    try:
+        with conn:
+            imported = import_koca_metrics(conn, products)
+            computed = compute_catalog_heat(conn)
+        return imported, computed
+    finally:
+        conn.close()
+
+
 def run_seed(
     json_path: Path,
     *,
     dry_run: bool,
     seed_user: bool,
+    replace_catalog: bool,
+    prune_stale: bool,
 ) -> None:
     showcase = load_showcase(json_path)
+    stats = summarize_koca_showcase(showcase)
     products = build_seed_products(showcase)
     if not products:
-        raise SystemExit(f"找不到商品資料：{json_path}")
+        raise SystemExit(
+            f"找不到可匯入的 KOCA 盲盒商品：{json_path} "
+            f"（JSON 共 {stats['raw_total']} 筆，"
+            f"略過 {stats['skipped_other_type']} 筆非 gatcha_goods）"
+        )
 
     ip_covers = load_ip_cover_by_slug()
     brand_logos: dict[str, str | None] = {}
@@ -205,12 +290,21 @@ def run_seed(
             p.series_name,
         )
 
+    seed_external_ids = {p.external_id for p in products}
+
     print(f"來源：{json_path}")
     print(
-        f"將匯入 {len(products)} 筆商品、"
-        f"{len(brands_meta)} 個品牌、{len(series_meta)} 個系列"
+        f"KOCA JSON：{stats['raw_total']} 筆 → "
+        f"盲盒 gatcha_goods {stats['blind_box']} 筆 → "
+        f"略過其他 typeId {stats['skipped_other_type']} 筆"
+    )
+    print(
+        f"將匯入 {len(products)} 筆 catalog_products、"
+        f"{len(brands_meta)} 個品牌、{len(series_meta)} 個 IP（series）"
         + (f"（{len(ip_covers)} 個 IP 官圖）" if ip_covers else "")
     )
+    if prune_stale and not replace_catalog:
+        print("匯入後將刪除不在本次種子內的 catalog_products，並清理空 series / brands")
 
     if dry_run:
         print("[dry-run] 略過資料庫寫入")
@@ -229,7 +323,7 @@ def run_seed(
     try:
         with conn:
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                if getattr(run_seed, "_replace_catalog", False):
+                if replace_catalog:
                     purge_catalog_and_marketplace(cur)
 
                 brand_ids: dict[str, str] = {}
@@ -253,6 +347,15 @@ def run_seed(
                     sid = series_ids[(p.brand_slug, p.series_slug)]
                     upsert_catalog_product(cur, p, sid)
 
+                pruned_products = 0
+                pruned_series = 0
+                pruned_brands = 0
+                if prune_stale and not replace_catalog:
+                    pruned_products = prune_catalog_products_not_in_seed(
+                        cur, seed_external_ids
+                    )
+                    pruned_series, pruned_brands = prune_orphan_series_and_brands(cur)
+
                 updated_series = refresh_series_counts(cur)
 
                 dev_id: str | None = None
@@ -260,26 +363,35 @@ def run_seed(
                     dev_id = seed_dev_user(cur)
 
         print(f"✅ 完成：{len(products)} 筆 catalog_products")
-        print(f"   已更新 {updated_series} 個系列的 total_count")
+        print(f"   已更新 {updated_series} 個 IP 的 total_count")
+        if pruned_products:
+            print(f"   已刪除 {pruned_products} 筆不在種子內的舊圖鑑商品")
+        if pruned_series or pruned_brands:
+            print(f"   已清理空 series {pruned_series}、brands {pruned_brands}")
         if dev_id:
             print(f"   開發用使用者：{DEV_USER_NAME} ({dev_id})")
             print(f"   可加入 .env：VITE_DEV_USER_ID={dev_id}")
+
+        if json_path == KOCA_JSON or str(json_path).endswith("koca-popmart-showcase.json"):
+            imported, computed = refresh_catalog_metrics_from_koca(json_path)
+            if imported:
+                print(
+                    f"   已重建 catalog_product_metrics：KOCA 匯入 {imported} 筆、"
+                    f"heat 重算 {computed} 筆"
+                )
     finally:
         conn.close()
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="BlindBox 圖鑑種子資料")
+    parser = argparse.ArgumentParser(
+        description="BlindBox 圖鑑種子（僅 KOCA 盲盒 gatcha_goods）"
+    )
     parser.add_argument(
         "--json",
         type=Path,
-        default=DEFAULT_JSON,
-        help=f"showcase JSON 路徑（預設 {DEFAULT_JSON.relative_to(REPO_ROOT)}）",
-    )
-    parser.add_argument(
-        "--koca",
-        action="store_true",
-        help=f"使用 KOCA 圖鑑（{KOCA_JSON.relative_to(REPO_ROOT)}）",
+        default=KOCA_JSON,
+        help=f"KOCA showcase JSON（預設 {KOCA_JSON.relative_to(REPO_ROOT)}）",
     )
     parser.add_argument(
         "--dry-run",
@@ -296,17 +408,23 @@ def main() -> None:
         action="store_true",
         help="先刪除圖鑑與市集資料（保留 users），再匯入",
     )
+    parser.add_argument(
+        "--no-prune",
+        action="store_true",
+        help="不刪除資料庫中不在本次種子內的舊 catalog_products（預設會 prune）",
+    )
     args = parser.parse_args()
 
-    json_path = KOCA_JSON if args.koca else args.json
+    json_path = args.json
     if not json_path.is_file():
         raise SystemExit(f"找不到 JSON：{json_path}")
 
-    run_seed._replace_catalog = args.replace  # type: ignore[attr-defined]
     run_seed(
         json_path,
         dry_run=args.dry_run,
         seed_user=not args.no_dev_user,
+        replace_catalog=args.replace,
+        prune_stale=not args.no_prune,
     )
 
 

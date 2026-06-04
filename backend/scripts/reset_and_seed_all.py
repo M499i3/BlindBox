@@ -3,7 +3,7 @@
 清空資料庫並重新植入全部種子資料。
 
 1. TRUNCATE 所有業務表（保留 schema / migration 狀態）
-2. 從 popmart-hk-showcase.json 匯入 brands / series / catalog_products
+2. 從 koca-popmart-showcase.json 匯入 KOCA 盲盒（gatcha_goods）圖鑑
 3. 寫入 5 位測試使用者與市集／交易／社交資料（每張表皆有列）
 
 用法（專案根目錄）：
@@ -22,7 +22,7 @@ from pathlib import Path
 BACKEND_ROOT = Path(__file__).resolve().parents[1]
 REPO_ROOT = BACKEND_ROOT.parent
 SCRIPTS_DIR = Path(__file__).resolve().parent
-DEFAULT_JSON = REPO_ROOT / "frontend" / "data" / "popmart-hk-showcase.json"
+DEFAULT_JSON = REPO_ROOT / "frontend" / "data" / "koca-popmart-showcase.json"
 
 sys.path.insert(0, str(SCRIPTS_DIR))
 

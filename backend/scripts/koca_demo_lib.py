@@ -8,7 +8,7 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
-from catalog_seed_lib import load_showcase, parse_price
+from catalog_seed_lib import is_koca_blind_box_product, load_showcase, parse_price
 
 DEMO_MARKER = "[demo]"
 
@@ -60,6 +60,8 @@ def pick_listing_products(
     without_market: dict[str, list[dict[str, Any]]] = defaultdict(list)
 
     for raw in showcase.get("products", []):
+        if not is_koca_blind_box_product(raw):
+            continue
         if not str(raw.get("id", "")).strip() or not str(raw.get("title", "")).strip():
             continue
         if _price_cents(raw) is None:

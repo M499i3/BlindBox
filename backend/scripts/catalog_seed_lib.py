@@ -1,4 +1,7 @@
-"""從 showcase JSON 解析圖鑑種子：品牌（廠牌）→ 系列（IP）→ 商品"""
+"""從 KOCA showcase JSON 解析圖鑑種子：品牌（Pop Mart）→ 系列（IP）→ 盲盒商品。
+
+僅匯入 typeId === gatcha_goods（KOCA 盲盒類）。
+"""
 
 from __future__ import annotations
 
@@ -14,6 +17,9 @@ if str(BACKEND_SRC) not in sys.path:
     sys.path.insert(0, str(BACKEND_SRC))
 
 from domain.ip_rules import derive_ip_label  # noqa: E402
+
+KOCA_SHOWCASE_SOURCE = "koca"
+KOCA_BLIND_BOX_TYPE_ID = "gatcha_goods"
 
 # 廠牌 / 製造商（Explore 頂層：Pop Mart、Jellycat）
 POPMART_BRAND = ("pop-mart", "Pop Mart")
@@ -114,9 +120,35 @@ def load_showcase(path: Path) -> dict[str, Any]:
         return json.load(f)
 
 
+def assert_koca_showcase(showcase: dict[str, Any]) -> None:
+    source = str(showcase.get("source") or "").strip()
+    if source != KOCA_SHOWCASE_SOURCE:
+        raise ValueError(
+            f"圖鑑種子僅支援 KOCA（source={source!r}，預期 {KOCA_SHOWCASE_SOURCE!r}）"
+        )
+
+
+def is_koca_blind_box_product(raw: dict[str, Any]) -> bool:
+    return str(raw.get("typeId") or "").strip() == KOCA_BLIND_BOX_TYPE_ID
+
+
+def summarize_koca_showcase(showcase: dict[str, Any]) -> dict[str, int]:
+    assert_koca_showcase(showcase)
+    raw_products = showcase.get("products") or []
+    blind = sum(1 for r in raw_products if is_koca_blind_box_product(r))
+    return {
+        "raw_total": len(raw_products),
+        "blind_box": blind,
+        "skipped_other_type": len(raw_products) - blind,
+    }
+
+
 def build_seed_products(showcase: dict[str, Any]) -> list[SeedProduct]:
+    assert_koca_showcase(showcase)
     products: list[SeedProduct] = []
     for raw in showcase.get("products", []):
+        if not is_koca_blind_box_product(raw):
+            continue
         title = str(raw.get("title", "")).strip()
         external_id = str(raw.get("id", "")).strip()
         if not title or not external_id:
