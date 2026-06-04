@@ -1,120 +1,15 @@
-import { useEffect, useMemo, useState } from 'react';
-import {
-  getCatalogBrands,
-  getCatalogProducts,
-  getCatalogIps,
-} from '@/frontend/infrastructure/api/catalogApi';
-import { fetchCached } from '@/frontend/shared/utils/fetchCache';
-import {
-  CATALOG_BRANDS_KEY,
-  catalogProductsKey,
-  catalogIpsKey,
-} from '@/frontend/shared/utils/catalogCacheKeys';
+import { useState } from 'react';
 import { uploadImageToStorage } from '@/frontend/infrastructure/storage/supabaseStorage';
-import type { BrandRow, CatalogProduct, IpRow } from '@/frontend/domain/entities/catalog';
-import {
-  filterProductsByIp,
-  productLinesFromProducts,
-  productsInLine,
-} from '@/frontend/shared/utils/catalogProductLines';
+import { useCatalogProductPicker } from '@/frontend/presentation/hooks/useCatalogProductPicker';
 
-export type CatalogStyleOption = { id: string; name: string; image: string };
+export type { CatalogStyleOption } from '@/frontend/presentation/hooks/useCatalogProductPicker';
 
 export function useCatalogListingForm() {
+  const picker = useCatalogProductPicker();
   const [images, setImages] = useState<string[]>([]);
   const [localImageFiles, setLocalImageFiles] = useState<(File | null)[]>([]);
   const [recommendedImage, setRecommendedImage] = useState('');
   const [title, setTitle] = useState('');
-  const [itemName, setItemName] = useState('');
-  const [catalogProductId, setCatalogProductId] = useState('');
-
-  const [brand, setBrand] = useState('');
-  const [brandSlug, setBrandSlug] = useState('');
-  const [brandOptions, setBrandOptions] = useState<BrandRow[]>([]);
-
-  const [ip, setIp] = useState('');
-  const [ipSlug, setIpSlug] = useState('');
-  const [ipOptions, setIpOptions] = useState<IpRow[]>([]);
-
-  const [productLine, setProductLine] = useState('');
-  const [brandProducts, setBrandProducts] = useState<CatalogProduct[]>([]);
-  const [productsLoading, setProductsLoading] = useState(false);
-
-  useEffect(() => {
-    fetchCached(CATALOG_BRANDS_KEY, getCatalogBrands)
-      .then((rows) => {
-        if (!rows.length) return;
-        setBrandOptions(rows);
-        const first = rows[0];
-        const slug = first.slug ?? first.name.toLowerCase().replace(/\s+/g, '-');
-        setBrand(first.name);
-        setBrandSlug(slug);
-      })
-      .catch(() => {
-        const fallback = [{ name: 'Pop Mart', slug: 'pop-mart', image: '' }];
-        setBrandOptions(fallback);
-        setBrand(fallback[0].name);
-        setBrandSlug(fallback[0].slug);
-      });
-  }, []);
-
-  useEffect(() => {
-    if (!brandSlug) return;
-    setProductsLoading(true);
-    Promise.all([
-      fetchCached(catalogIpsKey(brandSlug), () => getCatalogIps(brandSlug)),
-      fetchCached(catalogProductsKey({ brand: brandSlug }), () =>
-        getCatalogProducts({ brand: brandSlug })
-      ),
-    ])
-      .then(([ips, products]) => {
-        setIpOptions(ips);
-        setBrandProducts(products);
-        const first = ips[0];
-        setIp(first?.name ?? '');
-        setIpSlug(first?.slug ?? '');
-        setProductLine('');
-        setCatalogProductId('');
-        setItemName('');
-      })
-      .catch(() => {
-        setIpOptions([]);
-        setBrandProducts([]);
-        setIp('');
-        setIpSlug('');
-      })
-      .finally(() => setProductsLoading(false));
-  }, [brandSlug]);
-
-  const productsForIp = useMemo(
-    () => filterProductsByIp(brandProducts, ip),
-    [brandProducts, ip]
-  );
-
-  const productLineOptions = useMemo(
-    () => productLinesFromProducts(productsForIp),
-    [productsForIp]
-  );
-
-  const styleOptions: CatalogStyleOption[] = useMemo(() => {
-    const pool = productLine ? productsInLine(productsForIp, productLine) : [];
-    return pool.map((p) => ({ id: p.id, name: p.title, image: p.image }));
-  }, [productsForIp, productLine]);
-
-  useEffect(() => {
-    if (!productLineOptions.length) {
-      setProductLine('');
-      return;
-    }
-    if (!productLine || !productLineOptions.includes(productLine)) {
-      setProductLine(productLineOptions[0]);
-    }
-  }, [productLineOptions, productLine]);
-
-  useEffect(() => {
-    setCatalogProductId('');
-    setItemName('');
-  }, [productLine, ip]);
 
   const onUploadImage = (index: number, file?: File | null) => {
     if (!file) return;
@@ -137,11 +32,10 @@ export function useCatalogListingForm() {
   };
 
   const applyCatalogStyle = (styleId: string) => {
-    const style = styleOptions.find((s) => s.id === styleId);
+    const style = picker.styleOptions.find((s) => s.id === styleId);
     if (!style) return;
-    setCatalogProductId(style.id);
-    setItemName(style.name);
-    if (!title.trim()) setTitle(style.name);
+    picker.applyCatalogStyle(styleId);
+    if (!title.trim()) setTitle(`想換 ${style.name}`);
     if (style.image) {
       setRecommendedImage(style.image);
       setImages([style.image]);
@@ -165,42 +59,39 @@ export function useCatalogListingForm() {
     );
   };
 
-  const hasRequiredStyle = Boolean(catalogProductId && itemName.trim());
-
   return {
     images,
     title,
     setTitle,
-    itemName,
-    setItemName,
-    catalogProductId,
-    brand,
-    setBrand,
-    brandSlug,
-    setBrandSlug,
-    brandOptions,
-    ip,
-    setIp,
-    ipSlug,
-    setIpSlug,
-    ipOptions,
-    productLine,
-    setProductLine,
-    productLineOptions,
-    styleOptions,
-    productsLoading,
+    itemName: picker.itemName,
+    setItemName: picker.setItemName,
+    catalogProductId: picker.catalogProductId,
+    brand: picker.brand,
+    setBrand: picker.setBrand,
+    brandSlug: picker.brandSlug,
+    setBrandSlug: picker.setBrandSlug,
+    brandOptions: picker.brandOptions,
+    ip: picker.ip,
+    setIp: picker.setIp,
+    ipSlug: picker.ipSlug,
+    setIpSlug: picker.setIpSlug,
+    ipOptions: picker.ipOptions,
+    productLine: picker.productLine,
+    setProductLine: picker.setProductLine,
+    productLineOptions: picker.productLineOptions,
+    styleOptions: picker.styleOptions,
+    productsLoading: picker.productsLoading,
     recommendedImage,
     applyCatalogStyle,
     useRecommendedImage,
     onUploadImage,
     removeImage,
     uploadImages,
-    hasRequiredStyle,
-    /** @deprecated kept for swap wizard typing */
-    series: ip,
-    setSeries: setIp,
-    seriesOptions: ipOptions,
-    seriesSlug: ipSlug,
-    setSeriesSlug: setIpSlug,
+    hasRequiredStyle: picker.hasRequiredStyle,
+    series: picker.ip,
+    setSeries: picker.setIp,
+    seriesOptions: picker.ipOptions,
+    seriesSlug: picker.ipSlug,
+    setSeriesSlug: picker.setIpSlug,
   };
 }

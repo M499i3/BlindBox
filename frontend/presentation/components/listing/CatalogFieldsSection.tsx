@@ -1,6 +1,6 @@
 import React from 'react';
 import type { BrandRow, SeriesRow } from '@/frontend/domain/entities/catalog';
-import type { CatalogStyleOption } from '@/frontend/presentation/hooks/useCatalogListingForm';
+import type { CatalogStyleOption } from '@/frontend/presentation/hooks/useCatalogProductPicker';
 import { cn } from '@/frontend/shared/utils/cn';
 import { LISTING_FIELD, LISTING_LABEL, LISTING_SECTION } from '@/frontend/presentation/components/listing/listingFormStyles';
 

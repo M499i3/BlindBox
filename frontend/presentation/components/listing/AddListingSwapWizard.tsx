@@ -2,6 +2,12 @@ import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import CatalogFieldsSection from '@/frontend/presentation/components/listing/CatalogFieldsSection';
+import IdealSwapTargetsSection, {
+  createInitialIdealSwapEntries,
+  formatIdealSwapDescription,
+  hasValidIdealSwapTargets,
+  type IdealSwapEntry,
+} from '@/frontend/presentation/components/listing/IdealSwapTargetsSection';
 import ListingConditionPicker from '@/frontend/presentation/components/listing/ListingConditionPicker';
 import ListingPhotoUpload from '@/frontend/presentation/components/listing/ListingPhotoUpload';
 import ListingWizardSteps from '@/frontend/presentation/components/listing/ListingWizardSteps';
@@ -25,10 +31,16 @@ export default function AddListingSwapWizard({ onBack }: Props) {
   const catalog = useCatalogListingForm();
   const [step, setStep] = useState(1);
   const [condition, setCondition] = useState('全新未拆');
-  const [idealSwap, setIdealSwap] = useState('');
+  const [idealEntries, setIdealEntries] = useState<IdealSwapEntry[]>(
+    createInitialIdealSwapEntries
+  );
   const [description, setDescription] = useState('');
   const [shippingMethods, setShippingMethods] = useState<string[]>(['7-11 店到店']);
   const [submitting, setSubmitting] = useState(false);
+
+  const completedIdeal = idealEntries.filter(
+    (e) => e.catalogProductId && e.itemName.trim()
+  );
 
   const submit = async () => {
     if (submitting) return;
@@ -40,12 +52,16 @@ export default function AddListingSwapWizard({ onBack }: Props) {
       alert('請使用推薦圖或上傳至少一張照片');
       return;
     }
+    if (!hasValidIdealSwapTargets(idealEntries)) {
+      alert('請至少選擇一筆理想交換商品');
+      return;
+    }
     try {
       setSubmitting(true);
       const uploadedImages = await catalog.uploadImages();
       const itemLabel = catalog.itemName.trim() || catalog.title.trim() || '未命名商品';
       const title = catalog.title.trim() || `想換 ${itemLabel}`;
-      const idealBlock = idealSwap.trim() ? `【理想交換】${idealSwap.trim()}` : '';
+      const idealBlock = formatIdealSwapDescription(idealEntries);
       const body = [idealBlock, description.trim()].filter(Boolean).join('\n\n') || '無補充說明';
 
       const listingId = await createListing({
@@ -137,24 +153,16 @@ export default function AddListingSwapWizard({ onBack }: Props) {
 
       {step === 2 ? (
         <>
+          <IdealSwapTargetsSection
+            offerCatalogProductId={catalog.catalogProductId}
+            entries={idealEntries}
+            onChange={setIdealEntries}
+          />
           <section className="space-y-5 rounded-3xl border-2 border-black bg-neutral-50 p-5">
-            <p className={LISTING_SECTION}>想換到什麼</p>
-            <div className="space-y-1.5">
-              <label className={LISTING_LABEL} htmlFor="swap-ideal">
-                理想交換物
-              </label>
-              <textarea
-                id="swap-ideal"
-                value={idealSwap}
-                onChange={(e) => setIdealSwap(e.target.value)}
-                className={cn(LISTING_FIELD, 'resize-none leading-relaxed')}
-                placeholder="例如：同系列 hidden 款、特定 IP 的盲盒…"
-                rows={4}
-              />
-            </div>
+            <p className={LISTING_SECTION}>貼文標題</p>
             <div className="space-y-1.5">
               <label className={LISTING_LABEL} htmlFor="swap-title">
-                貼文標題
+                標題
               </label>
               <input
                 id="swap-title"
@@ -166,7 +174,26 @@ export default function AddListingSwapWizard({ onBack }: Props) {
               />
             </div>
           </section>
-          <WizardNav onBack={() => setStep(1)} onNext={() => setStep(3)} nextLabel="下一步" />
+          <WizardNav
+            onBack={() => setStep(1)}
+            onNext={() => {
+              if (!hasValidIdealSwapTargets(idealEntries)) {
+                alert('請至少完成一筆理想交換商品（品牌／IP／系列／款式）');
+                return;
+              }
+              const ids = completedIdeal.map((e) => e.catalogProductId);
+              if (new Set(ids).size !== ids.length) {
+                alert('理想交換款式不可重複');
+                return;
+              }
+              if (ids.includes(catalog.catalogProductId)) {
+                alert('理想交換不可與換出商品相同');
+                return;
+              }
+              setStep(3);
+            }}
+            nextLabel="下一步"
+          />
         </>
       ) : null}
 
@@ -174,6 +201,18 @@ export default function AddListingSwapWizard({ onBack }: Props) {
         <>
           <section className="space-y-5 rounded-3xl border-2 border-black bg-neutral-50 p-5">
             <p className={LISTING_SECTION}>交易說明</p>
+            {completedIdeal.length > 0 ? (
+              <div className="rounded-2xl border border-black/10 bg-white p-3 text-xs text-on-surface-variant">
+                <p className="font-bold text-on-surface mb-1">理想交換（{completedIdeal.length} 款）</p>
+                <ul className="list-disc pl-4 space-y-0.5">
+                  {completedIdeal.map((e) => (
+                    <li key={e.catalogProductId}>
+                      {e.brand} · {e.ip} · {e.productLine} · {e.itemName}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
             <div className="space-y-1.5">
               <label className={LISTING_LABEL} htmlFor="swap-description">
                 補充說明
