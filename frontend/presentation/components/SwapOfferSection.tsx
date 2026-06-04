@@ -87,7 +87,7 @@ export default function SwapOfferSection({
           wantedListingId: wantedListing.id,
           offeredListingId: form.offeredListingId,
           message: form.message.trim() || undefined,
-          additionalAmount: Math.round((Number(form.additionalAmount) || 0) * 100),
+          additionalAmount: Math.round(Number(form.additionalAmount) || 0),
         });
       } else {
         if (!catalog.itemName.trim() && !catalog.title.trim()) {
@@ -115,7 +115,7 @@ export default function SwapOfferSection({
             images: uploadedImages,
           },
           message: form.message.trim() || undefined,
-          additionalAmount: Math.round((Number(form.additionalAmount) || 0) * 100),
+          additionalAmount: Math.round(Number(form.additionalAmount) || 0),
         });
       }
       onProposalChange();
@@ -202,7 +202,7 @@ export default function SwapOfferSection({
               ) : null}
               {proposal.additionalAmount > 0 ? (
                 <p className="text-xs font-semibold text-primary">
-                  補差價：NT$ {(proposal.additionalAmount / 100).toFixed(0)}
+                  補差價：NT$ {proposal.additionalAmount.toFixed(0)}
                 </p>
               ) : null}
               {proposal.status === 'pending' ? (

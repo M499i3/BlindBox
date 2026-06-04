@@ -80,6 +80,7 @@ function toApi(input: CreateListingInput): Record<string, unknown> {
     image: input.image,
     images,
     quantity: input.quantity,
+    catalog_product_id: input.catalogProductId?.trim() || null,
   };
 }
 

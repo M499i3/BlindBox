@@ -59,7 +59,7 @@ def _price_from_raw(raw: dict[str, Any]) -> tuple[int | None, str | None]:
             major = None
         if major is not None:
             currency = str(mp.get("currency") or "TWD").upper()
-            return int(round(major * 100)), currency
+            return int(round(major)), currency
     return parse_price(str(raw.get("price", "")))
 
 
@@ -78,7 +78,7 @@ def parse_price(price: str) -> tuple[int | None, str | None]:
         currency = "HKD"
     elif re.search(r"¥|CNY", price, re.I):
         currency = "CNY"
-    return int(round(major * 100)), currency
+    return int(round(major)), currency
 
 
 def load_showcase(path: Path) -> dict[str, Any]:

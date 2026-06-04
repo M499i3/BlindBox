@@ -79,7 +79,7 @@ _STYLES_BY_BRAND_SERIES = """
 def _format_price(amount: int | None, currency: str | None) -> str:
     if amount is None or amount == 0:
         return "HK$ 0.00"
-    major = amount / 100
+    major = float(amount)
     symbol = {"HKD": "HK$", "TWD": "NT$", "CNY": "¥"}.get(currency or "HKD", "HK$")
     if currency == "HKD":
         return f"{symbol} {major:.2f}"

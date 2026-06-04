@@ -80,6 +80,7 @@ function offerToApi(offer: CreateListingInput) {
     quantity: offer.quantity,
     image: offer.image,
     images: offer.images,
+    catalog_product_id: offer.catalogProductId?.trim() || null,
   };
 }
 

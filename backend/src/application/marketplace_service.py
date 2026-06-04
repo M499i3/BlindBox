@@ -65,7 +65,7 @@ def get_rankings(conn: psycopg2.extensions.connection) -> list[MarketplaceRankin
         amount = row.get("official_price_amount") or 0
         currency = row.get("official_price_currency") or "HKD"
         symbol = {"HKD": "HK$", "TWD": "NT$", "CNY": "¥"}.get(currency, "HK$")
-        price = f"{symbol} {amount / 100:.2f}"
+        price = f"{symbol} {amount:.2f}"
         heat_score = int(row.get("heat_score") or 0)
         result.append(
             MarketplaceRankingItem(

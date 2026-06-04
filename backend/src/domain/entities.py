@@ -67,6 +67,7 @@ class CreateListingInput(BaseModel):
     brand: str
     ip: str = ""
     series: str
+    catalog_product_id: str | None = None
     condition: str
     trade_mode: str
     shipping: str

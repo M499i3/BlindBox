@@ -42,14 +42,14 @@ def _price_cents(raw: dict) -> int:
     mp = raw.get("marketPrice")
     if isinstance(mp, dict) and mp.get("avg") is not None:
         try:
-            return int(round(float(mp["avg"]) * 100))
+            return int(round(float(mp["avg"])))
         except (TypeError, ValueError):
             pass
     price = str(raw.get("price") or "")
     digits = re.sub(r"[^0-9.]", "", price)
     if not digits:
         return 9900
-    return int(round(float(digits) * 100))
+    return int(round(float(digits)))
 
 
 def _load_product_lines() -> list[tuple[str, str, list[dict]]]:
@@ -171,7 +171,7 @@ def main() -> None:
             reserve_n = 1 if len(prods) >= 4 else 0
             reserved_idxs = set(rng.sample(range(len(prods)), reserve_n)) if reserve_n else set()
 
-            total_cents = sum(_price_cents(p) for p in prods)
+            total_major = sum(_price_cents(p) for p in prods)
             slots = [
                 SplitBoxSlotInput(
                     catalog_product_id=str(p["id"]),
@@ -194,7 +194,7 @@ def main() -> None:
                 description=f"[demo] 示範拆盒團 · {ip} · {line} · 共 {len(prods)} 款",
                 cover_image=str(prods[0].get("image") or "") or None,
                 shipping="7-11 店到店",
-                total_price=f"NT$ {total_cents // 100}",
+                total_price=f"NT$ {total_major}",
                 closes_at=closes,
                 slots=slots,
             )

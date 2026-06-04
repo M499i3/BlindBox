@@ -49,6 +49,7 @@ export default function AddListingSellWizard({ onBack }: Props) {
       const listingId = await createListing({
         title: catalog.title.trim() || catalog.itemName.trim() || '未命名貼文',
         itemName: catalog.itemName.trim() || catalog.title.trim() || '未命名商品',
+        catalogProductId: catalog.catalogProductId,
         price: `NT$ ${numericPrice}`,
         quantity,
         description: description.trim() || '無補充說明',

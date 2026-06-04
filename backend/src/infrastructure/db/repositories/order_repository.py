@@ -21,7 +21,7 @@ _STATUS_LABELS: dict[str, str] = {
 def _format_price(amount: int | None, currency: str | None) -> str:
     if amount is None or amount == 0:
         return "NT$ 0"
-    major = amount / 100
+    major = float(amount)
     symbol = {"HKD": "HK$", "TWD": "NT$", "CNY": "¥"}.get(currency or "TWD", "NT$")
     return f"{symbol} {major:.0f}" if major == int(major) else f"{symbol} {major:.2f}"
 

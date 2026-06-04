@@ -51,6 +51,7 @@ export default function AddListingSwapWizard({ onBack }: Props) {
       const listingId = await createListing({
         title,
         itemName: itemLabel,
+        catalogProductId: catalog.catalogProductId,
         price: 'NT$ 0',
         quantity: 1,
         description: body,
