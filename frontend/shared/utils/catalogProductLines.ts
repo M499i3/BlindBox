@@ -1,4 +1,5 @@
 import type { CatalogProduct } from '@/frontend/domain/entities/catalog';
+import { resolveHierarchyLabels } from '@/frontend/shared/utils/catalogHierarchy';
 import { deriveSeriesName as deriveCatalogSeriesName } from '@/frontend/shared/utils/deriveSeriesName';
 
 export { deriveCatalogSeriesName };
@@ -8,9 +9,13 @@ export function catalogProductLineKey(product: CatalogProduct): string {
   return deriveCatalogSeriesName(product.title);
 }
 
+function deriveIpFromProduct(p: CatalogProduct): string {
+  return resolveHierarchyLabels(p).ip;
+}
+
 export function filterProductsByIp(products: CatalogProduct[], ipName: string): CatalogProduct[] {
   if (!ipName) return [];
-  return products.filter((p) => (p.ipName ?? '') === ipName);
+  return products.filter((p) => deriveIpFromProduct(p) === ipName);
 }
 
 export function productLinesFromProducts(products: CatalogProduct[]): string[] {

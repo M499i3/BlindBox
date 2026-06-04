@@ -260,15 +260,16 @@ def apply_backfill(cur, products: list[GroupedProduct]) -> dict[str, int]:
     cur.execute(
         """
         UPDATE series s
-        SET total_count = sub.cnt,
+        SET total_count = COALESCE(sub.cnt, 0),
             updated_at = now()
-        FROM (
+        FROM series s_all
+        LEFT JOIN (
             SELECT series_id, COUNT(*)::int AS cnt
             FROM catalog_products
             WHERE series_id IS NOT NULL
             GROUP BY series_id
-        ) sub
-        WHERE s.id = sub.series_id
+        ) sub ON sub.series_id = s_all.id
+        WHERE s.id = s_all.id
         """
     )
     series_updated = cur.rowcount
@@ -276,15 +277,16 @@ def apply_backfill(cur, products: list[GroupedProduct]) -> dict[str, int]:
     cur.execute(
         """
         UPDATE ips i
-        SET total_count = sub.cnt,
+        SET total_count = COALESCE(sub.cnt, 0),
             updated_at = now()
-        FROM (
+        FROM ips i_all
+        LEFT JOIN (
             SELECT ip_id, COUNT(*)::int AS cnt
             FROM catalog_products
             WHERE ip_id IS NOT NULL
             GROUP BY ip_id
-        ) sub
-        WHERE i.id = sub.ip_id
+        ) sub ON sub.ip_id = i_all.id
+        WHERE i.id = i_all.id
         """
     )
     ips_updated = cur.rowcount
@@ -305,16 +307,23 @@ def apply_backfill(cur, products: list[GroupedProduct]) -> dict[str, int]:
     cur.execute(
         """
         UPDATE split_box_groups g
-        SET series_id = cp.series_id,
-            ip_id = cp.ip_id,
+        SET series_id = agg.series_id,
+            ip_id = agg.ip_id,
             updated_at = now()
-        FROM catalog_products cp
-        WHERE EXISTS (
-            SELECT 1 FROM split_box_slots s
-            WHERE s.group_id = g.id
-              AND s.catalog_product_external_id = cp.external_id
-        )
-          AND cp.series_id IS NOT NULL
+        FROM (
+            SELECT s.group_id,
+                   MIN(cp.series_id) AS series_id,
+                   MIN(cp.ip_id) AS ip_id
+            FROM split_box_slots s
+            JOIN catalog_products cp
+              ON cp.external_id = s.catalog_product_external_id
+            WHERE cp.series_id IS NOT NULL
+              AND cp.ip_id IS NOT NULL
+            GROUP BY s.group_id
+            HAVING COUNT(DISTINCT cp.series_id) = 1
+               AND COUNT(DISTINCT cp.ip_id) = 1
+        ) agg
+        WHERE g.id = agg.group_id
         """
     )
     split_boxes_updated = cur.rowcount

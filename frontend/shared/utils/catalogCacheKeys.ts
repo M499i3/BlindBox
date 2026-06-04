@@ -21,8 +21,8 @@ export const catalogIpsKey = (brandSlug: string) => `catalog:ips|${brandSlug}`;
 export const catalogSeriesKey = catalogIpsKey;
 export const catalogProductSeriesKey = (brandSlug: string, ipSlug?: string) =>
   `catalog:product-series|${brandSlug}|${ipSlug ?? '*'}`;
-export const catalogStylesKey = (brandSlug: string, seriesSlug: string) =>
-  `catalog:styles|${brandSlug}|${seriesSlug}`;
+export const catalogStylesKey = (brandSlug: string, seriesSlug: string, ipSlug: string) =>
+  `catalog:styles|${brandSlug}|${seriesSlug}|${ipSlug}`;
 export const catalogProductKey = (id: string) => `catalog:product|${id}`;
 export const catalogSearchKey = (q: string) => `catalog:search|${q.trim().toLowerCase()}`;
 

@@ -92,6 +92,7 @@ def get_series(
 def get_styles(
     brand: Annotated[str, Query(description="品牌 slug")],
     series: Annotated[str, Query(description="產品線系列 slug")],
+    ip: Annotated[str, Query(description="IP slug")],
     conn: psycopg2.extensions.connection = Depends(get_db),
 ) -> list[dict]:
-    return list_styles(conn, brand, series)
+    return list_styles(conn, brand, series, ip)

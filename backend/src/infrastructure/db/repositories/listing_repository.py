@@ -243,20 +243,30 @@ def _ensure_brand_ip_and_product_series_ids(
     if not ip and line:
         cur.execute(
             """
-            SELECT i.id AS ip_id, s.id AS series_id
+            SELECT COUNT(DISTINCT i.id) AS ip_count
             FROM series s
             JOIN ips i ON i.id = s.ip_id
             WHERE s.brand_id = %s AND s.name = %s
-            ORDER BY s.updated_at DESC
-            LIMIT 1
             """,
             (brand_id, line),
         )
-        row = cur.fetchone()
-        if row:
-            return brand_id, str(row["ip_id"]), str(row["series_id"])
-
-    if not ip:
+        distinct_ips = int(cur.fetchone()["ip_count"] or 0)
+        if distinct_ips == 1:
+            cur.execute(
+                """
+                SELECT i.id AS ip_id, s.id AS series_id
+                FROM series s
+                JOIN ips i ON i.id = s.ip_id
+                WHERE s.brand_id = %s AND s.name = %s
+                LIMIT 1
+                """,
+                (brand_id, line),
+            )
+            row = cur.fetchone()
+            if row:
+                return brand_id, str(row["ip_id"]), str(row["series_id"])
+        ip = _OTHER_IP
+    elif not ip:
         ip = _OTHER_IP
 
     ip_slug = _to_slug(ip)

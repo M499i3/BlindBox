@@ -214,19 +214,28 @@ export function useCatalogProductSeries(
   return { productSeries: data ?? [], loading };
 }
 
-export function useCatalogStyles(brandSlug: string | undefined, seriesSlug: string | undefined) {
+export function useCatalogStyles(
+  brandSlug: string | undefined,
+  seriesSlug: string | undefined,
+  ipSlug: string | undefined
+) {
   const mock = isMockDataEnabled();
   const key =
-    mock || !brandSlug || !seriesSlug ? null : catalogStylesKey(brandSlug, seriesSlug);
+    mock || !brandSlug || !seriesSlug || !ipSlug
+      ? null
+      : catalogStylesKey(brandSlug, seriesSlug, ipSlug);
 
   const { data, loading } = useCachedFetch(
     key,
-    () => getCatalogStyles(brandSlug!, seriesSlug!).catch(() => [] as StyleRow[]),
-    [brandSlug, seriesSlug],
-    { enabled: !mock && !!brandSlug && !!seriesSlug, initial: [] as StyleRow[] }
+    () =>
+      getCatalogStyles(brandSlug!, seriesSlug!, ipSlug!).catch(() => [] as StyleRow[]),
+    [brandSlug, seriesSlug, ipSlug],
+    {
+      enabled: !mock && !!brandSlug && !!seriesSlug && !!ipSlug,
+      initial: [] as StyleRow[] },
   );
 
-  if (mock || !brandSlug || !seriesSlug) {
+  if (mock || !brandSlug || !seriesSlug || !ipSlug) {
     return { styles: [] as StyleRow[], loading: false };
   }
 

@@ -121,6 +121,7 @@ def build_seed_products(showcase: dict[str, Any]) -> list[SeedProduct]:
             continue
         brand_slug, brand_name = manufacturer_for_title(title)
         amount, currency = _price_from_raw(raw)
+        raw_secret = raw.get("isSecret", raw.get("is_secret"))
         rows.append(
             {
                 "id": external_id,
@@ -130,7 +131,7 @@ def build_seed_products(showcase: dict[str, Any]) -> list[SeedProduct]:
                 "sourceUrl": raw.get("sourceUrl"),
                 "price_amount": amount,
                 "price_currency": currency,
-                "is_secret": "隱藏" in title or "secret" in title.lower(),
+                "is_secret": bool(raw_secret),
                 "brand_slug": brand_slug,
                 "brand_name": brand_name,
             }

@@ -70,7 +70,8 @@ _STYLES_BY_BRAND_SERIES = """
     FROM catalog_products cp
     JOIN series ps ON ps.id = cp.series_id
     JOIN brands b ON b.id = ps.brand_id
-    WHERE b.slug = %s AND ps.slug = %s
+    JOIN ips i ON i.id = ps.ip_id
+    WHERE b.slug = %s AND ps.slug = %s AND i.slug = %s
     ORDER BY cp.title ASC
 """
 
@@ -276,10 +277,13 @@ def search_series(conn: psycopg2.extensions.connection, query: str) -> list[dict
 
 
 def get_styles_by_brand_series_slug(
-    conn: psycopg2.extensions.connection, brand_slug: str, series_slug: str
+    conn: psycopg2.extensions.connection,
+    brand_slug: str,
+    series_slug: str,
+    ip_slug: str,
 ) -> list[dict]:
     with conn.cursor() as cur:
-        cur.execute(_STYLES_BY_BRAND_SERIES, (brand_slug, series_slug))
+        cur.execute(_STYLES_BY_BRAND_SERIES, (brand_slug, series_slug, ip_slug))
         rows = cur.fetchall()
     return [
         {

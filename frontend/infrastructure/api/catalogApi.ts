@@ -113,7 +113,15 @@ export function getCatalogSeries(brandSlug: string, ipSlug?: string): Promise<Se
   return apiFetch<SeriesRow[]>(`/api/catalog/series?${params.toString()}`);
 }
 
-export function getCatalogStyles(brandSlug: string, seriesSlug: string): Promise<StyleRow[]> {
-  const qs = new URLSearchParams({ brand: brandSlug, series: seriesSlug }).toString();
+export function getCatalogStyles(
+  brandSlug: string,
+  seriesSlug: string,
+  ipSlug: string
+): Promise<StyleRow[]> {
+  const qs = new URLSearchParams({
+    brand: brandSlug,
+    series: seriesSlug,
+    ip: ipSlug,
+  }).toString();
   return apiFetch<StyleRow[]>(`/api/catalog/styles?${qs}`);
 }

@@ -84,9 +84,12 @@ def list_series(
 
 
 def list_styles(
-    conn: psycopg2.extensions.connection, brand_slug: str, series_slug: str
+    conn: psycopg2.extensions.connection,
+    brand_slug: str,
+    series_slug: str,
+    ip_slug: str,
 ) -> list[dict]:
-    return get_styles_by_brand_series_slug(conn, brand_slug, series_slug)
+    return get_styles_by_brand_series_slug(conn, brand_slug, series_slug, ip_slug)
 
 
 def catalog_search(
