@@ -246,7 +246,16 @@ def create_swap_proposal(
     conn.commit()
     result = get_proposal_by_id(conn, proposal_id)
     assert result is not None
+    create_notification(
+        conn,
+        user_id=receiver_id,
+        ntype="trade",
+        title="有人想和你交換",
+        body=f"{result.proposer_name} 想用「{result.offered_listing.item_name or result.offered_listing.title}」交換你的「{result.wanted_listing.item_name or result.wanted_listing.title}」。",
+        action_url=f"/swap-proposals/{wanted_listing_id}",
+    )
     return result
+
 
 
 def update_proposal_status(

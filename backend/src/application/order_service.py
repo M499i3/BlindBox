@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import uuid
 import psycopg2.extensions
 from fastapi import HTTPException
 
@@ -47,6 +48,27 @@ def _can_transition(
     if user_id == seller_id:
         return new in _SELLER_TRANSITIONS.get(current, set())
     return False
+
+
+def create_notification(
+    conn: psycopg2.extensions.connection,
+    *,
+    user_id: str,
+    ntype: str,
+    title: str,
+    body: str,
+    action_url: str | None = None,
+) -> None:
+    notif_id = str(uuid.uuid4())
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            INSERT INTO notifications (id, user_id, type, title, body, action_url)
+            VALUES (%s, %s, %s::notification_type_enum, %s, %s, %s)
+            """,
+            (notif_id, user_id, ntype, title, body, action_url),
+        )
+    conn.commit()
 
 
 def place_order(
@@ -129,6 +151,14 @@ def place_order(
         order_status=status,
         actor_user_id=user_id,
     )
+    create_notification(
+        conn,
+        user_id=seller_id,
+        ntype="trade",
+        title="新訂單通知",
+        body=f"有人購買了你的商品「{listing.get('item_name') or listing.get('title') or '商品'}」。",
+        action_url="/sales-history",
+    )
     return OrderCreated(
         id=str(order["id"]),
         listing_id=listing_id,
@@ -175,6 +205,47 @@ def change_order_status(
         order_status=status,
         actor_user_id=user_id,
     )
+    if status == "shipped":
+        create_notification(
+            conn,
+            user_id=buyer_id,
+            ntype="trade",
+            title="訂單狀態更新",
+            body="賣家已將商品標記為已出貨。",
+            action_url="/purchase-history",
+        )
+
+    elif status == "delivered":
+        create_notification(
+            conn,
+            user_id=buyer_id,
+            ntype="trade",
+            title="訂單狀態更新",
+            body="賣家已將商品標記為已送達。",
+            action_url="/purchase-history",
+        )
+
+    elif status == "completed":
+        notify_user_id = seller_id if user_id == buyer_id else buyer_id
+        create_notification(
+            conn,
+            user_id=notify_user_id,
+            ntype="trade",
+            title="交易完成",
+            body="訂單已完成。",
+            action_url="/purchase-history",
+        )
+
+    elif status == "cancelled":
+        notify_user_id = seller_id if user_id == buyer_id else buyer_id
+        create_notification(
+            conn,
+            user_id=notify_user_id,
+            ntype="trade",
+            title="訂單已取消",
+            body="此筆訂單已取消。",
+            action_url="/purchase-history",
+        )
     return OrderCreated(
         id=order_id,
         listing_id=str(updated["listing_id"]),

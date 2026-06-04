@@ -151,7 +151,7 @@ def get_listing_for_chat(
     with conn.cursor() as cur:
         cur.execute(
             """
-            SELECT id, seller_id, status, price_amount, price_currency, shipping_method, shipping_methods
+            SELECT id, seller_id, status, title, item_name, price_amount, price_currency, shipping_method, shipping_methods
             FROM listings
             WHERE id = %s AND deleted_at IS NULL
             """,

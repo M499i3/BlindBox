@@ -496,7 +496,7 @@ def claim_split_box_slot(
         cur.execute(
             """
             SELECT g.organizer_id, g.status::text, g.claimed_count, g.target_count, g.reserved_count,
-                   ss.status AS slot_status, ss.claimed_by_user_id
+                   ss.status AS slot_status, ss.claimed_by_user_id, ss.product_title
             FROM split_box_groups g
             JOIN split_box_slots ss ON ss.group_id = g.id
             WHERE g.id = %s AND ss.id = %s
@@ -545,6 +545,25 @@ def claim_split_box_slot(
             )
         conn.commit()
         organizer_id = str(counts["organizer_id"])
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT display_name FROM users WHERE id = %s",
+                (user_id,),
+            )
+            user_row = cur.fetchone()
+
+        claimer_name = (
+            user_row["display_name"]
+            if user_row and user_row.get("display_name")
+            else "有人"
+        )
+        create_notification(
+            conn,
+            user_id=organizer_id,
+            title="有人認領拆盒",
+            body=f"{claimer_name} 認領了「{info.get('product_title') or '款式'}」。",
+            action_url=f"/split-box/{group_id}",
+        )
 
     if int(counts["claimed_count"]) >= claimable_total:
         create_notification(
