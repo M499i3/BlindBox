@@ -34,7 +34,7 @@ def _market_avg_cents(raw: dict[str, Any]) -> int | None:
     if avg is None:
         return None
     try:
-        return int(round(float(avg) * 100))
+        return int(round(float(avg)))
     except (TypeError, ValueError):
         return None
 

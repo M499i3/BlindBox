@@ -29,4 +29,6 @@ export type CreateListingInput = Omit<
   'id' | 'createdAt' | 'sellerName' | 'isSeeded'
 > & {
   ip?: string;
+  /** 圖鑑 external_id 或 UUID */
+  catalogProductId?: string;
 };

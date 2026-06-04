@@ -5,6 +5,9 @@ import uuid
 import psycopg2.extensions
 
 from domain.entities import CreateListingInput, Listing
+from infrastructure.db.repositories.collection_repository import (
+    _resolve_catalog_product_id,
+)
 
 _LIST_SELECT = """
     SELECT
@@ -188,7 +191,7 @@ def _shipping_labels_from_row(row: dict) -> list[str]:
 def _format_price(amount: int | None, currency: str | None) -> str:
     if amount is None or amount == 0:
         return "NT$ 0"
-    major = amount / 100
+    major = float(amount)
     symbol = {"HKD": "HK$", "TWD": "NT$", "CNY": "¥"}.get(currency or "TWD", "NT$")
     return f"{symbol} {major:.0f}" if major == int(major) else f"{symbol} {major:.2f}"
 
@@ -198,7 +201,7 @@ def _parse_price_amount(price_str: str) -> int:
     digits = re.sub(r"[^0-9.]", "", price_str)
     if not digits:
         return 0
-    return round(float(digits) * 100)
+    return int(round(float(digits)))
 
 
 def _to_slug(value: str) -> str:
@@ -377,15 +380,19 @@ def create_listing(
         brand_id, ip_id, series_id = _ensure_brand_ip_and_product_series_ids(
             cur, data.brand, data.ip or None, data.series
         )
+        catalog_product_id = None
+        raw_catalog_id = (data.catalog_product_id or "").strip()
+        if raw_catalog_id:
+            catalog_product_id = _resolve_catalog_product_id(cur, raw_catalog_id)
         cur.execute(
             """
             INSERT INTO listings
-              (id, seller_id, brand_id, ip_id, series_id, title, item_name, quantity, price_amount, price_currency,
+              (id, seller_id, catalog_product_id, brand_id, ip_id, series_id, title, item_name, quantity, price_amount, price_currency,
                description, condition, trade_mode, shipping_method, shipping_methods,
                allow_swap, allow_bargain, status,
                split_box_group_id, split_box_slot_id)
             VALUES
-              (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+              (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
                %s::listing_condition_enum,
                %s::trade_mode_enum,
                %s::shipping_method_enum,
@@ -396,6 +403,7 @@ def create_listing(
             (
                 listing_id,
                 user_id,
+                catalog_product_id,
                 brand_id,
                 ip_id,
                 series_id,
