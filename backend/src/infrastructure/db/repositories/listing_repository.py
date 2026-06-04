@@ -27,7 +27,8 @@ _LIST_SELECT = """
         l.seller_id,
         u.display_name AS seller_name,
         b.name AS brand_name,
-        s.name AS series_name,
+        i.name AS ip_name,
+        ps.name AS series_name,
         (
             SELECT li.url FROM listing_images li
             WHERE li.listing_id = l.id
@@ -42,7 +43,8 @@ _LIST_SELECT = """
     FROM listings l
     LEFT JOIN users u ON u.id = l.seller_id
     LEFT JOIN brands b ON b.id = l.brand_id
-    LEFT JOIN series s ON s.id = l.series_id
+    LEFT JOIN ips i ON i.id = l.ip_id
+    LEFT JOIN series ps ON ps.id = l.series_id
     WHERE l.status = 'active' AND l.deleted_at IS NULL
     ORDER BY l.created_at DESC
 """
@@ -68,7 +70,8 @@ _MY_LISTINGS_SELECT = """
         l.seller_id,
         u.display_name AS seller_name,
         b.name AS brand_name,
-        s.name AS series_name,
+        i.name AS ip_name,
+        ps.name AS series_name,
         (
             SELECT li.url FROM listing_images li
             WHERE li.listing_id = l.id
@@ -83,7 +86,8 @@ _MY_LISTINGS_SELECT = """
     FROM listings l
     LEFT JOIN users u ON u.id = l.seller_id
     LEFT JOIN brands b ON b.id = l.brand_id
-    LEFT JOIN series s ON s.id = l.series_id
+    LEFT JOIN ips i ON i.id = l.ip_id
+    LEFT JOIN series ps ON ps.id = l.series_id
     WHERE l.status = 'active' AND l.deleted_at IS NULL AND l.seller_id = %s
     ORDER BY l.created_at DESC
 """
@@ -109,7 +113,8 @@ _LISTING_BY_ID = """
         l.seller_id,
         u.display_name AS seller_name,
         b.name AS brand_name,
-        s.name AS series_name,
+        i.name AS ip_name,
+        ps.name AS series_name,
         (
             SELECT li.url FROM listing_images li
             WHERE li.listing_id = l.id
@@ -124,7 +129,8 @@ _LISTING_BY_ID = """
     FROM listings l
     LEFT JOIN users u ON u.id = l.seller_id
     LEFT JOIN brands b ON b.id = l.brand_id
-    LEFT JOIN series s ON s.id = l.series_id
+    LEFT JOIN ips i ON i.id = l.ip_id
+    LEFT JOIN series ps ON ps.id = l.series_id
     WHERE l.id = %s AND l.deleted_at IS NULL
     LIMIT 1
 """
@@ -203,15 +209,20 @@ def _to_slug(value: str) -> str:
     return slug or "unknown"
 
 
-def _ensure_brand_and_series_ids(
+_OTHER_IP = "其他 IP"
+
+
+def _ensure_brand_ip_and_product_series_ids(
     cur,
     brand_name: str | None,
-    series_name: str | None,
-) -> tuple[str | None, str | None]:
+    ip_name: str | None = None,
+    product_series_name: str | None = None,
+) -> tuple[str | None, str | None, str | None]:
     brand = (brand_name or "").strip()
-    series = (series_name or "").strip()
+    ip = (ip_name or "").strip()
+    line = (product_series_name or "").strip()
     if not brand:
-        return None, None
+        return None, None, None
 
     brand_slug = _to_slug(brand)
     cur.execute(
@@ -226,22 +237,57 @@ def _ensure_brand_and_series_ids(
     )
     brand_id = str(cur.fetchone()["id"])
 
-    if not series:
-        return brand_id, None
+    if not ip and not line:
+        return brand_id, None, None
 
-    series_slug = _to_slug(series)
+    if not ip and line:
+        cur.execute(
+            """
+            SELECT i.id AS ip_id, s.id AS series_id
+            FROM series s
+            JOIN ips i ON i.id = s.ip_id
+            WHERE s.brand_id = %s AND s.name = %s
+            ORDER BY s.updated_at DESC
+            LIMIT 1
+            """,
+            (brand_id, line),
+        )
+        row = cur.fetchone()
+        if row:
+            return brand_id, str(row["ip_id"]), str(row["series_id"])
+
+    if not ip:
+        ip = _OTHER_IP
+
+    ip_slug = _to_slug(ip)
     cur.execute(
         """
-        INSERT INTO series (brand_id, slug, name)
+        INSERT INTO ips (brand_id, slug, name)
         VALUES (%s, %s, %s)
         ON CONFLICT (brand_id, slug)
         DO UPDATE SET name = EXCLUDED.name, updated_at = now()
         RETURNING id
         """,
-        (brand_id, series_slug, series),
+        (brand_id, ip_slug, ip),
+    )
+    ip_id = str(cur.fetchone()["id"])
+
+    if not line:
+        return brand_id, ip_id, None
+
+    line_slug = _to_slug(line)
+    cur.execute(
+        """
+        INSERT INTO series (brand_id, ip_id, slug, name)
+        VALUES (%s, %s, %s, %s)
+        ON CONFLICT (brand_id, ip_id, slug)
+        DO UPDATE SET name = EXCLUDED.name, updated_at = now()
+        RETURNING id
+        """,
+        (brand_id, ip_id, line_slug, line),
     )
     series_id = str(cur.fetchone()["id"])
-    return brand_id, series_id
+    return brand_id, ip_id, series_id
 
 
 def _row_to_listing(row: dict) -> Listing:
@@ -318,16 +364,18 @@ def create_listing(
     shipping_db = methods_db[0]
 
     with conn.cursor() as cur:
-        brand_id, series_id = _ensure_brand_and_series_ids(cur, data.brand, data.series)
+        brand_id, ip_id, series_id = _ensure_brand_ip_and_product_series_ids(
+            cur, data.brand, data.ip or None, data.series
+        )
         cur.execute(
             """
             INSERT INTO listings
-              (id, seller_id, brand_id, series_id, title, item_name, quantity, price_amount, price_currency,
+              (id, seller_id, brand_id, ip_id, series_id, title, item_name, quantity, price_amount, price_currency,
                description, condition, trade_mode, shipping_method, shipping_methods,
                allow_swap, allow_bargain, status,
                split_box_group_id, split_box_slot_id)
             VALUES
-              (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+              (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
                %s::listing_condition_enum,
                %s::trade_mode_enum,
                %s::shipping_method_enum,
@@ -339,6 +387,7 @@ def create_listing(
                 listing_id,
                 user_id,
                 brand_id,
+                ip_id,
                 series_id,
                 data.title,
                 data.item_name,

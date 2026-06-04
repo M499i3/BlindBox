@@ -6,15 +6,7 @@ import PriceTrendChart from '@/frontend/presentation/components/PriceTrendChart'
 import { useCatalogProduct, deriveBrandLabel } from '@/frontend/presentation/hooks/useCatalog';
 import { useProductCollection } from '@/frontend/presentation/hooks/useProductCollection';
 import { buildMarketplaceSearchUrl } from '@/frontend/shared/utils/shopNavigation';
-
-function deriveSeriesName(title: string) {
-  const cleaned = title
-    .replace(/^泡泡萌粒\s*/g, '')
-    .replace(/(手辦|公仔|手办|盲盒|模型|挂件|掛件|周邊|周边)$/g, '')
-    .trim();
-  const m = cleaned.match(/([A-Za-z0-9\u4e00-\u9fff ×xX·\-\(\)（）]{2,32}?系列)/);
-  return m?.[1]?.trim();
-}
+import { deriveSeriesName } from '@/frontend/shared/utils/deriveSeriesName';
 
 function stopAction(e: React.MouseEvent) {
   e.stopPropagation();
@@ -32,8 +24,10 @@ export default function CatalogProductDetail() {
     const parts = ['圖鑑'];
     const brand = product.brandName ?? deriveBrandLabel(product.title);
     if (brand) parts.push(brand);
-    const series = product.seriesName ?? deriveSeriesName(product.title);
-    if (series) parts.push(series);
+    const ip = product.ipName;
+    if (ip) parts.push(ip);
+    const line = product.seriesName ?? deriveSeriesName(product.title);
+    if (line) parts.push(line);
     return parts;
   }, [product]);
 
@@ -53,7 +47,9 @@ export default function CatalogProductDetail() {
   }
 
   const brand = product.brandName ?? deriveBrandLabel(product.title);
+  const ipName = product.ipName;
   const seriesName = product.seriesName ?? deriveSeriesName(product.title);
+  const metaLine = [ipName, seriesName].filter(Boolean).join(' · ');
   const hero = product.image;
 
   return (
@@ -102,9 +98,9 @@ export default function CatalogProductDetail() {
             <div>
               <p className="text-[10px] font-black uppercase tracking-wider text-secondary">盲盒詳情</p>
               <h1 className="mt-1 text-lg font-extrabold leading-snug text-on-surface">{product.title}</h1>
-              {(brand || seriesName) && (
+              {(brand || metaLine) && (
                 <p className="mt-1 text-xs font-semibold text-on-surface-variant">
-                  {[brand, seriesName].filter(Boolean).join(' · ')}
+                  {[brand, metaLine].filter(Boolean).join(' · ')}
                 </p>
               )}
               {product.price ? (

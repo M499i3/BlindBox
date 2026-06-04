@@ -65,6 +65,7 @@ function toApi(input: CreateListingInput): Record<string, unknown> {
     price: input.price,
     description: input.description,
     brand: input.brand,
+    ip: input.ip ?? '',
     series: input.series,
     condition: input.condition,
     trade_mode: input.tradeMode,

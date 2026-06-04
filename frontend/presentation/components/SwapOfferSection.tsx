@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import type { Listing } from '@/frontend/domain/entities/listing';
 import type { SwapOfferFormValue, SwapProposal } from '@/frontend/domain/entities/swapProposal';
 import { DEFAULT_SWAP_OFFER_FORM } from '@/frontend/domain/entities/swapProposal';
@@ -8,9 +8,9 @@ import {
   createSwapProposal,
   rejectSwapProposal,
 } from '@/frontend/infrastructure/api/swapProposalsApi';
-import { getCatalogBrands, getCatalogSeries, getCatalogStyles } from '@/frontend/infrastructure/api/catalogApi';
 import { uploadImageToStorage } from '@/frontend/infrastructure/storage/supabaseStorage';
-import type { BrandRow, SeriesRow, StyleRow } from '@/frontend/domain/entities/catalog';
+import CatalogFieldsSection from '@/frontend/presentation/components/listing/CatalogFieldsSection';
+import { useCatalogListingForm } from '@/frontend/presentation/hooks/useCatalogListingForm';
 import ListingCardImage from '@/frontend/presentation/components/ListingCardImage';
 import { cn } from '@/frontend/shared/utils/cn';
 
@@ -47,12 +47,8 @@ export default function SwapOfferSection({
   const [form, setForm] = useState<SwapOfferFormValue>(DEFAULT_SWAP_OFFER_FORM);
   const [submitting, setSubmitting] = useState(false);
   const [actionId, setActionId] = useState<string | null>(null);
-  const [brandOptions, setBrandOptions] = useState<BrandRow[]>([]);
-  const [seriesOptions, setSeriesOptions] = useState<SeriesRow[]>([]);
-  const [styleOptions, setStyleOptions] = useState<StyleRow[]>([]);
-  const [brandSlug, setBrandSlug] = useState('');
-  const [seriesSlug, setSeriesSlug] = useState('');
   const [query, setQuery] = useState('');
+  const catalog = useCatalogListingForm();
 
   const swapListings = useMemo(
     () => myListings.filter((item) => item.id !== wantedListing.id),
@@ -61,84 +57,21 @@ export default function SwapOfferSection({
 
   const filteredStyles = useMemo(() => {
     const q = query.trim().toLowerCase();
-    let pool = styleOptions;
-    if (form.itemName.trim()) {
-      pool = pool.filter((s) => s.name === form.itemName.trim());
+    let pool = catalog.styleOptions;
+    if (catalog.itemName.trim()) {
+      pool = pool.filter((s) => s.name === catalog.itemName.trim());
     }
     if (!q) return pool.slice(0, 8);
     return pool.filter((s) => s.name.toLowerCase().includes(q)).slice(0, 8);
-  }, [styleOptions, query, form.itemName]);
+  }, [catalog.styleOptions, catalog.itemName, query]);
 
   const visibleImageSlots = useMemo(
-    () => Math.min(9, Math.max(1, form.images.length + 1)),
-    [form.images.length]
+    () => Math.min(9, Math.max(1, catalog.images.length + 1)),
+    [catalog.images.length]
   );
-
-  useEffect(() => {
-    getCatalogBrands()
-      .then((rows) => {
-        if (!rows.length) return;
-        setBrandOptions(rows);
-        const first = rows[0];
-        const slug = first.slug ?? first.name.toLowerCase().replace(/\s+/g, '-');
-        setForm((prev) => ({ ...prev, brand: prev.brand || first.name }));
-        setBrandSlug(slug);
-      })
-      .catch(() => undefined);
-  }, []);
-
-  useEffect(() => {
-    if (!brandSlug) return;
-    getCatalogSeries(brandSlug)
-      .then((rows) => {
-        setSeriesOptions(rows);
-        const first = rows[0];
-        setForm((prev) => ({ ...prev, series: prev.series || first?.name || '' }));
-        setSeriesSlug(first?.slug ?? '');
-      })
-      .catch(() => {
-        setSeriesOptions([]);
-        setSeriesSlug('');
-      });
-  }, [brandSlug]);
-
-  useEffect(() => {
-    if (!brandSlug || !seriesSlug) {
-      setStyleOptions([]);
-      return;
-    }
-    getCatalogStyles(brandSlug, seriesSlug)
-      .then(setStyleOptions)
-      .catch(() => setStyleOptions([]));
-  }, [brandSlug, seriesSlug]);
 
   const patchForm = (patch: Partial<SwapOfferFormValue>) => {
     setForm((prev) => ({ ...prev, ...patch }));
-  };
-
-  const onUploadImage = (index: number, file?: File | null) => {
-    if (!file) return;
-    const previewUrl = URL.createObjectURL(file);
-    patchForm({
-      source: 'form',
-      images: (() => {
-        const next = [...form.images];
-        next[index] = previewUrl;
-        return next.slice(0, 9);
-      })(),
-      localImageFiles: (() => {
-        const next = [...form.localImageFiles];
-        next[index] = file;
-        return next.slice(0, 9);
-      })(),
-    });
-  };
-
-  const removeImage = (index: number) => {
-    patchForm({
-      images: form.images.filter((_, i) => i !== index),
-      localImageFiles: form.localImageFiles.filter((_, i) => i !== index),
-    });
   };
 
   const submitProposal = async () => {
@@ -157,27 +90,22 @@ export default function SwapOfferSection({
           additionalAmount: Math.round((Number(form.additionalAmount) || 0) * 100),
         });
       } else {
-        if (!form.itemName.trim() && !form.title.trim()) {
-          alert('請填寫商品名稱');
+        if (!catalog.itemName.trim() && !catalog.title.trim()) {
+          alert('請選擇款式或填寫商品名稱');
           return;
         }
-        const uploadedImages = await Promise.all(
-          form.images.map(async (img, idx) => {
-            const file = form.localImageFiles[idx];
-            if (!file) return img;
-            return uploadImageToStorage({ file, folder: 'listings' });
-          })
-        );
+        const uploadedImages = await catalog.uploadImages();
         await createSwapProposal({
           wantedListingId: wantedListing.id,
           offer: {
-            title: form.title.trim() || form.itemName.trim(),
-            itemName: form.itemName.trim() || form.title.trim(),
+            title: catalog.title.trim() || catalog.itemName.trim(),
+            itemName: catalog.itemName.trim() || catalog.title.trim(),
             price: 'NT$ 0',
             quantity: 1,
             description: form.description.trim() || '交換提案商品',
-            brand: form.brand,
-            series: form.series,
+            brand: catalog.brand,
+            ip: catalog.ip,
+            series: catalog.productLine,
             condition: form.condition,
             tradeMode: '我想換',
             shipping: form.shipping,
@@ -401,7 +329,7 @@ export default function SwapOfferSection({
         <>
           <div className="grid grid-cols-3 gap-2">
             {Array.from({ length: visibleImageSlots }, (_, index) => {
-              const image = form.images[index];
+              const image = catalog.images[index];
               return (
                 <label
                   key={index}
@@ -416,7 +344,7 @@ export default function SwapOfferSection({
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          removeImage(index);
+                          catalog.removeImage(index);
                         }}
                         className="absolute right-1 top-1 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-black/55 text-white"
                         aria-label="移除照片"
@@ -431,12 +359,34 @@ export default function SwapOfferSection({
                     type="file"
                     accept="image/*"
                     className="hidden"
-                    onChange={(e) => onUploadImage(index, e.target.files?.[0])}
+                    onChange={(e) => catalog.onUploadImage(index, e.target.files?.[0])}
                   />
                 </label>
               );
             })}
           </div>
+
+          <CatalogFieldsSection
+            brand={catalog.brand}
+            ip={catalog.ip}
+            productLine={catalog.productLine}
+            catalogProductId={catalog.catalogProductId}
+            brandOptions={catalog.brandOptions}
+            ipOptions={catalog.ipOptions}
+            productLineOptions={catalog.productLineOptions}
+            styleOptions={catalog.styleOptions}
+            productsLoading={catalog.productsLoading}
+            onBrandChange={(name, slug) => {
+              catalog.setBrand(name);
+              catalog.setBrandSlug(slug);
+            }}
+            onIpChange={(name, slug) => {
+              catalog.setIp(name);
+              catalog.setIpSlug(slug);
+            }}
+            onProductLineChange={catalog.setProductLine}
+            onStyleChange={catalog.applyCatalogStyle}
+          />
 
           <div className="relative">
             <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">
@@ -456,15 +406,11 @@ export default function SwapOfferSection({
                 <button
                   key={p.id}
                   type="button"
-                  onClick={() => {
-                    patchForm({
-                      itemName: p.name,
-                      title: form.title || p.name,
-                      images: p.image ? [p.image] : form.images,
-                      localImageFiles: [],
-                    });
-                  }}
-                  className="aspect-square overflow-hidden rounded-xl border border-outline"
+                  onClick={() => catalog.applyCatalogStyle(p.id)}
+                  className={cn(
+                    'aspect-square overflow-hidden rounded-xl border-2',
+                    catalog.catalogProductId === p.id ? 'border-primary' : 'border-outline'
+                  )}
                 >
                   <img src={p.image} alt="" className="h-full w-full object-cover" referrerPolicy="no-referrer" />
                 </button>
@@ -472,51 +418,15 @@ export default function SwapOfferSection({
             </div>
           ) : null}
 
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <label className={LABEL} htmlFor="swap-brand">品牌</label>
-              <select
-                id="swap-brand"
-                value={form.brand}
-                onChange={(e) => {
-                  const nextName = e.target.value;
-                  const selected = brandOptions.find((b) => b.name === nextName);
-                  patchForm({ brand: nextName });
-                  setBrandSlug(selected?.slug ?? nextName.toLowerCase().replace(/\s+/g, '-'));
-                }}
-                className={cn(FIELD, 'cursor-pointer')}
-              >
-                {brandOptions.map((b) => (
-                  <option key={b.slug ?? b.name} value={b.name}>{b.name}</option>
-                ))}
-              </select>
-            </div>
-            <div className="space-y-1.5">
-              <label className={LABEL} htmlFor="swap-series">系列</label>
-              <select
-                id="swap-series"
-                value={form.series}
-                onChange={(e) => {
-                  const nextName = e.target.value;
-                  const selected = seriesOptions.find((s) => s.name === nextName);
-                  patchForm({ series: nextName });
-                  setSeriesSlug(selected?.slug ?? '');
-                }}
-                className={cn(FIELD, 'cursor-pointer')}
-              >
-                {seriesOptions.map((s) => (
-                  <option key={s.slug ?? s.name} value={s.name}>{s.name}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
           <div className="space-y-1.5">
             <label className={LABEL} htmlFor="swap-item-name">商品名稱</label>
             <input
               id="swap-item-name"
-              value={form.itemName}
-              onChange={(e) => patchForm({ itemName: e.target.value, title: e.target.value })}
+              value={catalog.itemName}
+              onChange={(e) => {
+                catalog.setItemName(e.target.value);
+                catalog.setTitle(e.target.value);
+              }}
               className={FIELD}
               placeholder="例如：Molly 經典系列 - 小畫家"
             />

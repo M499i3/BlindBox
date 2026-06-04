@@ -2,16 +2,16 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   getCatalogBrands,
   getCatalogProducts,
-  getCatalogSeries,
+  getCatalogIps,
 } from '@/frontend/infrastructure/api/catalogApi';
 import { fetchCached } from '@/frontend/shared/utils/fetchCache';
 import {
   CATALOG_BRANDS_KEY,
   catalogProductsKey,
-  catalogSeriesKey,
+  catalogIpsKey,
 } from '@/frontend/shared/utils/catalogCacheKeys';
 import { uploadImageToStorage } from '@/frontend/infrastructure/storage/supabaseStorage';
-import type { BrandRow, CatalogProduct, SeriesRow } from '@/frontend/domain/entities/catalog';
+import type { BrandRow, CatalogProduct, IpRow } from '@/frontend/domain/entities/catalog';
 import {
   filterProductsByIp,
   productLinesFromProducts,
@@ -34,7 +34,7 @@ export function useCatalogListingForm() {
 
   const [ip, setIp] = useState('');
   const [ipSlug, setIpSlug] = useState('');
-  const [ipOptions, setIpOptions] = useState<SeriesRow[]>([]);
+  const [ipOptions, setIpOptions] = useState<IpRow[]>([]);
 
   const [productLine, setProductLine] = useState('');
   const [brandProducts, setBrandProducts] = useState<CatalogProduct[]>([]);
@@ -62,7 +62,7 @@ export function useCatalogListingForm() {
     if (!brandSlug) return;
     setProductsLoading(true);
     Promise.all([
-      fetchCached(catalogSeriesKey(brandSlug), () => getCatalogSeries(brandSlug)),
+      fetchCached(catalogIpsKey(brandSlug), () => getCatalogIps(brandSlug)),
       fetchCached(catalogProductsKey({ brand: brandSlug }), () =>
         getCatalogProducts({ brand: brandSlug })
       ),

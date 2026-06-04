@@ -5,10 +5,11 @@ import {
   getCatalogProducts,
   getCatalogProductById,
   getCatalogSearch,
+  getCatalogIps,
   getCatalogSeries,
   getCatalogStyles,
 } from '@/frontend/infrastructure/api/catalogApi';
-import type { SeriesRow, StyleRow } from '@/frontend/domain/entities/catalog';
+import type { IpRow, SeriesRow, StyleRow } from '@/frontend/domain/entities/catalog';
 import {
   deriveBrandLabel as deriveBrandLabelFromMock,
   filterMockProducts,
@@ -28,7 +29,8 @@ import {
   catalogProductKey,
   catalogProductsKey,
   catalogSearchKey,
-  catalogSeriesKey,
+  catalogIpsKey,
+  catalogProductSeriesKey,
   catalogStylesKey,
   mergeProductIntoCatalogCache,
 } from '@/frontend/shared/utils/catalogCacheKeys';
@@ -48,6 +50,7 @@ export function buildBrandRow(products: CatalogProduct[], limit = 6): BrandRow[]
 export function useCatalogProducts(opts?: {
   q?: string;
   brand?: string;
+  ip?: string;
   series?: string;
   /** API mode: skip fetch when false (avoids loading full catalog). */
   enabled?: boolean;
@@ -58,13 +61,13 @@ export function useCatalogProducts(opts?: {
 
   const mockProducts = useMemo(
     () => (mock ? filterMockProducts(opts) : []),
-    [mock, opts?.q, opts?.brand, opts?.series]
+    [mock, opts?.q, opts?.brand, opts?.ip, opts?.series]
   );
 
   const { data, loading } = useCachedFetch(
     cacheKey,
     () => getCatalogProducts(opts).catch(() => filterMockProducts(opts)),
-    [opts?.q, opts?.brand, opts?.series, enabled],
+    [opts?.q, opts?.brand, opts?.ip, opts?.series, enabled],
     {
       enabled: !mock && enabled,
       initial: mock ? mockProducts : [],
@@ -163,22 +166,52 @@ export function useCatalogBrands() {
   return data ?? [];
 }
 
-export function useCatalogSeries(brandSlug: string | undefined) {
+/** 品牌下的 IP 列表（DB `ips`） */
+export function useCatalogIps(brandSlug: string | undefined) {
   const mock = isMockDataEnabled();
-  const key = mock || !brandSlug ? null : catalogSeriesKey(brandSlug);
+  const key = mock || !brandSlug ? null : catalogIpsKey(brandSlug);
 
   const { data, loading } = useCachedFetch(
     key,
-    () => getCatalogSeries(brandSlug!).catch(() => [] as SeriesRow[]),
+    () => getCatalogIps(brandSlug!).catch(() => [] as IpRow[]),
     [brandSlug],
+    { enabled: !mock && !!brandSlug, initial: [] as IpRow[] }
+  );
+
+  if (mock || !brandSlug) {
+    return { ips: [] as IpRow[], loading: false };
+  }
+
+  return { ips: data ?? [], loading };
+}
+
+/** @deprecated 請改用 useCatalogIps；保留別名以免大量改動 */
+export function useCatalogSeries(brandSlug: string | undefined) {
+  const { ips, loading } = useCatalogIps(brandSlug);
+  return { series: ips as SeriesRow[], loading };
+}
+
+/** 產品線系列（DB `series`，可選 IP slug 篩選） */
+export function useCatalogProductSeries(
+  brandSlug: string | undefined,
+  ipSlug?: string
+) {
+  const mock = isMockDataEnabled();
+  const key =
+    mock || !brandSlug ? null : catalogProductSeriesKey(brandSlug, ipSlug);
+
+  const { data, loading } = useCachedFetch(
+    key,
+    () => getCatalogSeries(brandSlug!, ipSlug).catch(() => [] as SeriesRow[]),
+    [brandSlug, ipSlug],
     { enabled: !mock && !!brandSlug, initial: [] as SeriesRow[] }
   );
 
   if (mock || !brandSlug) {
-    return { series: [] as SeriesRow[], loading: false };
+    return { productSeries: [] as SeriesRow[], loading: false };
   }
 
-  return { series: data ?? [], loading };
+  return { productSeries: data ?? [], loading };
 }
 
 export function useCatalogStyles(brandSlug: string | undefined, seriesSlug: string | undefined) {

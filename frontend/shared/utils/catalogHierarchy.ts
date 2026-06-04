@@ -1,5 +1,8 @@
 import type { CatalogProduct } from '@/frontend/domain/entities/catalog';
 import { deriveBrandLabel } from '@/frontend/presentation/hooks/useCatalog';
+import { deriveSeriesName } from '@/frontend/shared/utils/deriveSeriesName';
+
+export { deriveSeriesName } from '@/frontend/shared/utils/deriveSeriesName';
 
 /** 圖鑑層級：品牌 → IP → 系列 → 盲盒商品 */
 export type CollectionProgress = {
@@ -55,17 +58,7 @@ export type CatalogHierarchy = {
 
 const POP_MART = 'Pop Mart';
 const JELLYCAT = 'Jellycat';
-const FALLBACK_SERIES = '未分系列';
 const FALLBACK_IP = '其他 IP';
-
-export function deriveSeriesName(title: string): string {
-  const cleaned = title
-    .replace(/^泡泡萌粒\s*/g, '')
-    .replace(/(手辦|公仔|手办|盲盒|模型|挂件|掛件|周邊|周边)$/g, '')
-    .trim();
-  const m = cleaned.match(/([A-Za-z0-9\u4e00-\u9fff ×xX·\-\(\)（）]{2,32}?系列)/);
-  return m?.[1]?.trim() ?? FALLBACK_SERIES;
-}
 
 export function productBrandName(title: string): string {
   if (/jellycat/i.test(title)) return JELLYCAT;
@@ -76,6 +69,18 @@ export function productIpName(title: string, brand: string): string {
   if (brand !== POP_MART) return brand;
   const ip = deriveBrandLabel(title);
   return ip === POP_MART ? FALLBACK_IP : ip;
+}
+
+/** API 圖鑑優先使用 DB 欄位；缺欄位時才從標題推導（mock／舊資料） */
+export function resolveHierarchyLabels(product: CatalogProduct): {
+  brand: string;
+  ip: string;
+  series: string;
+} {
+  const brand = product.brandName?.trim() || productBrandName(product.title);
+  const ip = product.ipName?.trim() || productIpName(product.title, brand);
+  const series = product.seriesName?.trim() || deriveSeriesName(product.title);
+  return { brand, ip, series };
 }
 
 function seriesKey(brand: string, ip: string, series: string) {
@@ -139,9 +144,7 @@ export function buildCatalogHierarchy(
   };
 
   const rows: Acc[] = products.map((p) => {
-    const brand = productBrandName(p.title);
-    const ip = productIpName(p.title, brand);
-    const series = deriveSeriesName(p.title);
+    const { brand, ip, series } = resolveHierarchyLabels(p);
     return { brand, ip, series, product: p };
   });
 

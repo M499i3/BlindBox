@@ -5,21 +5,9 @@ import CatalogHero from '@/frontend/presentation/components/catalog/CatalogHero'
 import CatalogFigurineTile from '@/frontend/presentation/components/catalog/CatalogFigurineTile';
 import CatalogSectionHeading from '@/frontend/presentation/components/catalog/CatalogSectionHeading';
 import { useProductCollection } from '@/frontend/presentation/hooks/useProductCollection';
-import {
-  deriveBrandLabel,
-  useCatalogProducts,
-  useCatalogStyles,
-} from '@/frontend/presentation/hooks/useCatalog';
+import { deriveBrandLabel, useCatalogBrands, useCatalogProducts } from '@/frontend/presentation/hooks/useCatalog';
 import { isMockDataEnabled } from '@/frontend/lib/popmartShowcase';
-
-function deriveSeriesName(title: string) {
-  const cleaned = title
-    .replace(/^泡泡萌粒\s*/g, '')
-    .replace(/(手辦|公仔|手办|盲盒|模型|挂件|掛件|周邊|周边)$/g, '')
-    .trim();
-  const m = cleaned.match(/([A-Za-z0-9\u4e00-\u9fff ×xX·\-\(\)（）]{2,32}?系列)/);
-  return m?.[1]?.trim();
-}
+import { deriveSeriesName } from '@/frontend/shared/utils/deriveSeriesName';
 
 export default function SubseriesDetail() {
   const [params] = useSearchParams();
@@ -29,32 +17,39 @@ export default function SubseriesDetail() {
 
   const brandSlug = params.get('brand') ?? '';
   const seriesSlug = params.get('series') ?? '';
-  const ip = params.get('ip') ?? '';
-  const name = params.get('name') ?? '';
+  const ipName = params.get('ip') ?? '';
+  const lineName = params.get('name') ?? '';
+
+  const dbBrands = useCatalogBrands();
+  const brandTitle = useMemo(() => {
+    const hit = dbBrands.find((b) => (b.slug ?? '') === brandSlug);
+    return hit?.name ?? (brandSlug ? brandSlug.replace(/-/g, ' ') : '');
+  }, [dbBrands, brandSlug]);
 
   const { products: catalogProducts } = useCatalogProducts(
-    mock ? undefined : { brand: brandSlug || undefined, series: seriesSlug || undefined }
-  );
-  const { styles: dbStyles } = useCatalogStyles(
-    mock ? undefined : brandSlug || undefined,
-    mock ? undefined : seriesSlug || undefined
+    mock
+      ? undefined
+      : {
+          brand: brandSlug || undefined,
+          series: seriesSlug || undefined,
+        }
   );
 
-  const products = mock
-    ? catalogProducts.filter((p) => {
-        if (ip && deriveBrandLabel(p.title) !== ip) return false;
+  const products = useMemo(() => {
+    if (mock) {
+      return catalogProducts.filter((p) => {
+        if (ipName && deriveBrandLabel(p.title) !== ipName) return false;
         const s = deriveSeriesName(p.title);
-        return name ? s === name : Boolean(s);
-      })
-    : name
-      ? catalogProducts.filter((p) => deriveSeriesName(p.title) === name)
-      : dbStyles.map((s) => ({
-          id: s.id,
-          title: s.name,
-          image: s.image,
-          price: '',
-          sourceUrl: '',
-        }));
+        return lineName ? s === lineName : Boolean(s);
+      });
+    }
+    return catalogProducts.filter((p) => {
+      if (lineName && p.seriesName && p.seriesName !== lineName) return false;
+      if (seriesSlug && p.seriesSlug && p.seriesSlug !== seriesSlug) return false;
+      if (ipName && p.ipName && p.ipName !== ipName) return false;
+      return true;
+    });
+  }, [mock, catalogProducts, ipName, lineName, seriesSlug]);
 
   const hero =
     products[0]?.image ??
@@ -67,19 +62,20 @@ export default function SubseriesDetail() {
 
   const breadcrumb = useMemo(() => {
     const parts = ['圖鑑'];
-    if (mock && ip) parts.push(ip);
-    else if (brandSlug) parts.push(brandSlug.replace(/-/g, ' '));
-    if (name) parts.push(name);
+    if (mock && ipName) parts.push(ipName);
+    else if (brandTitle) parts.push(brandTitle);
+    if (ipName && !mock) parts.push(ipName);
+    if (lineName) parts.push(lineName);
     return parts;
-  }, [mock, ip, brandSlug, name]);
+  }, [mock, ipName, brandTitle, lineName]);
 
   return (
     <div className="w-full min-w-0 max-w-full overflow-x-hidden animate-in fade-in duration-500 min-h-full pb-32">
-      <TopBar title={name || '系列'} showBack rightElement={<></>} />
+      <TopBar title={lineName || '系列'} showBack rightElement={<></>} />
 
       <main className="mx-auto w-full min-w-0 max-w-full space-y-8 px-container-margin pt-topbar-content">
         <CatalogHero
-          title={name || '系列'}
+          title={lineName || '系列'}
           subtitle="收錄款式圖鑑，點選查看詳情或標記收藏。"
           breadcrumb={breadcrumb}
           coverImage={hero}

@@ -105,6 +105,7 @@ function createPayload(input: CreateSplitBoxInput) {
   return {
     title: input.title,
     brand: input.brand,
+    ip: input.ip ?? '',
     series: input.series,
     description: input.description,
     cover_image: input.coverImage,

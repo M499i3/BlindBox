@@ -15,7 +15,7 @@ from infrastructure.db.repositories.listing_repository import (
     _SHIPPING_MAP,
     _format_price,
     _parse_price_amount,
-    _ensure_brand_and_series_ids,
+    _ensure_brand_ip_and_product_series_ids,
     create_listing,
 )
 from domain.entities import CreateListingInput
@@ -36,7 +36,7 @@ _GROUP_SUMMARY_SELECT = """
         g.closes_at,
         g.created_at,
         b.name AS brand_name,
-        s.name AS series_name,
+        ps.name AS series_name,
         (
             SELECT COUNT(*)::int FROM split_box_slots ss
             WHERE ss.group_id = g.id AND ss.status = 'available'
@@ -44,7 +44,7 @@ _GROUP_SUMMARY_SELECT = """
     FROM split_box_groups g
     LEFT JOIN users u ON u.id = g.organizer_id
     LEFT JOIN brands b ON b.id = g.brand_id
-    LEFT JOIN series s ON s.id = g.series_id
+    LEFT JOIN series ps ON ps.id = g.series_id
 """
 
 _SLOT_SELECT = """
@@ -188,7 +188,7 @@ def get_split_box_group_detail(
                 g.*,
                 u.display_name AS organizer_name,
                 b.name AS brand_name,
-                s.name AS series_name,
+                ps.name AS series_name,
                 g.shipping_method::text AS shipping_method,
                 (
                     SELECT COUNT(*)::int FROM split_box_slots ss
@@ -197,7 +197,7 @@ def get_split_box_group_detail(
             FROM split_box_groups g
             LEFT JOIN users u ON u.id = g.organizer_id
             LEFT JOIN brands b ON b.id = g.brand_id
-            LEFT JOIN series s ON s.id = g.series_id
+            LEFT JOIN series ps ON ps.id = g.series_id
             WHERE g.id = %s
             """,
             (group_id,),
@@ -256,15 +256,17 @@ def create_split_box_group(
     default_slot_amount = total_amount // len(non_reserved) if non_reserved else 0
 
     with conn.cursor() as cur:
-        brand_id, series_id = _ensure_brand_and_series_ids(cur, data.brand, data.series)
+        brand_id, ip_id, series_id = _ensure_brand_ip_and_product_series_ids(
+            cur, data.brand, data.ip or None, data.series
+        )
         cur.execute(
             """
             INSERT INTO split_box_groups
-              (id, organizer_id, brand_id, series_id, title, description, cover_image,
+              (id, organizer_id, brand_id, ip_id, series_id, title, description, cover_image,
                shipping_method, shipping_note, total_price_amount, price_per_slot_amount,
                target_count, reserved_count, claimed_count, closes_at)
             VALUES
-              (%s, %s, %s, %s, %s, %s, %s,
+              (%s, %s, %s, %s, %s, %s, %s, %s,
                %s::shipping_method_enum, %s, %s, %s,
                %s, %s, 0, %s)
             """,
@@ -272,6 +274,7 @@ def create_split_box_group(
                 group_id,
                 organizer_id,
                 brand_id,
+                ip_id,
                 series_id,
                 data.title,
                 data.description or "",
@@ -344,6 +347,7 @@ def create_split_box_group(
             price=_format_price(slot_amount, "TWD"),
             description=data.description or f"拆盒團認領：{data.title}",
             brand=data.brand,
+            ip=data.ip,
             series=data.series,
             condition="全新未拆",
             trade_mode="加入拆盒團",

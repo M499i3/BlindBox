@@ -70,6 +70,7 @@ function offerToApi(offer: CreateListingInput) {
     price: offer.price,
     description: offer.description,
     brand: offer.brand,
+    ip: offer.ip ?? '',
     series: offer.series,
     condition: offer.condition,
     trade_mode: offer.tradeMode,

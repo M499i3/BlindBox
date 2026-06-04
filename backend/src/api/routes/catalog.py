@@ -11,6 +11,7 @@ from application.catalog_service import (
     derive_brand_label,
     get_product,
     list_brands,
+    list_ips,
     list_products,
     list_series,
     list_styles,
@@ -32,10 +33,11 @@ def search_catalog(
 def get_products(
     q: Annotated[str | None, Query(description="搜尋關鍵字")] = None,
     brand: Annotated[str | None, Query(description="品牌 slug")] = None,
-    series: Annotated[str | None, Query(description="系列 slug")] = None,
+    ip: Annotated[str | None, Query(description="IP slug")] = None,
+    series: Annotated[str | None, Query(description="產品線系列 slug")] = None,
     conn: psycopg2.extensions.connection = Depends(get_db),
 ) -> list[CatalogProduct]:
-    return list_products(conn, query=q, brand=brand, series=series)
+    return list_products(conn, query=q, brand=brand, ip=ip, series=series)
 
 
 @router.get("/products/{product_id}", response_model=CatalogProduct)
@@ -69,18 +71,27 @@ def get_brands(
     return [{"name": name, "slug": name.lower().replace(" ", "-"), "image": image} for name, image in seen.items()]
 
 
-@router.get("/series")
-def get_series(
+@router.get("/ips")
+def get_ips(
     brand: Annotated[str, Query(description="品牌 slug")],
     conn: psycopg2.extensions.connection = Depends(get_db),
 ) -> list[dict]:
-    return list_series(conn, brand)
+    return list_ips(conn, brand)
+
+
+@router.get("/series")
+def get_series(
+    brand: Annotated[str, Query(description="品牌 slug")],
+    ip: Annotated[str | None, Query(description="IP slug（可選）")] = None,
+    conn: psycopg2.extensions.connection = Depends(get_db),
+) -> list[dict]:
+    return list_series(conn, brand, ip_slug=ip)
 
 
 @router.get("/styles")
 def get_styles(
     brand: Annotated[str, Query(description="品牌 slug")],
-    series: Annotated[str, Query(description="系列 slug")],
+    series: Annotated[str, Query(description="產品線系列 slug")],
     conn: psycopg2.extensions.connection = Depends(get_db),
 ) -> list[dict]:
     return list_styles(conn, brand, series)

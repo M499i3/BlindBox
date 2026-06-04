@@ -33,14 +33,9 @@ BRAND_NAME = "Pop Mart"
 
 
 def _derive_product_line(title: str) -> str:
-    cleaned = re.sub(r"^泡泡萌粒\s*", "", title or "")
-    cleaned = re.sub(
-        r"(手辦|公仔|手办|盲盒|模型|挂件|掛件|周邊|周边)$", "", cleaned
-    ).strip()
-    m = re.search(
-        r"([A-Za-z0-9\u4e00-\u9fff ×xX·\-\(\)（）]{2,32}?系列)", cleaned
-    )
-    return m.group(1).strip() if m else "未分系列"
+    from domain.series_rules import derive_series_name
+
+    return derive_series_name(title)
 
 
 def _price_cents(raw: dict) -> int:

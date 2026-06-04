@@ -29,11 +29,11 @@ REPO_ROOT = BACKEND_ROOT.parent
 sys.path.insert(0, str(SCRIPTS_DIR))
 
 from catalog_seed_lib import (  # noqa: E402
-    SeedProduct,
     build_seed_products,
     load_showcase,
     summarize_koca_showcase,
 )
+from catalog_seed_ops import seed_catalog_on_cursor  # noqa: E402
 from marketplace_purge_lib import purge_catalog_and_marketplace  # noqa: E402
 
 KOCA_JSON = REPO_ROOT / "frontend" / "data" / "koca-popmart-showcase.json"
@@ -152,7 +152,7 @@ def prune_catalog_products_not_in_seed(cur, external_ids: set[str]) -> int:
     return cur.rowcount
 
 
-def prune_orphan_series_and_brands(cur) -> tuple[int, int]:
+def prune_orphan_series_and_brands(cur) -> tuple[int, int, int]:
     cur.execute(
         """
         DELETE FROM series s
@@ -164,12 +164,24 @@ def prune_orphan_series_and_brands(cur) -> tuple[int, int]:
     series_deleted = cur.rowcount
     cur.execute(
         """
+        DELETE FROM ips i
+        WHERE NOT EXISTS (
+            SELECT 1 FROM catalog_products cp WHERE cp.ip_id = i.id
+        )
+        AND NOT EXISTS (
+            SELECT 1 FROM series s WHERE s.ip_id = i.id
+        )
+        """
+    )
+    ips_deleted = cur.rowcount
+    cur.execute(
+        """
         DELETE FROM brands b
-        WHERE NOT EXISTS (SELECT 1 FROM series s WHERE s.brand_id = b.id)
+        WHERE NOT EXISTS (SELECT 1 FROM ips i WHERE i.brand_id = b.id)
         """
     )
     brands_deleted = cur.rowcount
-    return series_deleted, brands_deleted
+    return series_deleted, ips_deleted, brands_deleted
 
 
 def refresh_series_counts(cur) -> int:
@@ -268,27 +280,9 @@ def run_seed(
         )
 
     ip_covers = load_ip_cover_by_slug()
-    brand_logos: dict[str, str | None] = {}
-    series_covers: dict[tuple[str, str], str | None] = {}
-    for p in products:
-        if p.brand_slug not in brand_logos and p.image_url:
-            brand_logos[p.brand_slug] = p.image_url
-        key = (p.brand_slug, p.series_slug)
-        if key not in series_covers:
-            series_covers[key] = ip_covers.get(p.series_slug) or p.image_url
-    brand_logos["pop-mart"] = (
-        "https://www.rosedalecenter.com/media/v1/595/2024/12/POP-MART-LOGO.png"
-    )
-
-    brands_meta: dict[str, tuple[str, str]] = {}
-    series_meta: dict[tuple[str, str], tuple[str, str, str]] = {}
-    for p in products:
-        brands_meta[p.brand_slug] = (p.brand_slug, p.brand_name)
-        series_meta[(p.brand_slug, p.series_slug)] = (
-            p.brand_slug,
-            p.series_slug,
-            p.series_name,
-        )
+    brands_meta = {p.brand_slug for p in products}
+    ips_meta = {(p.brand_slug, p.ip_slug) for p in products}
+    lines_meta = {(p.brand_slug, p.ip_slug, p.line_slug) for p in products}
 
     seed_external_ids = {p.external_id for p in products}
 
@@ -300,7 +294,7 @@ def run_seed(
     )
     print(
         f"將匯入 {len(products)} 筆 catalog_products、"
-        f"{len(brands_meta)} 個品牌、{len(series_meta)} 個 IP（series）"
+        f"{len(brands_meta)} 個品牌、{len(ips_meta)} 個 IP、{len(lines_meta)} 條產品線"
         + (f"（{len(ip_covers)} 個 IP 官圖）" if ip_covers else "")
     )
     if prune_stale and not replace_catalog:
@@ -326,35 +320,19 @@ def run_seed(
                 if replace_catalog:
                     purge_catalog_and_marketplace(cur)
 
-                brand_ids: dict[str, str] = {}
-                for slug, (_, name) in brands_meta.items():
-                    brand_ids[slug] = upsert_brand(
-                        cur, slug, name, brand_logos.get(slug)
-                    )
-
-                series_ids: dict[tuple[str, str], str] = {}
-                for key, (brand_slug, series_slug, series_name) in series_meta.items():
-                    brand_id = brand_ids[brand_slug]
-                    series_ids[key] = upsert_series(
-                        cur,
-                        brand_id,
-                        series_slug,
-                        series_name,
-                        series_covers.get(key),
-                    )
-
-                for p in products:
-                    sid = series_ids[(p.brand_slug, p.series_slug)]
-                    upsert_catalog_product(cur, p, sid)
+                seed_stats = seed_catalog_on_cursor(cur, products)
 
                 pruned_products = 0
                 pruned_series = 0
+                pruned_ips = 0
                 pruned_brands = 0
                 if prune_stale and not replace_catalog:
                     pruned_products = prune_catalog_products_not_in_seed(
                         cur, seed_external_ids
                     )
-                    pruned_series, pruned_brands = prune_orphan_series_and_brands(cur)
+                    pruned_series, pruned_ips, pruned_brands = (
+                        prune_orphan_series_and_brands(cur)
+                    )
 
                 updated_series = refresh_series_counts(cur)
 
@@ -362,12 +340,18 @@ def run_seed(
                 if seed_user:
                     dev_id = seed_dev_user(cur)
 
-        print(f"✅ 完成：{len(products)} 筆 catalog_products")
-        print(f"   已更新 {updated_series} 個 IP 的 total_count")
+        print(f"✅ 完成：{seed_stats['products']} 筆 catalog_products")
+        print(
+            f"   {seed_stats['brands']} 品牌 / {seed_stats['ips']} IP / "
+            f"{seed_stats['series']} 產品線"
+        )
+        print(f"   已更新 {updated_series} 條產品線、{seed_stats.get('ip_counts_updated', 0)} 個 IP 的 total_count")
         if pruned_products:
             print(f"   已刪除 {pruned_products} 筆不在種子內的舊圖鑑商品")
-        if pruned_series or pruned_brands:
-            print(f"   已清理空 series {pruned_series}、brands {pruned_brands}")
+        if pruned_series or pruned_ips or pruned_brands:
+            print(
+                f"   已清理空產品線 {pruned_series}、IP {pruned_ips}、品牌 {pruned_brands}"
+            )
         if dev_id:
             print(f"   開發用使用者：{DEV_USER_NAME} ({dev_id})")
             print(f"   可加入 .env：VITE_DEV_USER_ID={dev_id}")

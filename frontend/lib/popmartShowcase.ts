@@ -6,6 +6,7 @@ import type {
   SeriesRow,
 } from '@/frontend/domain/entities/catalog';
 import showcaseJson from '@/frontend/data/popmart-hk-showcase.json';
+import { deriveSeriesName, FALLBACK_SERIES } from '@/frontend/shared/utils/deriveSeriesName';
 
 export const popmartShowcase = showcaseJson as CatalogShowcase;
 
@@ -88,13 +89,8 @@ export function buildMockCatalogSearch(query: string): CatalogSearchResult {
 
   const seriesMap = new Map<string, SeriesRow>();
   for (const p of searchProducts(query)) {
-    const cleaned = p.title
-      .replace(/^泡泡萌粒\s*/g, '')
-      .replace(/(手辦|公仔|手办|盲盒|模型|挂件|掛件|周邊|周边)$/g, '')
-      .trim();
-    const m = cleaned.match(/([A-Za-z0-9\u4e00-\u9fff ×xX·\-\(\)（）]{2,32}?系列)/);
-    const seriesName = m?.[1]?.trim();
-    if (!seriesName) continue;
+    const seriesName = deriveSeriesName(p.title);
+    if (seriesName === FALLBACK_SERIES) continue;
     const brandName = deriveBrandLabel(p.title);
     const brandSlug = brandName.toLowerCase().replace(/\s+/g, '-');
     const key = `${brandSlug}:${seriesName}`;

@@ -8,8 +8,9 @@ from domain.entities import CatalogProduct
 from infrastructure.db.repositories.catalog_repository import (
     get_all_brands,
     get_all_products,
+    get_ips_by_brand_slug,
     get_product_by_id,
-    get_series_by_brand_slug,
+    get_product_series_by_brand_slug,
     get_styles_by_brand_series_slug,
     search_brands,
     search_series,
@@ -35,19 +36,25 @@ def derive_brand_label(title: str) -> str:
     return "Pop Mart"
 
 
+def _normalize_brand_slug(brand: str | None) -> str | None:
+    if not brand:
+        return None
+    return re.sub(r"[_\-]+", "-", brand.strip().lower()).strip("-") or None
+
+
 def list_products(
     conn: psycopg2.extensions.connection,
     query: str | None = None,
     brand: str | None = None,
+    ip: str | None = None,
     series: str | None = None,
 ) -> list[CatalogProduct]:
-    brand_slug = re.sub(r"[_\-]+", "-", brand.strip().lower()).strip("-") if brand else None
-    series_slug = series.strip() if series else None
     return get_all_products(
         conn,
         query=query,
-        brand_slug=brand_slug,
-        series_slug=series_slug,
+        brand_slug=_normalize_brand_slug(brand),
+        ip_slug=ip.strip() if ip else None,
+        series_slug=series.strip() if series else None,
     )
 
 
@@ -61,10 +68,19 @@ def list_brands(conn: psycopg2.extensions.connection) -> list[dict]:
     return get_all_brands(conn)
 
 
-def list_series(
+def list_ips(
     conn: psycopg2.extensions.connection, brand_slug: str
 ) -> list[dict]:
-    return get_series_by_brand_slug(conn, brand_slug)
+    return get_ips_by_brand_slug(conn, brand_slug)
+
+
+def list_series(
+    conn: psycopg2.extensions.connection,
+    brand_slug: str,
+    *,
+    ip_slug: str | None = None,
+) -> list[dict]:
+    return get_product_series_by_brand_slug(conn, brand_slug, ip_slug=ip_slug)
 
 
 def list_styles(
