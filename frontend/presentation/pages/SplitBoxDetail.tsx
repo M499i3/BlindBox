@@ -330,7 +330,9 @@ export default function SplitBoxDetail() {
                   slot.listingId ? () => handleAddToConsideration(slot.listingId) : undefined
                 }
                 onClaim={() => handleClaim(slot.id)}
-                onOpenListing={(listingId) => navigate(`/listing/${listingId}`)}
+                onOpenListing={(listingId) =>
+                  navigateWithReturn(navigate, `/listing/${listingId}`, location)
+                }
               />
             ))}
           </div>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
+import { navigateBack } from '@/frontend/shared/utils/routeNavigation';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import AddListingSellWizard from '@/frontend/presentation/components/listing/AddListingSellWizard';
 import AddListingSwapWizard from '@/frontend/presentation/components/listing/AddListingSwapWizard';
@@ -7,6 +8,7 @@ import TradeModePicker, {
   type ListingTradeType,
 } from '@/frontend/presentation/components/listing/TradeModePicker';
 import CreateSplitBox from '@/frontend/presentation/pages/CreateSplitBox';
+import { useNavigate } from 'react-router-dom';
 
 type Phase = 'pick' | ListingTradeType;
 
@@ -18,6 +20,8 @@ const PHASE_TITLE: Record<Phase, string> = {
 };
 
 export default function AddListing() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [phase, setPhase] = useState<Phase>('pick');
 
@@ -46,7 +50,9 @@ export default function AddListing() {
       <TopBar
         title={PHASE_TITLE[phase]}
         showBack
-        onBack={phase === 'pick' ? undefined : backToPick}
+        onBack={
+          phase === 'pick' ? () => navigateBack(navigate, location) : backToPick
+        }
       />
 
       <main className="space-y-6 px-5 pt-topbar-content">

@@ -21,10 +21,10 @@
   --color-primary-container: #ffffff;
   --color-on-primary-container: #111111;
 
-  /* Accent palette (secondary tones) */
+  /* Accent palette (secondary tones) — brand yellow #ffbf00 */
   --color-secondary: #ffbf00;
   --color-on-secondary: #111111;
-  --color-secondary-container: #fff4cc;
+  --color-secondary-container: color-mix(in srgb, #ffbf00 18%, white);
 
   --color-tertiary: #ff9393;
   --color-on-tertiary: #111111;
@@ -34,6 +34,11 @@
   --color-accent-amber: #ffbf00;
   --color-accent-coral: #ff9393;
   --color-accent-sky: #96c8f5;
+
+  /* Align Tailwind amber-* with brand yellow */
+  --color-amber-400: #ffbf00;
+  --color-amber-500: #ffbf00;
+  --color-amber-600: #ffbf00;
 
   --color-error: #ba1a1a;
   --color-on-error: #ffffff;
@@ -176,6 +181,24 @@
   /* Guardrail: some pages still add `text-white` on premium-gradient buttons */
   .premium-gradient.text-white {
     color: var(--color-on-background) !important;
+  }
+
+  .fab-listing-btn.premium-gradient {
+    box-shadow: 4px 4px 0 var(--color-accent-sky) !important;
+  }
+
+  .fab-listing-btn.premium-gradient:active {
+    background: #ffffff !important;
+    box-shadow: 2px 2px 0 var(--color-accent-sky) !important;
+    transform: scale(0.9) !important;
+  }
+
+  .home-banner-btn {
+    box-shadow: 6px 6px 0 var(--color-accent-coral);
+  }
+
+  .home-banner-btn:active {
+    box-shadow: 4px 4px 0 var(--color-accent-coral);
   }
 
   .premium-gradient:active {

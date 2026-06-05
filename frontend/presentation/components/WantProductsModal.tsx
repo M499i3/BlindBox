@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { navigateWithReturn } from '@/frontend/shared/utils/routeNavigation';
 import type { CatalogProduct } from '@/frontend/domain/entities/catalog';
 import {
   createDefaultWishAlertSettings,
@@ -26,6 +27,7 @@ function getAppShellPortalRoot(): HTMLElement {
 
 export default function WantProductsModal({ open, onClose, collection }: Props) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { posts, getWishAlert, setWishAlert } = useAppState();
   const { wishedProducts, toggleWish, wishCount } = collection;
 
@@ -56,7 +58,7 @@ export default function WantProductsModal({ open, onClose, collection }: Props) 
 
   const goToSearch = (title: string) => {
     onClose();
-    navigate(buildMarketplaceSearchUrl(title));
+    navigateWithReturn(navigate, buildMarketplaceSearchUrl(title), location);
   };
 
   const handleSaveSettings = () => {

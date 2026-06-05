@@ -114,7 +114,7 @@ export default function SellerInfoModal({
                       className="mt-3 flex items-center justify-center gap-2 rounded-full border border-black/[0.08] bg-white px-3 py-1 active:bg-black/[0.03] transition-colors"
                     >
                       <span
-                        className="material-symbols-outlined text-base text-amber-500"
+                        className="material-symbols-outlined text-base text-accent-amber"
                         style={{ fontVariationSettings: "'FILL' 1" }}
                       >
                         star
@@ -128,7 +128,7 @@ export default function SellerInfoModal({
                   ) : (
                     <div className="mt-3 flex items-center justify-center gap-2 rounded-full border border-black/[0.08] bg-white px-3 py-1">
                       <span
-                        className="material-symbols-outlined text-base text-amber-500"
+                        className="material-symbols-outlined text-base text-accent-amber"
                         style={{ fontVariationSettings: "'FILL' 1" }}
                       >
                         star

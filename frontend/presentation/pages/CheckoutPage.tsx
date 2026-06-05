@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { navigateBack } from '@/frontend/shared/utils/routeNavigation';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import ListingCardImage from '@/frontend/presentation/components/ListingCardImage';
 import { LISTING_FIELD } from '@/frontend/presentation/components/listing/listingFormStyles';
@@ -22,6 +23,7 @@ function isSeededListingId(id: string): boolean {
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [params] = useSearchParams();
   const { posts, listings, removeFromCart } = useAppState();
   const mock = isMockDataEnabled();
@@ -130,10 +132,10 @@ export default function CheckoutPage() {
           <p className="text-sm text-on-surface-variant py-16">沒有可下單的商品</p>
           <button
             type="button"
-            onClick={() => navigate('/cart')}
+            onClick={() => navigateBack(navigate, location)}
             className="rounded-full border-2 border-outline px-6 py-3 text-sm font-bold"
           >
-            返回購物車
+            返回上一頁
           </button>
         </main>
       </div>

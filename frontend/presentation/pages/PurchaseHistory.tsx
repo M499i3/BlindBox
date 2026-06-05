@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { motion } from 'motion/react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { navigateWithReturn } from '@/frontend/shared/utils/routeNavigation';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import UserAvatar from '@/frontend/presentation/components/UserAvatar';
 import {
@@ -50,6 +51,7 @@ function canBuyerComplete(status: string): boolean {
 
 export default function PurchaseHistory() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [orders, setOrders] = useState<OrderSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<FilterTab>('all');
@@ -88,8 +90,10 @@ export default function PurchaseHistory() {
       );
       // Navigate to rate-seller page
       const sellerName = encodeURIComponent(order?.counterpartyName ?? '賣家');
-      navigate(
-        `/rate-seller?orderId=${encodeURIComponent(orderId)}&sellerName=${sellerName}`
+      navigateWithReturn(
+        navigate,
+        `/rate-seller?orderId=${encodeURIComponent(orderId)}&sellerName=${sellerName}`,
+        location
       );
     } catch (e) {
       console.error(e);
@@ -106,10 +110,10 @@ export default function PurchaseHistory() {
         title="購買紀錄"
         rightElement={
           <div className="flex gap-4">
-            <button type="button" onClick={() => navigate('/search')} className="text-black" aria-label="搜尋">
+            <button type="button" onClick={() => navigateWithReturn(navigate, '/search', location)} className="text-black" aria-label="搜尋">
               <span className="material-symbols-outlined">search</span>
             </button>
-            <button type="button" onClick={() => navigate('/notifications')} className="text-primary" aria-label="通知">
+            <button type="button" onClick={() => navigateWithReturn(navigate, '/notifications', location)} className="text-primary" aria-label="通知">
               <span className="material-symbols-outlined">notifications</span>
             </button>
           </div>
@@ -187,7 +191,9 @@ export default function PurchaseHistory() {
                   ) : null}
                   <button
                     type="button"
-                    onClick={() => navigate(`/listing/${order.listingId}`)}
+                    onClick={() =>
+                      navigateWithReturn(navigate, `/listing/${order.listingId}`, location)
+                    }
                     className="doodle-press px-4 py-2 rounded-full premium-gradient text-white text-xs font-bold transition-all"
                   >
                     查看詳情

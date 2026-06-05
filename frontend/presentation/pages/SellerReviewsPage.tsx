@@ -11,7 +11,7 @@ function StarRow({ score }: { score: number }) {
       {[1, 2, 3, 4, 5].map((s) => (
         <span
           key={s}
-          className={`material-symbols-outlined text-base ${s <= score ? 'text-amber-400' : 'text-neutral-300'}`}
+          className={`material-symbols-outlined text-base ${s <= score ? 'text-accent-amber' : 'text-neutral-300'}`}
           style={{ fontVariationSettings: s <= score ? "'FILL' 1" : "'FILL' 0" }}
         >
           star
@@ -66,7 +66,7 @@ export default function SellerReviewsPage() {
           <h2 className="text-xl font-extrabold text-on-surface">{sellerName}</h2>
           <div className="flex items-center gap-2 mt-1">
             <span
-              className="material-symbols-outlined text-2xl text-amber-400"
+              className="material-symbols-outlined text-2xl text-accent-amber"
               style={{ fontVariationSettings: "'FILL' 1" }}
             >
               star

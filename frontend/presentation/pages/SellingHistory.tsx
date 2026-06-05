@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { motion } from 'motion/react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { navigateWithReturn } from '@/frontend/shared/utils/routeNavigation';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import UserAvatar from '@/frontend/presentation/components/UserAvatar';
 import {
@@ -52,6 +53,7 @@ function matchesTab(order: OrderSummary, tab: FilterTab): boolean {
 
 export default function SellingHistory() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [orders, setOrders] = useState<OrderSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<FilterTab>('pending');
@@ -181,7 +183,9 @@ export default function SellingHistory() {
                   ) : null}
                   <button
                     type="button"
-                    onClick={() => navigate(`/listing/${order.listingId}`)}
+                    onClick={() =>
+                      navigateWithReturn(navigate, `/listing/${order.listingId}`, location)
+                    }
                     className="doodle-press px-4 py-2 rounded-full premium-gradient text-white text-xs font-bold"
                   >
                     查看詳情

@@ -31,13 +31,13 @@ export default function RateSellerPage() {
 
   return (
     <div className="animate-in fade-in duration-500 bg-background min-h-screen pb-28">
-      <TopBar showBack title="評價賣家" onBack={() => navigate('/purchase-history', { replace: true })} />
+      <TopBar showBack title="評價賣家" />
 
       <main className="pt-20 pb-32 px-5 max-w-md mx-auto">
         {done ? (
           <div className="flex flex-col items-center justify-center py-24 gap-6">
             <span
-              className="material-symbols-outlined text-6xl text-amber-400"
+              className="material-symbols-outlined text-6xl text-accent-amber"
               style={{ fontVariationSettings: "'FILL' 1" }}
             >
               star
@@ -72,7 +72,7 @@ export default function RateSellerPage() {
                 >
                   <span
                     className={`material-symbols-outlined text-4xl transition-colors ${
-                      s <= score ? 'text-amber-400' : 'text-neutral-300'
+                      s <= score ? 'text-accent-amber' : 'text-neutral-300'
                     }`}
                     style={{ fontVariationSettings: s <= score ? "'FILL' 1" : "'FILL' 0" }}
                   >

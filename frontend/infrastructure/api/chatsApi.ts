@@ -49,6 +49,7 @@ type ApiChatInbox = {
   unread_count: number;
   listing_image: string;
   listing_title: string;
+  listing_trade_kind?: string;
   online: boolean;
 };
 
