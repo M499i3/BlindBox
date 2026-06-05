@@ -180,7 +180,7 @@ export default function Explore() {
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               className="text-sm pr-10"
-              placeholder="搜尋品牌、系列或盲盒"
+              placeholder="搜尋IP、系列或款式"
               type="search"
               enterKeyHint="search"
             />

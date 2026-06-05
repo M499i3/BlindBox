@@ -261,7 +261,7 @@ export default function Marketplace() {
             <input
               name="q"
               className="text-sm"
-              placeholder="搜尋品牌、系列、子系列或盲盒"
+              placeholder="搜尋商品"
               type="search"
             />
           </form>
