@@ -613,6 +613,17 @@ export default function ListingDetail() {
               >
                 {claimButtonLabel}
               </button>
+              {canClaimSplit ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    inCart ? removeFromCart(listing.id) : addToCart(listing.id);
+                  }}
+                  className={`w-full py-4 rounded-full text-sm font-bold ${cartButtonClass}`}
+                >
+                  {inCart ? '已加入購物車（點我移除）' : '考慮一下（加購物車）'}
+                </button>
+              ) : null}
               <button
                 type="button"
                 disabled={contacting}

@@ -9,7 +9,7 @@ import { cn } from '@/frontend/shared/utils/cn';
  * 卡片內容區固定高度（px）：
  * p-3(24) + badge h-6+mb-2(32) + title 2lh + gap h-2(8) + price h-6(24) + btn mt-2+h-11(52)
  */
-const BODY_HEIGHT = 'h-[11.25rem]';
+const BODY_HEIGHT = 'min-h-[11.25rem]';
 
 type Props = {
   title: string;
@@ -60,6 +60,8 @@ export default function ListingProductCard({
   scrollItem = false,
 }: Props) {
   const hasCarousel = Boolean(images?.length || fallbackImage);
+  const hasAction = Boolean(actionLabel && onAction);
+  const hasCart = Boolean(showCart && onAddToCart);
 
   return (
     <motion.div
@@ -121,8 +123,38 @@ export default function ListingProductCard({
         </p>
 
         {/* 5. 按鈕區：無購物車時以 placeholder 維持高度 */}
-        <div className="mt-2 flex h-11 shrink-0 items-center">
-          {actionLabel && onAction ? (
+        <div
+          className={cn(
+            'mt-2 shrink-0',
+            hasAction && hasCart ? 'flex flex-col gap-2' : 'flex h-11 items-center gap-2'
+          )}
+        >
+          {hasAction && hasCart ? (
+            <>
+              <button
+                type="button"
+                data-no-scroll-top="true"
+                onClick={onAddToCart}
+                disabled={cartDisabled}
+                className={cn(
+                  'flex h-9 w-full items-center justify-center gap-1.5 rounded-full border-2 border-outline px-2 text-xs font-extrabold text-on-background shadow-[3px_3px_0_#111] transition-transform active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-80',
+                  isInCart ? 'bg-secondary text-on-secondary' : 'bg-white hover:bg-secondary/10'
+                )}
+                aria-label={isInCart ? '已加入購物車' : '考慮一下（加購物車）'}
+              >
+                <span className="truncate">{isInCart ? '已加入購物車' : '考慮一下（加購物車）'}</span>
+              </button>
+              <button
+                type="button"
+                data-no-scroll-top="true"
+                onClick={onAction}
+                disabled={actionDisabled}
+                className="h-9 w-full rounded-full border-2 border-outline bg-white px-2 text-xs font-extrabold text-on-background shadow-[3px_3px_0_#111] transition-transform hover:bg-secondary/10 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-60"
+              >
+                {actionLabel}
+              </button>
+            </>
+          ) : hasAction ? (
             <button
               type="button"
               data-no-scroll-top="true"
@@ -132,7 +164,7 @@ export default function ListingProductCard({
             >
               {actionLabel}
             </button>
-          ) : showCart && onAddToCart ? (
+          ) : hasCart ? (
             <button
               type="button"
               data-no-scroll-top="true"

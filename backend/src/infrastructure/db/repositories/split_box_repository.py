@@ -579,6 +579,17 @@ def claim_split_box_slot(
             """,
             (slot_id,),
         )
+        # 認領者本人若曾把此款式加入考慮清單，認領後直接清掉
+        cur.execute(
+            """
+            DELETE FROM cart_items
+            WHERE user_id = %s
+              AND listing_id IN (
+                  SELECT id FROM listings WHERE split_box_slot_id = %s
+              )
+            """,
+            (user_id, slot_id),
+        )
         cur.execute(
             """
             UPDATE split_box_groups

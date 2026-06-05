@@ -12,6 +12,7 @@ import {
   type SplitBoxGroupDetail,
   type SplitBoxSlot,
 } from '@/frontend/domain/entities/splitBox';
+import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
 import { computeSplitBoxProgress } from '@/frontend/shared/utils/splitBoxProgress';
 import { cn } from '@/frontend/shared/utils/cn';
 
@@ -25,12 +26,16 @@ function SlotCard({
   slot,
   disabled,
   groupOpen,
+  isInConsideration,
+  onAddToConsideration,
   onClaim,
   onOpenListing,
 }: {
   slot: SplitBoxSlot;
   disabled: boolean;
   groupOpen: boolean;
+  isInConsideration: boolean;
+  onAddToConsideration?: () => void;
   onClaim: () => void;
   onOpenListing?: (listingId: string) => void;
 }) {
@@ -86,16 +91,34 @@ function SlotCard({
           <p className="text-[10px] text-on-surface-variant">認領：{slot.claimedByName}</p>
         ) : null}
         {isClaimable && !disabled ? (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onClaim();
-            }}
-            className="w-full rounded-full border-2 border-black bg-black py-2 text-xs font-extrabold text-white"
-          >
-            認領此款
-          </button>
+          <div className="space-y-2">
+            <button
+              type="button"
+              disabled={!onAddToConsideration || isInConsideration}
+              onClick={(e) => {
+                e.stopPropagation();
+                onAddToConsideration?.();
+              }}
+              className={cn(
+                'w-full rounded-full border-2 border-outline py-2 text-xs font-extrabold shadow-[2px_2px_0_#111] disabled:opacity-70',
+                isInConsideration
+                  ? 'bg-secondary text-on-secondary'
+                  : 'bg-white text-on-background'
+              )}
+            >
+              {isInConsideration ? '已加入購物車' : '考慮一下（加購物車）'}
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onClaim();
+              }}
+              className="w-full rounded-full border-2 border-black bg-black py-2 text-xs font-extrabold text-white"
+            >
+              認領此款
+            </button>
+          </div>
         ) : null}
       </div>
     </div>
@@ -106,6 +129,7 @@ export default function SplitBoxDetail() {
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
+  const { addToCart, isInCart } = useAppState();
   const [group, setGroup] = useState<SplitBoxGroupDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
@@ -133,6 +157,10 @@ export default function SplitBoxDetail() {
     const slot = group?.slots.find((s) => s.id === slotId);
     if (slot?.listingId) params.set('listingId', slot.listingId);
     navigateWithReturn(navigate, `/split-box/${id}/apply?${params.toString()}`, location);
+  };
+
+  const handleAddToConsideration = (listingId: string) => {
+    addToCart(listingId);
   };
 
   const handleShip = async () => {
@@ -297,6 +325,10 @@ export default function SplitBoxDetail() {
                 slot={slot}
                 disabled={!canClaim}
                 groupOpen={group.status === 'open'}
+                isInConsideration={Boolean(slot.listingId && isInCart(slot.listingId))}
+                onAddToConsideration={
+                  slot.listingId ? () => handleAddToConsideration(slot.listingId) : undefined
+                }
                 onClaim={() => handleClaim(slot.id)}
                 onOpenListing={(listingId) => navigate(`/listing/${listingId}`)}
               />

@@ -31,13 +31,22 @@ export function buildListingCardActionProps(
 
   if (isSplitBoxListing(item) && item.splitBoxGroupId) {
     const canClaim = isClaimableSplitBoxListing(item);
+    const alreadyInCart = ctx.isInCart(item.id);
     const actionLabel = canClaim
       ? '認領此款'
       : item.splitBoxSlotStatus === 'claimed'
         ? '已認領'
         : '無法認領';
     return {
-      showCart: false,
+      // 拆盒款式的「購物車」＝考慮清單：仍可認領時才允許加入
+      showCart: canClaim,
+      isInCart: alreadyInCart,
+      cartDisabled: alreadyInCart,
+      onAddToCart: (e) => {
+        e.stopPropagation();
+        if (!canClaim || alreadyInCart) return;
+        ctx.addToCart(item.id);
+      },
       actionLabel,
       actionDisabled: !canClaim,
       onAction: (e) => {
