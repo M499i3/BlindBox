@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import CollectionOverlayActions from '@/frontend/presentation/components/CollectionOverlayActions';
-import PriceTrendChart from '@/frontend/presentation/components/PriceTrendChart';
 import { useCatalogProduct, deriveBrandLabel } from '@/frontend/presentation/hooks/useCatalog';
 import { useProductCollection } from '@/frontend/presentation/hooks/useProductCollection';
 import { buildMarketplaceSearchUrl } from '@/frontend/shared/utils/shopNavigation';
@@ -167,8 +166,6 @@ export default function CatalogProductDetail() {
             </div>
 
             <PriceStatsSection product={product} />
-
-            <PriceTrendChart seed={product.id} currentPriceText={product.price} />
 
             <button
               type="button"

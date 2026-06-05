@@ -17,9 +17,6 @@ import type { Listing } from '@/frontend/domain/entities/listing';
 import type { UserProfile } from '@/frontend/domain/entities/profile';
 import type { SwapProposal } from '@/frontend/domain/entities/swapProposal';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
-import { useCatalogProducts } from '@/frontend/presentation/hooks/useCatalog';
-import PriceTrendChart from '@/frontend/presentation/components/PriceTrendChart';
-import { pickBestTitleMatch } from '@/frontend/shared/utils/searchListings';
 import {
   hasListingImage,
   resolveListingImages,
@@ -52,7 +49,6 @@ export default function ListingDetail() {
   const [listing, setListing] = useState<Listing | undefined | null>(null);
   const [loading, setLoading] = useState(!!id);
   const [imageIndex, setImageIndex] = useState(0);
-  const { products: catalogProducts } = useCatalogProducts();
   const [contacting, setContacting] = useState(false);
   const [sellerModalOpen, setSellerModalOpen] = useState(false);
   const [sellerProfile, setSellerProfile] = useState<UserProfile | null>(null);
@@ -73,13 +69,6 @@ export default function ListingDetail() {
       })
       .finally(() => setLoading(false));
   }, [id, getPostById, listings]);
-
-  const matchedCatalog = useMemo(() => {
-    if (!listing) return null;
-    const name = (listing.itemName || listing.title || '').trim();
-    if (!name) return null;
-    return pickBestTitleMatch(catalogProducts, name);
-  }, [catalogProducts, listing]);
 
   const listingImages = useMemo(() => {
     if (!listing) return [];
@@ -347,9 +336,6 @@ export default function ListingDetail() {
             ) : (
               <p className="text-2xl font-black text-primary">{listing.price}</p>
             )}
-            {!isSwapPost && matchedCatalog ? (
-              <PriceTrendChart seed={matchedCatalog.id} currentPriceText={listing.price} />
-            ) : null}
           </div>
         </section>
 
