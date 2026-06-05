@@ -10,7 +10,7 @@ export default function AppScrollEffects() {
   useEffect(() => {
     trackPageNavigation(location);
     scrollAppToTop();
-  }, [location.pathname]);
+  }, [location.pathname, location.search]);
 
   return null;
 }

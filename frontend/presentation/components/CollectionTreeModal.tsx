@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { navigateWithReturn } from '@/frontend/shared/utils/routeNavigation';
 import type { ProductCollectionApi } from '@/frontend/presentation/hooks/useProductCollection';
 import CollectionActionButton from '@/frontend/presentation/components/CollectionActionButton';
 import {
@@ -72,6 +73,7 @@ function HierarchyCard({
 
 export default function CollectionTreeModal({ open, onClose, collection }: Props) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { collectionHierarchy, toggleOwned, isOwned } = collection;
   const [path, setPath] = useState<Path>({ level: 'brand' });
 
@@ -82,7 +84,7 @@ export default function CollectionTreeModal({ open, onClose, collection }: Props
 
   const goToSearch = (title: string) => {
     resetAndClose();
-    navigate(buildMarketplaceSearchUrl(title));
+    navigateWithReturn(navigate, buildMarketplaceSearchUrl(title), location);
   };
 
   const breadcrumb = useMemo(() => {

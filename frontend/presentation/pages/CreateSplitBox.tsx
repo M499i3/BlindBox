@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { navigateWithReturn } from '@/frontend/shared/utils/routeNavigation';
+import { navigateBack, navigateWithReturn } from '@/frontend/shared/utils/routeNavigation';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import { getCatalogBrands, getCatalogProducts, getCatalogIps } from '@/frontend/infrastructure/api/catalogApi';
 import { fetchCached } from '@/frontend/shared/utils/fetchCache';
@@ -149,7 +149,11 @@ export default function CreateSplitBox({ embedded = false, onBack }: Props) {
       setStep((s) => s - 1);
       return;
     }
-    onBack?.();
+    if (onBack) {
+      onBack();
+      return;
+    }
+    navigateBack(navigate, location);
   };
 
   const submit = async () => {
@@ -387,7 +391,7 @@ export default function CreateSplitBox({ embedded = false, onBack }: Props) {
 
   return (
     <div className="animate-in fade-in pb-28 duration-500">
-      <TopBar title="發起拆盒團" showBack />
+      <TopBar title="發起拆盒團" showBack onBack={handleBack} />
       <main className="space-y-6 px-5 pt-topbar-content">{content}</main>
     </div>
   );

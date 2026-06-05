@@ -222,7 +222,11 @@ export default function ListingDetail() {
 
   const handleBuyNow = () => {
     if (!listing) return;
-    navigate(`/checkout?listingId=${encodeURIComponent(listing.id)}`);
+    navigateWithReturn(
+      navigate,
+      `/checkout?listingId=${encodeURIComponent(listing.id)}`,
+      location
+    );
   };
 
   const handleClaimSlot = () => {
@@ -243,7 +247,7 @@ export default function ListingDetail() {
     try {
       const chat = await createChat(listing.id);
       setSellerModalOpen(false);
-      navigate(`/chat/${chat.id}`);
+      navigateWithReturn(navigate, `/chat/${chat.id}`, location);
     } catch (e) {
       console.error(e);
       alert(e instanceof Error ? e.message : '無法開啟聊天');
@@ -283,7 +287,7 @@ export default function ListingDetail() {
 
   const handleEditListing = () => {
     if (!listing) return;
-    navigate(`/listing/${listing.id}/edit`);
+    navigateWithReturn(navigate, `/listing/${listing.id}/edit`, location);
   };
 
   const handleDeleteListing = async () => {
@@ -532,7 +536,11 @@ export default function ListingDetail() {
             listing.sellerId && sellerListingCount > 0
               ? () => {
                   setSellerModalOpen(false);
-                  navigate(`/search?seller=${encodeURIComponent(listing.sellerId!)}`);
+                  navigateWithReturn(
+                    navigate,
+                    `/search?seller=${encodeURIComponent(listing.sellerId!)}`,
+                    location
+                  );
                 }
               : undefined
           }
@@ -540,8 +548,10 @@ export default function ListingDetail() {
             listing.sellerId
               ? () => {
                   setSellerModalOpen(false);
-                  navigate(
-                    `/seller-reviews/${encodeURIComponent(listing.sellerId!)}?name=${encodeURIComponent(listing.sellerName)}`
+                  navigateWithReturn(
+                    navigate,
+                    `/seller-reviews/${encodeURIComponent(listing.sellerId!)}?name=${encodeURIComponent(listing.sellerName)}`,
+                    location
                   );
                 }
               : undefined

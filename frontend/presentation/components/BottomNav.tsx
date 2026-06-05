@@ -28,7 +28,6 @@ export default function BottomNav() {
       <div className="relative z-10 flex justify-around items-center px-2 pb-1 pt-4.5">
       {links.map(({ to, label, navImage, accentClass }) => {
         const ImageIcon = NAV_TAB_ICONS[navImage];
-        const plainTab = accentClass === 'nav-tab-plain';
 
         return (
           <NavLink
@@ -36,23 +35,27 @@ export default function BottomNav() {
             to={to}
             className={({ isActive }) =>
               cn(
-                'flex flex-col items-center justify-center gap-1 w-10 min-w-0 px-0.5 py-0.5 transition-all duration-200 outline-none border-0 ring-0 shadow-none focus:outline-none focus-visible:outline-none',
+                'flex flex-col items-center justify-center gap-1 w-10 min-w-0 px-0.5 py-0.5 transition-opacity duration-200 outline-none border-0 ring-0 shadow-none focus:outline-none focus-visible:outline-none',
                 accentClass,
-                isActive && !plainTab && 'is-active'
+                isActive ? 'opacity-100 is-active' : 'opacity-55'
               )
             }
           >
-            <span
-              className={cn(
-                'nav-image-icon flex items-center justify-center w-9 h-9 shrink-0 mx-auto overflow-hidden border-0 transition-transform duration-200',
-                !plainTab && 'active:scale-95'
-              )}
-            >
-              <ImageIcon size={40} className="mx-auto scale-[1.12] border-0" />
-            </span>
-            <span className="nav-label block w-full text-center text-xs font-bold leading-none tracking-normal text-on-background">
-              {label}
-            </span>
+            {({ isActive }) => (
+              <>
+                <span className="nav-image-icon flex items-center justify-center w-9 h-9 shrink-0 mx-auto overflow-visible border-0">
+                  <ImageIcon size={40} className="mx-auto scale-[1.12] border-0" />
+                </span>
+                <span
+                  className={cn(
+                    'nav-label block w-full text-center text-xs font-bold leading-none tracking-normal transition-colors duration-200',
+                    isActive ? 'text-accent-amber' : 'text-on-background'
+                  )}
+                >
+                  {label}
+                </span>
+              </>
+            )}
           </NavLink>
         );
       })}

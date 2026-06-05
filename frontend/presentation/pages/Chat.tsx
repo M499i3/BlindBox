@@ -1,7 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { motion } from 'motion/react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { navigateWithReturn } from '@/frontend/shared/utils/routeNavigation';
 import TopBar from '@/frontend/presentation/components/TopBar';
+import { cn } from '@/frontend/shared/utils/cn';
 import UserAvatar from '@/frontend/presentation/components/UserAvatar';
 import { getChats, type ChatInboxItem } from '@/frontend/infrastructure/api/chatsApi';
 import {
@@ -11,9 +13,9 @@ import {
 } from '@/frontend/infrastructure/api/notificationsApi';
 
 const NOTIF_CATEGORIES = [
-  { type: 'system', label: '系統通知' },
-  { type: 'activity', label: '活動快訊' },
-  { type: 'trade', label: '交易動態' },
+  { type: 'system', label: '系統通知', iconClass: 'text-accent-amber', iconBg: 'bg-accent-amber/15', groupClass: '-translate-y-0.5', blockClass: 'left-1/2 top-0 h-8 w-8 -translate-x-1/2' },
+  { type: 'activity', label: '活動快訊', iconClass: 'text-accent-sky', iconBg: 'bg-accent-sky/15', groupClass: '-translate-y-0.5', blockClass: 'left-1/2 top-0.5 h-8 w-8 -translate-x-1/2' },
+  { type: 'trade', label: '交易動態', iconClass: 'text-accent-coral', iconBg: 'bg-accent-coral/15', groupClass: '-translate-y-0.5', blockClass: 'left-1/2 top-0.5 h-8 w-8 -translate-x-1/2' },
 ] as const;
 
 const CHAT_SECTIONS: { kind: ChatInboxItem['listingTradeKind']; label: string }[] = [
@@ -22,7 +24,7 @@ const CHAT_SECTIONS: { kind: ChatInboxItem['listingTradeKind']; label: string }[
   { kind: 'swap', label: '交換' },
 ];
 
-function ChatRow({ chat, onOpen }: { chat: ChatInboxItem; onOpen: () => void }) {
+const ChatRow: React.FC<{ chat: ChatInboxItem; onOpen: () => void }> = ({ chat, onOpen }) => {
   return (
     <motion.button
       type="button"
@@ -60,10 +62,11 @@ function ChatRow({ chat, onOpen }: { chat: ChatInboxItem; onOpen: () => void }) 
       ) : null}
     </motion.button>
   );
-}
+};
 
 export default function Chat() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [chats, setChats] = useState<ChatInboxItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -101,7 +104,7 @@ export default function Chat() {
             <h2 className="text-xl font-bold text-on-surface">通知</h2>
             <button
               type="button"
-              onClick={() => navigate('/notifications')}
+              onClick={() => navigateWithReturn(navigate, '/notifications', location)}
               className="text-xs font-semibold text-on-primary-container"
             >
               通知中心
@@ -115,19 +118,32 @@ export default function Chat() {
                 <button
                   key={cat.type}
                   type="button"
-                  onClick={() => navigate(`/notifications?type=${cat.type}`, { replace: true })}
-                  className="glass-card rounded-2xl px-2 py-3 text-center shadow-[2px_2px_0_#111] active:opacity-95"
+                  onClick={() => navigateWithReturn(navigate, `/notifications?type=${cat.type}`, location)}
+                  className="glass-card flex flex-col items-center rounded-2xl px-2 py-3 text-center shadow-[2px_2px_0_#111] active:opacity-95"
                 >
-                  <span
-                    className="material-symbols-outlined text-lg text-on-surface-variant"
-                    style={{ fontVariationSettings: "'FILL' 1" }}
-                  >
-                    {notificationIcon(cat.type)}
-                  </span>
+                  <div className={cn('relative mx-auto h-9 w-9', cat.groupClass)}>
+                    <span
+                      className={cn(
+                        'pointer-events-none absolute rounded-full',
+                        cat.iconBg,
+                        cat.blockClass
+                      )}
+                      aria-hidden
+                    />
+                    <span
+                      className={cn(
+                        'material-symbols-outlined relative z-10 flex h-9 w-9 items-center justify-center text-lg',
+                        cat.iconClass
+                      )}
+                      style={{ fontVariationSettings: "'FILL' 1" }}
+                    >
+                      {notificationIcon(cat.type)}
+                    </span>
+                  </div>
                   <p className="mt-1 text-[10px] font-bold leading-tight text-on-surface">{cat.label}</p>
-                  {unread > 0 ? (
-                    <p className="mt-0.5 text-[9px] font-bold text-primary">{unread} 未讀</p>
-                  ) : null}
+                  <p className="mt-0.5 h-[14px] text-[9px] font-bold leading-[14px] text-primary">
+                    {unread > 0 ? `${unread} 未讀` : '\u00a0'}
+                  </p>
                 </button>
               );
             })}
@@ -147,7 +163,11 @@ export default function Chat() {
                 <h3 className="text-sm font-bold text-on-surface-variant">{section.label}</h3>
                 <div className="space-y-3">
                   {sectionChats.map((chat) => (
-                    <ChatRow key={chat.id} chat={chat} onOpen={() => navigate(`/chat/${chat.id}`)} />
+                    <ChatRow
+                      key={chat.id}
+                      chat={chat}
+                      onOpen={() => navigateWithReturn(navigate, `/chat/${chat.id}`, location)}
+                    />
                   ))}
                 </div>
               </div>

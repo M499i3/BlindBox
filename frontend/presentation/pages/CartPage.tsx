@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { navigateWithReturn } from '@/frontend/shared/utils/routeNavigation';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import ListingCardImage from '@/frontend/presentation/components/ListingCardImage';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
@@ -195,6 +196,7 @@ function isCartTab(raw: string | null): raw is CartTab {
 
 export default function CartPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get('tab');
   const { cartItems, removeFromCart, refreshUserData } = useAppState();
@@ -315,7 +317,11 @@ export default function CartPage() {
 
   const handlePlaceOrder = () => {
     if (selectedSellItems.length === 0) return;
-    navigate(`/checkout?ids=${selectedSellItems.map((i) => i.id).join(',')}`);
+    navigateWithReturn(
+      navigate,
+      `/checkout?ids=${selectedSellItems.map((i) => i.id).join(',')}`,
+      location
+    );
   };
 
   const tabCount = (kind: CartTab) => itemsByKind[kind].length;
@@ -395,7 +401,7 @@ export default function CartPage() {
                         selected={selectedIds.includes(item.id)}
                         onToggle={() => toggleSelected(item.id)}
                         onRemove={() => removeFromCart(item.id)}
-                        onOpen={() => navigate(`/listing/${item.id}`)}
+                        onOpen={() => navigateWithReturn(navigate, `/listing/${item.id}`, location)}
                       />
                     ))}
                   </>
@@ -426,8 +432,12 @@ export default function CartPage() {
                         onRemove={() => removeFromCart(item.id)}
                         onOpen={() =>
                           item.splitBoxGroupId
-                            ? navigate(`/split-box/${item.splitBoxGroupId}`)
-                            : navigate(`/listing/${item.id}`)
+                            ? navigateWithReturn(
+                                navigate,
+                                `/split-box/${item.splitBoxGroupId}`,
+                                location
+                              )
+                            : navigateWithReturn(navigate, `/listing/${item.id}`, location)
                         }
                       />
                     ))}
@@ -438,7 +448,7 @@ export default function CartPage() {
                       key={item.id}
                       item={item}
                       onRemove={() => removeFromCart(item.id)}
-                      onProceed={() => navigate(`/listing/${item.id}`)}
+                      onProceed={() => navigateWithReturn(navigate, `/listing/${item.id}`, location)}
                     />
                   ))
                 )}

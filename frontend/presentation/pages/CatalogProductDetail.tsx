@@ -1,9 +1,10 @@
 import React, { useMemo } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import CollectionOverlayActions from '@/frontend/presentation/components/CollectionOverlayActions';
 import { useCatalogProduct, deriveBrandLabel } from '@/frontend/presentation/hooks/useCatalog';
 import { useProductCollection } from '@/frontend/presentation/hooks/useProductCollection';
+import { navigateWithReturn } from '@/frontend/shared/utils/routeNavigation';
 import { buildMarketplaceSearchUrl } from '@/frontend/shared/utils/shopNavigation';
 import { deriveSeriesName } from '@/frontend/shared/utils/deriveSeriesName';
 import type { CatalogProduct } from '@/frontend/domain/entities/catalog';
@@ -72,6 +73,7 @@ function stopAction(e: React.MouseEvent) {
 
 export default function CatalogProductDetail() {
   const { id } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const { product } = useCatalogProduct(id);
   const { requestWishProduct, toggleProductOwned, isWished, isOwned } = useProductCollection();
@@ -169,7 +171,9 @@ export default function CatalogProductDetail() {
 
             <button
               type="button"
-              onClick={() => navigate(buildMarketplaceSearchUrl(product.title))}
+              onClick={() =>
+                navigateWithReturn(navigate, buildMarketplaceSearchUrl(product.title), location)
+              }
               className="premium-gradient w-full rounded-full py-4 text-sm font-extrabold text-white shadow-[3px_3px_0_#111] transition-transform active:scale-[0.99]"
             >
               到商城搜尋此盲盒

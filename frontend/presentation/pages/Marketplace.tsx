@@ -186,9 +186,9 @@ export default function Marketplace() {
   const openListing = useCallback(
     (item: Pick<Listing, 'id'>) => {
       saveHomeScroll();
-      navigate(`/listing/${item.id}`, { state: { from: homeReturnPath } });
+      navigateWithReturn(navigate, `/listing/${item.id}`, location, { from: homeReturnPath });
     },
-    [navigate, homeReturnPath]
+    [navigate, location, homeReturnPath]
   );
 
   const rankingItems = useMemo(() => {
@@ -246,7 +246,7 @@ export default function Marketplace() {
         rightElement={
           <button
             type="button"
-            onClick={() => navigate('/cart')}
+            onClick={() => navigateWithReturn(navigate, '/cart', location)}
             className="relative shrink-0 border-0 bg-transparent p-0 cursor-pointer transition-transform active:scale-95 hover:opacity-85"
             aria-label="購物車"
           >
@@ -269,7 +269,11 @@ export default function Marketplace() {
               e.preventDefault();
               const fd = new FormData(e.currentTarget);
               const q = String(fd.get('q') ?? '').trim();
-              navigate(q ? `/search?q=${encodeURIComponent(q)}` : '/search');
+              navigateWithReturn(
+                navigate,
+                q ? `/search?q=${encodeURIComponent(q)}` : '/search',
+                location
+              );
             }}
           >
             <span className="material-symbols-outlined ui-search-icon">search</span>
@@ -286,8 +290,8 @@ export default function Marketplace() {
         <section className="mb-section-gap">
           <button
             type="button"
-            onClick={() => navigate('/search')}
-            className="flex h-[200px] w-full flex-col overflow-hidden rounded-2xl border-[2.5px] border-outline bg-white text-left shadow-[6px_6px_0_#111] transition-transform active:scale-[0.99] active:shadow-[4px_4px_0_#111]"
+            onClick={() => navigateWithReturn(navigate, '/search', location)}
+            className="home-banner-btn flex h-[200px] w-full flex-col overflow-hidden rounded-2xl border-[2.5px] border-outline bg-white text-left transition-transform active:scale-[0.99]"
             aria-label="前往搜尋"
           >
             <div className="relative min-h-0 flex-1 overflow-hidden">
@@ -299,7 +303,7 @@ export default function Marketplace() {
               />
             </div>
             <div className="shrink-0 px-stack-lg pb-3 pt-1">
-              <h1 className="mb-0.5 text-2xl font-extrabold text-on-background">找到你缺的那一盒</h1>
+              <h1 className="mb-0.5 text-2xl font-extrabold text-accent-coral">找到你缺的那一盒</h1>
               <p className="text-xs font-medium text-on-surface-variant">
                 交換、拆盒、購買，一次完成你的收藏
               </p>
@@ -309,14 +313,16 @@ export default function Marketplace() {
 
         {trendingTags.length > 0 && (
           <section className="mb-section-gap">
-            <h2 className="text-lg font-semibold text-on-surface mb-3">熱門標籤</h2>
+            <h2 className="mb-stack-lg text-2xl font-semibold text-on-surface">熱門標籤</h2>
             <div className="flex max-h-[4.25rem] flex-wrap gap-2 overflow-hidden">
               {trendingTags.slice(0, 12).map((tag) => (
                 <button
                   key={tag}
                   type="button"
-                  onClick={() => navigate(`/search?q=${encodeURIComponent(tag)}`)}
-                  className="px-3 py-1.5 rounded-full border border-black/[0.12] bg-white text-xs font-bold text-on-surface-variant active:scale-95 transition-transform"
+                  onClick={() =>
+                    navigateWithReturn(navigate, `/search?q=${encodeURIComponent(tag)}`, location)
+                  }
+                  className="px-3 py-1.5 rounded-full border border-black/[0.12] bg-white text-xs font-bold text-accent-amber active:scale-95 transition-transform"
                 >
                   #{tag}
                 </button>
@@ -561,8 +567,8 @@ export default function Marketplace() {
         </span>
         <button
           type="button"
-          onClick={() => navigate('/add-listing')}
-          className="flex h-14 w-14 items-center justify-center rounded-full premium-gradient text-white active:scale-90 transition-transform"
+          onClick={() => navigateWithReturn(navigate, '/add-listing', location)}
+          className="fab-listing-btn flex h-14 w-14 items-center justify-center rounded-full premium-gradient text-white active:scale-90 transition-transform"
           aria-label="新增上架商品"
           title="新增上架商品"
         >

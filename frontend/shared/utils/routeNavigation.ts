@@ -4,7 +4,12 @@ export type RouteLocationState = {
   from?: string;
 };
 
-const PAGE_STACK_KEY = 'app:pageStack';
+const PAGE_STACK_KEY = 'app:pageStack:v2';
+
+/** 堆疊與返回目標須含 query（如 /subseries?brand=&series=），僅 pathname 會丟失系列篩選 */
+function pageStackKey(location: Location): string {
+  return location.pathname + location.search;
+}
 
 function readPageStack(): string[] {
   if (typeof window === 'undefined') return [];
@@ -23,18 +28,18 @@ function writePageStack(stack: string[]): void {
   sessionStorage.setItem(PAGE_STACK_KEY, JSON.stringify(stack));
 }
 
-/** 路由 pathname 變更時更新頁面堆疊（同頁 query/tab 不新增一層） */
+/** 路由變更時更新頁面堆疊（同 pathname+search 視為同一層） */
 export function trackPageNavigation(location: Location): void {
-  const pathname = location.pathname;
+  const key = pageStackKey(location);
   const stack = readPageStack();
-  const existingIdx = stack.lastIndexOf(pathname);
+  const existingIdx = stack.lastIndexOf(key);
 
   if (existingIdx >= 0) {
     writePageStack(stack.slice(0, existingIdx + 1));
     return;
   }
 
-  writePageStack([...stack, pathname]);
+  writePageStack([...stack, key]);
 }
 
 /** 目前頁面完整路徑（含 query），作為返回目標 */
@@ -46,17 +51,21 @@ export function readReturnPath(location: Location): string | undefined {
   return (location.state as RouteLocationState | null)?.from;
 }
 
-/** TopBar／錯誤頁返回：優先 state.from，其次上一個不同 pathname，最後 history -1 或首頁 */
+/** TopBar／錯誤頁返回：優先 state.from，其次堆疊上一頁（含 query），最後 history -1 或首頁 */
 export function navigateBack(navigate: NavigateFunction, location: Location): void {
   const from = readReturnPath(location);
-  if (from) {
+  const current = pageStackKey(location);
+  if (from && from !== current) {
     navigate(from);
     return;
   }
 
-  const pathname = location.pathname;
+  const key = pageStackKey(location);
   const stack = readPageStack();
-  const idx = stack.lastIndexOf(pathname);
+  let idx = stack.lastIndexOf(key);
+  if (idx < 0) {
+    idx = stack.lastIndexOf(location.pathname);
+  }
   if (idx > 0) {
     navigate(stack[idx - 1]!);
     return;

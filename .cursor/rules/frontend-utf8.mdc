@@ -1,0 +1,28 @@
+---
+description: Prevent corrupted Chinese (???? mojibake) in frontend UI files
+globs: frontend/**/*.{ts,tsx,css}
+alwaysApply: false
+---
+
+# Frontend UTF-8 (Traditional Chinese)
+
+Many pages contain **繁體中文** UI strings. On Windows, partial search-replace or wrong editor encoding can turn Chinese into `????`.
+
+## When editing files with Chinese copy
+
+1. **Do not** use broad `StrReplace` / patch tools on lines that contain Chinese unless the file is written via a UTF-8 Python script.
+2. Prefer changing **English-only** lines (class names, imports, logic) when possible.
+3. To restore broken copy: recover from git (`git show <commit>:path`) and re-apply logic changes, or patch with `scripts/restore_marketplace_utf8.py`-style Python using `\uXXXX` escapes.
+4. After edits, run `npm run check:utf8`.
+
+## Red flags
+
+- String literals with `????` or `??`
+- Section titles / placeholders suddenly all question marks
+- Git diff showing `?` sequences instead of Chinese characters
+
+## Project settings
+
+- `.editorconfig` → `charset = utf-8`
+- `.gitattributes` → LF + text normalization
+- `npm run check:utf8` → fails CI/lint if mojibake detected

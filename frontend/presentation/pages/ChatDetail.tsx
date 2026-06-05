@@ -17,6 +17,7 @@ import { useAppState } from '@/frontend/presentation/providers/AppStateProvider'
 export default function ChatDetail() {
   const { id: chatId = '' } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { addToCart, isInCart, refreshOrderCounts } = useAppState();
   const [ctx, setCtx] = useState<ChatContext | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -71,7 +72,7 @@ export default function ChatDetail() {
   };
 
   const openListing = () => {
-    if (ctx?.listingId) navigate(`/listing/${ctx.listingId}`);
+    if (ctx?.listingId) navigateWithReturn(navigate, `/listing/${ctx.listingId}`, location);
   };
 
   const openSplitGroup = () => {
@@ -94,7 +95,12 @@ export default function ChatDetail() {
         showBack
         title={ctx?.counterpartyName ?? '聊天'}
         rightElement={
-          <button type="button" onClick={() => navigate('/search')} className="text-black" aria-label="搜尋">
+          <button
+            type="button"
+            onClick={() => navigateWithReturn(navigate, '/search', location)}
+            className="text-black"
+            aria-label="搜尋"
+          >
             <span className="material-symbols-outlined">search</span>
           </button>
         }
