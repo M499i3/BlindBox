@@ -206,21 +206,24 @@ export default function Marketplace() {
     }));
   }, [listingPool]);
 
-  const recommendations = useMemo(
-    () =>
-      listingPool.slice(0, 12).map((p, i) => ({
-        id: p.id,
-        title: p.title,
-        price: p.price,
-        type: p.tradeMode || (i % 2 === 0 ? '可交換' : '可購買'),
-        images: p.images,
-        fallbackImage: p.image,
-        sellerId: p.sellerId,
-        tradeMode: p.tradeMode,
-        allowSwap: p.allowSwap,
-      })),
-    [listingPool]
-  );
+  const recommendations = useMemo(() => {
+    const wished: typeof listingPool = [];
+    const rest: typeof listingPool = [];
+    for (const p of listingPool) {
+      (isListingWished(p) ? wished : rest).push(p);
+    }
+    return [...wished, ...rest].map((p) => ({
+      id: p.id,
+      title: p.title,
+      price: p.price,
+      type: p.tradeMode,
+      images: p.images,
+      fallbackImage: p.image,
+      sellerId: p.sellerId,
+      tradeMode: p.tradeMode,
+      allowSwap: p.allowSwap,
+    }));
+  }, [listingPool, isListingWished]);
 
   return (
     <div className={cn(APP_PAGE_CLASS, 'animate-in fade-in duration-500')}>
