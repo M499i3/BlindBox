@@ -17,7 +17,16 @@ import { SPLIT_BOX_STATUS_LABEL } from '@/frontend/domain/entities/splitBox';
 import type { MarketplaceRankingItem } from '@/frontend/infrastructure/api/marketplaceApi';
 import type { Listing } from '@/frontend/domain/entities/listing';
 import { filterListingsByFuzzyQuery } from '@/frontend/shared/utils/searchListings';
-import { isSwapListing, isTradeModeParam, listingMatchesTradeMode, parseTradeMode, tradeModeBadge, type TradeMode } from '@/frontend/shared/utils/tradeMode';
+import {
+  isClaimableSplitBoxListing,
+  isSplitBoxListing,
+  isSwapListing,
+  isTradeModeParam,
+  listingMatchesTradeMode,
+  parseTradeMode,
+  tradeModeBadge,
+  type TradeMode,
+} from '@/frontend/shared/utils/tradeMode';
 import { APP_PAGE_CLASS, BOTTOM_NAV_OFFSET } from '@/frontend/presentation/constants/layout';
 import { TOPBAR_RIGHT_ICON_SIZE } from '@/frontend/presentation/constants/topbar';
 import { useListingCardActions } from '@/frontend/presentation/hooks/useListingCardActions';
@@ -28,6 +37,11 @@ import { computeSplitBoxProgress } from '@/frontend/shared/utils/splitBoxProgres
 function isRealListing(item: Listing): boolean {
   if (item.isSeeded) return false;
   if (item.id.startsWith('pm_')) return false;
+  return true;
+}
+
+function isMarketplaceVisibleListing(item: Listing): boolean {
+  if (isSplitBoxListing(item)) return isClaimableSplitBoxListing(item);
   return true;
 }
 
@@ -147,7 +161,7 @@ export default function Marketplace() {
     if (userId) {
       fromListings = fromListings.filter((item) => !isOwnListing(item, userId));
     }
-    return fromListings;
+    return fromListings.filter(isMarketplaceVisibleListing);
   }, [posts, userId]);
 
   const filteredListings = useMemo(() => {

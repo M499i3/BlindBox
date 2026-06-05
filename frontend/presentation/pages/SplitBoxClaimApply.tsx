@@ -12,6 +12,8 @@ import {
   type SplitBoxGroupDetail,
   type SplitBoxSlot,
 } from '@/frontend/domain/entities/splitBox';
+import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
+import { invalidateCachesAfterSplitBoxClaim } from '@/frontend/shared/utils/cacheInvalidation';
 import { computeSplitBoxProgress } from '@/frontend/shared/utils/splitBoxProgress';
 import { cn } from '@/frontend/shared/utils/cn';
 
@@ -37,6 +39,7 @@ function resolveSlot(
 }
 
 export default function SplitBoxClaimApply() {
+  const { refreshUserData } = useAppState();
   const { groupId = '' } = useParams();
   const [searchParams] = useSearchParams();
   const slotIdParam = searchParams.get('slotId');
@@ -85,6 +88,8 @@ export default function SplitBoxClaimApply() {
     setError('');
     try {
       await claimSplitBoxSlot(groupId, slot.id);
+      invalidateCachesAfterSplitBoxClaim();
+      void refreshUserData();
       setSubmitted(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : '申請失敗，請稍後再試');

@@ -68,6 +68,16 @@ export function isSplitBoxListing(
   );
 }
 
+/** 拆盒貼文是否仍可在市集認領（slot 須為 available） */
+export function isClaimableSplitBoxListing(
+  item: Pick<Listing, 'tradeMode' | 'splitBoxGroupId' | 'splitBoxSlotId' | 'splitBoxSlotStatus'>
+): boolean {
+  if (!isSplitBoxListing(item)) return false;
+  if (!item.splitBoxGroupId || !item.splitBoxSlotId) return false;
+  if (item.splitBoxSlotStatus == null) return true;
+  return item.splitBoxSlotStatus === 'available';
+}
+
 export type ListingTradeKind = 'sell' | 'split' | 'swap';
 
 export function listingTradeKind(

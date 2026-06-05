@@ -12,3 +12,8 @@ export function invalidateMarketplaceCache(): void {
 export function invalidateCachesAfterListingPublish(): void {
   invalidateMarketplaceCache();
 }
+
+/** 拆盒認領後：市集列表需排除已認領款式貼文。 */
+export function invalidateCachesAfterSplitBoxClaim(): void {
+  invalidateMarketplaceCache();
+}

@@ -27,6 +27,7 @@ _LIST_SELECT = """
         l.allow_bargain,
         l.split_box_group_id,
         l.split_box_slot_id,
+        ss.status AS split_box_slot_status,
         l.catalog_product_id,
         l.created_at,
         l.seller_id,
@@ -50,7 +51,9 @@ _LIST_SELECT = """
     LEFT JOIN brands b ON b.id = l.brand_id
     LEFT JOIN ips i ON i.id = l.ip_id
     LEFT JOIN series ps ON ps.id = l.series_id
+    LEFT JOIN split_box_slots ss ON ss.id = l.split_box_slot_id
     WHERE l.status = 'active' AND l.deleted_at IS NULL
+      AND (l.split_box_slot_id IS NULL OR ss.status = 'available')
     ORDER BY l.created_at DESC
 """
 
@@ -115,6 +118,7 @@ _LISTING_BY_ID = """
         l.allow_bargain,
         l.split_box_group_id,
         l.split_box_slot_id,
+        ss.status AS split_box_slot_status,
         l.catalog_product_id,
         l.created_at,
         l.seller_id,
@@ -138,6 +142,7 @@ _LISTING_BY_ID = """
     LEFT JOIN brands b ON b.id = l.brand_id
     LEFT JOIN ips i ON i.id = l.ip_id
     LEFT JOIN series ps ON ps.id = l.series_id
+    LEFT JOIN split_box_slots ss ON ss.id = l.split_box_slot_id
     WHERE l.id = %s AND l.deleted_at IS NULL
     LIMIT 1
 """
@@ -334,6 +339,7 @@ def _row_to_listing(row: dict) -> Listing:
         seller_id=str(row.get("seller_id") or ""),
         split_box_group_id=str(row["split_box_group_id"]) if row.get("split_box_group_id") else None,
         split_box_slot_id=str(row["split_box_slot_id"]) if row.get("split_box_slot_id") else None,
+        split_box_slot_status=str(row["split_box_slot_status"]) if row.get("split_box_slot_status") else None,
     )
 
 

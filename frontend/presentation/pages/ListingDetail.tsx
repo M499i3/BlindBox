@@ -94,25 +94,27 @@ export default function ListingDetail() {
     return splitGroup.slots.find((s) => s.id === listing.splitBoxSlotId);
   }, [splitGroup, listing?.splitBoxSlotId]);
 
+  const slotStatus = splitSlot?.status ?? listing?.splitBoxSlotStatus ?? null;
+
   const canClaimSplit = useMemo(() => {
-    if (!splitGroup || !splitSlot) return false;
-    if (splitGroup.isOrganizer) return false;
-    if (splitGroup.status !== 'open') return false;
-    return splitSlot.status === 'available';
-  }, [splitGroup, splitSlot]);
+    if (!listing || !isSplitPost) return false;
+    if (splitGroup?.isOrganizer) return false;
+    if (splitGroup && splitGroup.status !== 'open') return false;
+    return slotStatus === 'available';
+  }, [listing, isSplitPost, splitGroup, slotStatus]);
 
   const claimButtonLabel = useMemo(() => {
-    if (splitGroupLoading) return '載入中…';
-    if (!splitSlot) return '認領此款';
-    if (splitSlot.status === 'claimed') {
-      return splitGroup?.myClaimedSlotIds.includes(splitSlot.id)
+    if (splitGroupLoading && !slotStatus) return '載入中…';
+    if (slotStatus === 'claimed') {
+      return splitGroup?.myClaimedSlotIds.includes(listing?.splitBoxSlotId ?? '')
         ? '你已認領此款式'
         : '此款式無法認領';
     }
     if (splitGroup?.isOrganizer) return '團主無法認領';
-    if (splitGroup?.status !== 'open') return '拆盒團目前不接受認領';
+    if (splitGroup && splitGroup.status !== 'open') return '拆盒團目前不接受認領';
+    if (slotStatus && slotStatus !== 'available') return '此款式無法認領';
     return '認領此款';
-  }, [splitGroup, splitSlot, splitGroupLoading]);
+  }, [splitGroup, slotStatus, splitGroupLoading, listing?.splitBoxSlotId]);
 
   const sellerListingCount = useMemo(() => {
     if (!listing?.sellerId) return 0;
@@ -606,7 +608,7 @@ export default function ListingDetail() {
               <button
                 type="button"
                 onClick={handleClaimSlot}
-                disabled={!splitGroupId || !canClaimSplit || splitGroupLoading}
+                disabled={!splitGroupId || !canClaimSplit || (splitGroupLoading && !slotStatus)}
                 className="w-full rounded-full premium-gradient py-4 text-sm font-bold text-white disabled:opacity-50"
               >
                 {claimButtonLabel}

@@ -2,7 +2,7 @@ import type { MouseEvent } from 'react';
 import type { NavigateFunction } from 'react-router-dom';
 import type { Listing } from '@/frontend/domain/entities/listing';
 import { isOwnListing } from '@/frontend/shared/utils/listingOwnership';
-import { isSplitBoxListing } from '@/frontend/shared/utils/tradeMode';
+import { isClaimableSplitBoxListing, isSplitBoxListing } from '@/frontend/shared/utils/tradeMode';
 
 export type ListingCardActionContext = {
   userId: string | null | undefined;
@@ -30,10 +30,15 @@ export function buildListingCardActionProps(
   }
 
   if (isSplitBoxListing(item) && item.splitBoxGroupId) {
-    const canClaim = Boolean(item.splitBoxSlotId);
+    const canClaim = isClaimableSplitBoxListing(item);
+    const actionLabel = canClaim
+      ? '認領此款'
+      : item.splitBoxSlotStatus === 'claimed'
+        ? '已認領'
+        : '無法認領';
     return {
       showCart: false,
-      actionLabel: canClaim ? '認領此款' : '無法認領',
+      actionLabel,
       actionDisabled: !canClaim,
       onAction: (e) => {
         e.stopPropagation();
