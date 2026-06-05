@@ -7,6 +7,7 @@ import UserAvatar from '@/frontend/presentation/components/UserAvatar';
 import { useProductCollection } from '@/frontend/presentation/hooks/useProductCollection';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
 import { useAuth } from '@/frontend/presentation/providers/AuthProvider';
+import { cn } from '@/frontend/shared/utils/cn';
 
 function formatStatCount(n: number | null): string {
   if (n === null) return '—';
@@ -33,9 +34,24 @@ export default function Profile() {
   const [activeModal, setActiveModal] = useState<null | 'collection'>(null);
 
   const stats = [
-    { label: '上架中', value: String(listings.length).padStart(2, '0'), to: '/profile/listings' },
-    { label: '購買數', value: formatStatCount(purchaseCount), to: '/purchase-history' },
-    { label: '出售數', value: formatStatCount(sellCount), to: '/profile/selling' },
+    {
+      label: '上架中',
+      value: String(listings.length).padStart(2, '0'),
+      to: '/profile/listings',
+      bgClass: 'bg-accent-amber',
+    },
+    {
+      label: '購買數',
+      value: formatStatCount(purchaseCount),
+      to: '/purchase-history',
+      bgClass: 'bg-accent-sky',
+    },
+    {
+      label: '出售數',
+      value: formatStatCount(sellCount),
+      to: '/profile/selling',
+      bgClass: 'bg-accent-coral',
+    },
   ];
 
   const menuItems = [
@@ -53,7 +69,7 @@ export default function Profile() {
           <>
             <button
               type="button"
-              onClick={() => navigate('/profile/edit')}
+              onClick={() => navigateWithReturn(navigate, '/profile/edit', location)}
               className="text-black"
               aria-label="設定"
             >
@@ -61,7 +77,7 @@ export default function Profile() {
             </button>
             <button
               type="button"
-              onClick={() => navigate('/notifications')}
+              onClick={() => navigateWithReturn(navigate, '/notifications', location)}
               className="text-black"
               aria-label="通知"
             >
@@ -83,7 +99,7 @@ export default function Profile() {
             </div>
             <button
               type="button"
-              onClick={() => navigate('/profile/edit')}
+              onClick={() => navigateWithReturn(navigate, '/profile/edit', location)}
               className="absolute bottom-0 right-0 bg-primary rounded-full p-1.5 border-2 border-white"
               aria-label="編輯個人檔案"
             >
@@ -100,13 +116,15 @@ export default function Profile() {
             <button
               type="button"
               onClick={() =>
-                navigate(
-                  `/seller-reviews/${encodeURIComponent(user?.id ?? '')}?name=${encodeURIComponent(displayName || user?.displayName || '我')}`
+                navigateWithReturn(
+                  navigate,
+                  `/seller-reviews/${encodeURIComponent(user?.id ?? '')}?name=${encodeURIComponent(displayName || user?.displayName || '我')}`,
+                  location
                 )
               }
               className="flex items-center justify-center gap-2 mt-2 px-3 py-1 bg-white rounded-full border border-black/[0.08] active:bg-black/[0.03] transition-colors"
             >
-              <span className="material-symbols-outlined text-amber-500 text-base" style={{ fontVariationSettings: "'FILL' 1" }}>
+              <span className="material-symbols-outlined text-accent-amber text-base" style={{ fontVariationSettings: "'FILL' 1" }}>
                 star
               </span>
               <span className="font-bold text-sm text-on-surface">{ratingAvg.toFixed(1)}</span>
@@ -121,12 +139,15 @@ export default function Profile() {
             <button
               key={stat.label}
               type="button"
-              onClick={() => navigate(stat.to)}
-              className="rounded-full border-2 border-outline bg-white p-4 flex flex-col items-center justify-center text-center shadow-none transition-transform active:scale-[0.98] active:bg-black/[0.02]"
+              onClick={() => navigateWithReturn(navigate, stat.to, location)}
+              className={cn(
+                'rounded-full border-2 border-outline p-4 flex flex-col items-center justify-center text-center shadow-[4px_4px_0_#111] transition-transform active:scale-[0.98] active:opacity-90',
+                stat.bgClass
+              )}
               aria-label={`查看${stat.label}`}
             >
-              <span className="text-2xl font-bold text-primary">{stat.value}</span>
-              <span className="text-[10px] text-on-surface-variant mt-1 uppercase font-bold tracking-tighter">
+              <span className="text-2xl font-bold text-on-background">{stat.value}</span>
+              <span className="text-[10px] text-on-background mt-1 uppercase font-bold tracking-tighter">
                 {stat.label}
               </span>
             </button>
@@ -181,13 +202,7 @@ export default function Profile() {
               <button
                 key={item.label}
                 type="button"
-                onClick={() => {
-                  if (item.to === '/profile/split-boxes') {
-                    navigateWithReturn(navigate, item.to, location, { from: '/profile' });
-                  } else {
-                    navigate(item.to);
-                  }
-                }}
+                onClick={() => navigateWithReturn(navigate, item.to, location)}
                 className="w-full flex items-center justify-between p-4 border-b border-black/[0.06] last:border-0 text-left active:bg-black/[0.03]"
               >
                 <div className="flex items-center gap-4">
@@ -204,7 +219,7 @@ export default function Profile() {
           <div className="rounded-3xl overflow-hidden border-2 border-outline bg-white shadow-none">
             <button
               type="button"
-              onClick={() => navigate('/profile/edit')}
+              onClick={() => navigateWithReturn(navigate, '/profile/edit', location)}
               className="w-full flex items-center justify-between p-4 text-left active:bg-black/[0.03]"
             >
               <div className="flex items-center gap-4">
@@ -227,7 +242,7 @@ export default function Profile() {
         <section className="pb-8 space-y-3">
           <button
             type="button"
-            onClick={() => navigate('/add-listing')}
+            onClick={() => navigateWithReturn(navigate, '/add-listing', location)}
             className="w-full py-4 premium-gradient rounded-full text-white font-bold tracking-wide shadow-lg shadow-primary/25 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
           >
             <span className="material-symbols-outlined" style={{ fontVariationSettings: "'wght' 700" }}>

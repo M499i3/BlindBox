@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { navigateWithReturn } from '@/frontend/shared/utils/routeNavigation';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import CatalogHero from '@/frontend/presentation/components/catalog/CatalogHero';
 import CatalogBrowseRow from '@/frontend/presentation/components/catalog/CatalogBrowseRow';
@@ -25,6 +26,7 @@ function titleCase(slug: string) {
 
 export default function BrandDetail() {
   const { id: slug = '' } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const mock = isMockDataEnabled();
   const {
@@ -121,7 +123,7 @@ export default function BrandDetail() {
                 subtitle={displayName}
                 image={item.image}
                 count={item.count}
-                onClick={() => navigate(item.href)}
+                onClick={() => navigateWithReturn(navigate, item.href, location)}
                 isAllWished={item.productIds.length > 0 ? isAllWished(item.productIds) : undefined}
                 isAllOwned={item.productIds.length > 0 ? isAllOwned(item.productIds) : undefined}
                 onToggleWish={

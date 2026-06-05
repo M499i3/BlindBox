@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import {
   deleteNotification,
@@ -10,13 +10,12 @@ import {
   type NotificationItem,
 } from '@/frontend/infrastructure/api/notificationsApi';
 import { cn } from '@/frontend/shared/utils/cn';
-import { navigateWithReturn } from '@/frontend/shared/utils/routeNavigation';
 
 const CATEGORIES = [
-  { type: 'system', label: '系統通知', icon: 'settings', iconClass: 'text-accent-amber', iconBg: 'bg-accent-amber/15' },
-  { type: 'activity', label: '活動快訊', icon: 'campaign', iconClass: 'text-accent-sky', iconBg: 'bg-accent-sky/15' },
-  { type: 'trade', label: '交易動態', icon: 'swap_horiz', iconClass: 'text-accent-coral', iconBg: 'bg-accent-coral/15' },
-  { type: 'support', label: '客服消息', icon: 'support_agent', iconClass: 'text-on-surface-variant', iconBg: 'bg-neutral-100' },
+  { type: 'system', label: '系統通知', icon: 'settings' },
+  { type: 'activity', label: '活動快訊', icon: 'campaign' },
+  { type: 'trade', label: '交易動態', icon: 'swap_horiz' },
+  { type: 'support', label: '客服消息', icon: 'support_agent' },
 ] as const;
 
 const TYPE_LABEL: Record<string, string> = {
@@ -42,7 +41,6 @@ function formatDateTime(iso: string): string {
 
 export default function NotificationsHub() {
   const navigate = useNavigate();
-  const location = useLocation();
   const [params] = useSearchParams();
   const focus = params.get('type');
   const [items, setItems] = useState<NotificationItem[]>([]);
@@ -125,7 +123,7 @@ export default function NotificationsHub() {
           {loading && <p className="text-sm text-on-surface-variant">載入中…</p>}
           {!loading && filteredSorted.length === 0 && (
             <div className="glass-card rounded-2xl p-5 shadow-[4px_4px_0_#111]">
-              <p className="text-sm text-on-surface-variant">尚無{title}</p>
+              <p className="text-sm text-on-surface-variant">目前沒有{title}</p>
             </div>
           )}
           {filteredSorted.map((n) => (
@@ -151,7 +149,7 @@ export default function NotificationsHub() {
                     type="button"
                     onClick={() => handleDelete(n.id)}
                     className="text-[10px] font-bold uppercase text-on-surface-variant"
-                    aria-label="刪除"
+                    aria-label="刪除通知"
                   >
                     刪除
                   </button>
@@ -166,7 +164,7 @@ export default function NotificationsHub() {
                   onClick={() => handleMarkRead(n.id)}
                   className="mt-3 text-xs font-bold text-primary"
                 >
-                  標記已讀
+                  標為已讀
                 </button>
               )}
             </article>
@@ -203,17 +201,12 @@ export default function NotificationsHub() {
               <button
                 key={cat.type}
                 type="button"
-                onClick={() => navigateWithReturn(navigate, `/notifications?type=${cat.type}`, location)}
+                onClick={() => navigate(`/notifications?type=${cat.type}`)}
                 className="glass-card flex w-full items-center gap-4 rounded-2xl p-4 text-left shadow-[4px_4px_0_#111] active:opacity-95"
               >
-                <div
-                  className={cn(
-                    'flex h-12 w-12 shrink-0 items-center justify-center rounded-full',
-                    cat.iconBg
-                  )}
-                >
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-surface-container-high">
                   <span
-                    className={cn('material-symbols-outlined', cat.iconClass)}
+                    className="material-symbols-outlined text-on-surface-variant"
                     style={{ fontVariationSettings: "'FILL' 1" }}
                   >
                     {notificationIcon(cat.type)}
@@ -222,7 +215,7 @@ export default function NotificationsHub() {
                 <div className="min-w-0 flex-1">
                   <h2 className="text-base font-extrabold text-on-surface">{cat.label}</h2>
                   <p className="mt-0.5 text-xs text-on-surface-variant">
-                    {count > 0 ? `${count} 則通知` : '尚無通知'}
+                    {count > 0 ? `${count} 則通知` : '暫無通知'}
                     {unread > 0 ? ` · ${unread} 則未讀` : ''}
                   </p>
                 </div>

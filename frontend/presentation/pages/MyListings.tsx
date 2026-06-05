@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { navigateWithReturn } from '@/frontend/shared/utils/routeNavigation';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import ListingImageCarousel from '@/frontend/presentation/components/ListingImageCarousel';
 import CollectionOverlayActions from '@/frontend/presentation/components/CollectionOverlayActions';
@@ -9,6 +10,7 @@ import { useAppState } from '@/frontend/presentation/providers/AppStateProvider'
 
 export default function MyListings() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { listings } = useAppState();
   const {
     toggleWishFromListing,
@@ -26,7 +28,7 @@ export default function MyListings() {
         rightElement={
           <button
             type="button"
-            onClick={() => navigate('/add-listing')}
+            onClick={() => navigateWithReturn(navigate, '/add-listing', location)}
             className="text-sm font-bold text-primary"
           >
             新增
@@ -45,7 +47,7 @@ export default function MyListings() {
             key={p.id}
             type="button"
             whileTap={{ scale: 0.98 }}
-            onClick={() => navigate(`/listing/${p.id}`)}
+            onClick={() => navigateWithReturn(navigate, `/listing/${p.id}`, location)}
             className="glass-card rounded-2xl overflow-hidden text-left"
           >
             <div className="aspect-square bg-neutral-100 relative">

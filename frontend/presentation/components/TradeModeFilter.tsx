@@ -55,7 +55,7 @@ export default function TradeModeFilter({
             <span
               className={cn(
                 'text-base font-black leading-none transition-colors',
-                active ? 'text-on-background' : 'text-on-surface-variant'
+                active ? 'text-accent-sky' : 'text-on-surface-variant'
               )}
             >
               {meta.label}

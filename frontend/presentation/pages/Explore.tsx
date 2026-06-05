@@ -300,7 +300,7 @@ export default function Explore() {
         {!isSearching && (
           <>
             <section className="pt-0 pb-2">
-              <p className="text-[10px] font-black text-secondary tracking-wider uppercase mb-2">BRAND</p>
+              <p className="text-[10px] font-black text-accent-coral tracking-wider uppercase mb-2">BRAND</p>
               <div className="overflow-x-auto overflow-y-visible no-scrollbar -mx-1 px-1 py-2 pr-3">
                 <div className="flex gap-3">
                   {brandCards.map((b) => {
@@ -319,8 +319,8 @@ export default function Explore() {
                             className={cn(
                               'rounded-3xl overflow-hidden border-[2.5px] shadow-[4px_4px_0_#111] bg-white transition-[width,height,opacity] duration-200',
                               active
-                                ? 'h-[96px] w-[96px] border-secondary opacity-100'
-                                : 'h-[72px] w-[72px] border-outline opacity-60'
+                                ? 'h-[96px] w-[96px] border-accent-coral opacity-100'
+                                : 'h-[72px] w-[72px] border-accent-coral/45 opacity-60'
                             )}
                           >
                             {b.image ? (
@@ -353,7 +353,7 @@ export default function Explore() {
             {showIpRow && (
               <section className="pb-2">
                 <div className="flex items-end justify-between mb-2">
-                  <p className="text-[10px] font-black text-secondary tracking-wider uppercase">IP</p>
+                  <p className="text-[10px] font-black text-accent-amber tracking-wider uppercase">IP</p>
                   {!mock && (
                     <p className="text-[10px] text-on-surface-variant">{ipOptions.length} 個 IP</p>
                   )}
@@ -362,7 +362,7 @@ export default function Explore() {
                 {(dbIpsLoading || brandProductsLoading) && !mock ? (
                   <p className="text-sm text-on-surface-variant px-1">載入 IP…</p>
                 ) : ipOptions.length === 0 ? (
-                  <div className="glass-card rounded-2xl p-5">
+                  <div className="glass-card rounded-2xl border-[2.5px] border-accent-amber p-5 shadow-[4px_4px_0_#111]">
                     <p className="text-sm text-on-surface-variant">此品牌暫無可用的 IP 資料。</p>
                   </div>
                 ) : (
@@ -384,8 +384,8 @@ export default function Explore() {
                                 className={cn(
                                   'rounded-full overflow-hidden border-[2.5px] bg-white shadow-[4px_4px_0_#111] transition-[width,height,opacity] duration-200',
                                   active
-                                    ? 'h-[80px] w-[80px] border-secondary opacity-100'
-                                    : 'h-[60px] w-[60px] border-outline opacity-60'
+                                    ? 'h-[80px] w-[80px] border-accent-amber opacity-100'
+                                    : 'h-[60px] w-[60px] border-accent-amber/45 opacity-60'
                                 )}
                               >
                                 {ip.image ? (
@@ -418,7 +418,7 @@ export default function Explore() {
             <section className="pb-28">
               <div className="flex items-end justify-between mb-3">
                 <div className="min-w-0">
-                  <p className="text-[10px] font-black text-secondary tracking-wider uppercase">SERIES</p>
+                  <p className="text-[10px] font-black text-accent-sky tracking-wider uppercase">SERIES</p>
                   <h2 className="text-lg font-extrabold text-on-background mt-1 truncate">
                     {selectedIp || selectedBrandTitle || '請先選擇品牌'}
                   </h2>

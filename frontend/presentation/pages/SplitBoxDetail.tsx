@@ -271,7 +271,9 @@ export default function SplitBoxDetail() {
                 slot={slot}
                 disabled={!canClaim}
                 onClaim={() => handleClaim(slot.id)}
-                onOpenListing={(listingId) => navigate(`/listing/${listingId}`)}
+                onOpenListing={(listingId) =>
+                  navigateWithReturn(navigate, `/listing/${listingId}`, location)
+                }
                 isInCart={slot.listingId ? isInCart(slot.listingId) : false}
                 onAddToCart={
                   slot.listingId && !group.isOrganizer

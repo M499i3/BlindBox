@@ -62,7 +62,6 @@ export default function MySplitBoxes() {
       <TopBar
         title="拆盒團"
         showBack
-        onBack={() => navigate('/profile')}
         rightElement={
           <button
             type="button"
