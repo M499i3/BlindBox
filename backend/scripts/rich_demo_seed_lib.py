@@ -53,7 +53,7 @@ class RichSeedBundle:
     notification_specs: list[tuple[str, str, str, str, bool]]
 
 
-def _price_cents(product: dict[str, Any], salt: int) -> int:
+def _listing_price(product: dict[str, Any], salt: int) -> int:
     amount = product.get("official_price_amount")
     if amount and int(amount) > 0:
         return int(amount)
@@ -144,7 +144,7 @@ def build_rich_seed_bundle(
             trade_mode = _TRADE_MODES[j % len(_TRADE_MODES)]
             condition = _CONDITIONS[j % len(_CONDITIONS)]
             allow_swap = trade_mode == "swap"
-            cents = _price_cents(p, product_idx)
+            cents = _listing_price(p, product_idx)
             if trade_mode == "swap" and j % 3 == 0:
                 cents = 0
             listing_specs.append((email, ext, trade_mode, condition, allow_swap, cents))

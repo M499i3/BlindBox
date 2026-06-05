@@ -205,7 +205,7 @@ def seed_listings(
                 title[:200],
                 cat["title"][:120],
                 desc,
-                price_cents // 100 if price_cents else 0,
+                price_cents or 0,
                 condition,
                 trade_mode,
                 allow_swap,

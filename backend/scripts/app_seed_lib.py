@@ -124,7 +124,7 @@ SWAP_SPECS: list[tuple[str, str, str, str, str, str, str, int]] = [
         "user1@test.com",
         "2138",
         "pending",
-        30000,
+        300,
     ),
     (
         "user5@test.com",

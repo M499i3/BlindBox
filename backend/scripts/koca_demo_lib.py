@@ -26,7 +26,7 @@ _TRADE_MODES = ("sell", "sell", "sell", "swap", "swap")
 _CONDITIONS = ("sealed", "sealed", "opened", "sealed")
 
 
-def _market_avg_cents(raw: dict[str, Any]) -> int | None:
+def _market_avg_price(raw: dict[str, Any]) -> int | None:
     mp = raw.get("marketPrice")
     if not isinstance(mp, dict):
         return None
@@ -39,13 +39,13 @@ def _market_avg_cents(raw: dict[str, Any]) -> int | None:
         return None
 
 
-def _fallback_price_cents(raw: dict[str, Any]) -> int | None:
+def _fallback_price(raw: dict[str, Any]) -> int | None:
     amount, _ = parse_price(str(raw.get("price", "")))
     return amount
 
 
-def _price_cents(raw: dict[str, Any]) -> int | None:
-    return _market_avg_cents(raw) or _fallback_price_cents(raw)
+def _listing_price(raw: dict[str, Any]) -> int | None:
+    return _market_avg_price(raw) or _fallback_price(raw)
 
 
 def pick_listing_products(
@@ -64,10 +64,10 @@ def pick_listing_products(
             continue
         if not str(raw.get("id", "")).strip() or not str(raw.get("title", "")).strip():
             continue
-        if _price_cents(raw) is None:
+        if _listing_price(raw) is None:
             continue
         ip = str(raw.get("ip") or "其他 IP").strip() or "其他 IP"
-        bucket = with_market if _market_avg_cents(raw) is not None else without_market
+        bucket = with_market if _market_avg_price(raw) is not None else without_market
         bucket[ip].append(raw)
 
     ips = sorted(set(with_market) | set(without_market))
@@ -118,7 +118,7 @@ def pick_listing_products(
 def build_listing_specs(
     products: list[dict[str, Any]],
 ) -> list[tuple[str, str, str, str, bool, int]]:
-    """(seller_email, external_id, trade_mode, condition, allow_swap, price_twd_cents)"""
+    """(seller_email, external_id, trade_mode, condition, allow_swap, price_twd)"""
     specs: list[tuple[str, str, str, str, bool, int]] = []
     for i, raw in enumerate(products):
         email = DEMO_USERS[i % len(DEMO_USERS)][0]
@@ -126,10 +126,10 @@ def build_listing_specs(
         trade_mode = _TRADE_MODES[i % len(_TRADE_MODES)]
         condition = _CONDITIONS[i % len(_CONDITIONS)]
         allow_swap = trade_mode == "swap"
-        cents = _price_cents(raw) or 0
+        price = _listing_price(raw) or 0
         if trade_mode == "swap" and i % 7 == 0:
-            cents = 0
-        specs.append((email, ext_id, trade_mode, condition, allow_swap, cents))
+            price = 0
+        specs.append((email, ext_id, trade_mode, condition, allow_swap, price))
     return specs
 
 
@@ -215,7 +215,7 @@ def build_koca_demo_bundle(
     listing_specs = build_listing_specs(products)
     order_specs = build_order_specs(listing_specs)
     ips = {str(p.get("ip") or "?") for p in products}
-    with_mp = sum(1 for p in products if _market_avg_cents(p) is not None)
+    with_mp = sum(1 for p in products if _market_avg_price(p) is not None)
     return {
         "listing_specs": listing_specs,
         "order_specs": order_specs,
