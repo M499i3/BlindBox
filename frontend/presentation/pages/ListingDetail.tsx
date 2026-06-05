@@ -27,7 +27,8 @@ import {
   SPLIT_BOX_STATUS_LABEL,
   type SplitBoxGroupDetail,
 } from '@/frontend/domain/entities/splitBox';
-import { isSplitBoxListing, isSwapListing, listingTradeKind } from '@/frontend/shared/utils/tradeMode';
+import { isSwapListing, listingTradeKind } from '@/frontend/shared/utils/tradeMode';
+import { computeSplitBoxProgress } from '@/frontend/shared/utils/splitBoxProgress';
 import { cn } from '@/frontend/shared/utils/cn';
 
 export default function ListingDetail() {
@@ -87,6 +88,33 @@ export default function ListingDetail() {
   const isSellPost = postKind === 'sell';
   const splitGroupId = listing?.splitBoxGroupId ?? null;
   const canContactSwap = myProposal?.status === 'accepted';
+
+  const splitSlot = useMemo(() => {
+    if (!splitGroup || !listing?.splitBoxSlotId) return undefined;
+    return splitGroup.slots.find((s) => s.id === listing.splitBoxSlotId);
+  }, [splitGroup, listing?.splitBoxSlotId]);
+
+  const slotStatus = splitSlot?.status ?? listing?.splitBoxSlotStatus ?? null;
+
+  const canClaimSplit = useMemo(() => {
+    if (!listing || !isSplitPost) return false;
+    if (splitGroup?.isOrganizer) return false;
+    if (splitGroup && splitGroup.status !== 'open') return false;
+    return slotStatus === 'available';
+  }, [listing, isSplitPost, splitGroup, slotStatus]);
+
+  const claimButtonLabel = useMemo(() => {
+    if (splitGroupLoading && !slotStatus) return '載入中…';
+    if (slotStatus === 'claimed') {
+      return splitGroup?.myClaimedSlotIds.includes(listing?.splitBoxSlotId ?? '')
+        ? '你已認領此款式'
+        : '此款式無法認領';
+    }
+    if (splitGroup?.isOrganizer) return '團主無法認領';
+    if (splitGroup && splitGroup.status !== 'open') return '拆盒團目前不接受認領';
+    if (slotStatus && slotStatus !== 'available') return '此款式無法認領';
+    return '認領此款';
+  }, [splitGroup, slotStatus, splitGroupLoading, listing?.splitBoxSlotId]);
 
   const sellerListingCount = useMemo(() => {
     if (!listing?.sellerId) return 0;
@@ -416,24 +444,25 @@ export default function ListingDetail() {
                       <span className="material-symbols-outlined shrink-0 text-on-surface-variant">chevron_right</span>
                     </div>
                     <div className="w-full border-t border-black/10 px-5 pb-4 pt-3">
+                      {(() => {
+                        const { filled, total, percent } = computeSplitBoxProgress(splitGroup);
+                        return (
+                          <>
                       <div className="mb-1.5 flex justify-between text-[10px] font-bold">
                         <span className="text-on-surface-variant">認領進度</span>
                         <span>
-                          {splitGroup.claimedCount} / {splitGroup.targetCount - splitGroup.reservedCount}
+                          {filled} / {total}
                         </span>
                       </div>
                       <div className="h-2 w-full overflow-hidden rounded-full bg-neutral-100">
                         <div
                           className="h-full rounded-full bg-accent-sky transition-all"
-                          style={{
-                            width: `${Math.round(
-                              (splitGroup.claimedCount /
-                                Math.max(1, splitGroup.targetCount - splitGroup.reservedCount)) *
-                                100
-                            )}%`,
-                          }}
+                          style={{ width: `${percent}%` }}
                         />
                       </div>
+                          </>
+                        );
+                      })()}
                       <div className="mt-3 flex flex-wrap gap-3 text-xs text-on-surface-variant">
                         <span>整盒 {splitGroup.totalPrice}</span>
                         <span>每款 {splitGroup.pricePerSlot}</span>
@@ -579,20 +608,22 @@ export default function ListingDetail() {
               <button
                 type="button"
                 onClick={handleClaimSlot}
-                disabled={!splitGroupId}
+                disabled={!splitGroupId || !canClaimSplit || (splitGroupLoading && !slotStatus)}
                 className="w-full rounded-full premium-gradient py-4 text-sm font-bold text-white disabled:opacity-50"
               >
-                認領此款
+                {claimButtonLabel}
               </button>
-              <button
-                type="button"
-                onClick={() => {
-                  inCart ? removeFromCart(listing.id) : addToCart(listing.id);
-                }}
-                className={`w-full py-4 rounded-full text-sm font-bold ${cartButtonClass}`}
-              >
-                {inCart ? '已加入購物車（點我移除）' : '加入購物車'}
-              </button>
+              {canClaimSplit ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    inCart ? removeFromCart(listing.id) : addToCart(listing.id);
+                  }}
+                  className={`w-full py-4 rounded-full text-sm font-bold ${cartButtonClass}`}
+                >
+                  {inCart ? '已加入購物車（點我移除）' : '考慮一下（加購物車）'}
+                </button>
+              ) : null}
               <button
                 type="button"
                 disabled={contacting}

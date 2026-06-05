@@ -23,6 +23,8 @@ export type Listing = {
   sellerName: string;
   splitBoxGroupId?: string | null;
   splitBoxSlotId?: string | null;
+  splitBoxSlotStatus?: string | null;
+  splitBoxGroupStatus?: string | null;
   isSeeded?: boolean;
 };
 

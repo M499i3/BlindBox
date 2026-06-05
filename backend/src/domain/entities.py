@@ -66,6 +66,8 @@ class Listing(BaseModel):
     seller_id: str
     split_box_group_id: str | None = None
     split_box_slot_id: str | None = None
+    split_box_slot_status: str | None = None
+    split_box_group_status: str | None = None
 
 
 class CreateListingInput(BaseModel):
@@ -307,6 +309,12 @@ class SplitBoxSlot(BaseModel):
     status: str
 
 
+class SplitBoxClaimedSlotBrief(BaseModel):
+    id: str
+    product_title: str
+    product_image: str = ""
+
+
 class SplitBoxGroupSummary(BaseModel):
     id: str
     title: str
@@ -323,6 +331,7 @@ class SplitBoxGroupSummary(BaseModel):
     price_per_slot: str = ""
     closes_at: str | None = None
     created_at: str = ""
+    my_claimed_slots: list[SplitBoxClaimedSlotBrief] = Field(default_factory=list)
 
 
 class SplitBoxGroupDetail(SplitBoxGroupSummary):

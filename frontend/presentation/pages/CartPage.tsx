@@ -1,22 +1,25 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import ListingCardImage from '@/frontend/presentation/components/ListingCardImage';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
 import type { Listing } from '@/frontend/domain/entities/listing';
-import { listingTradeKind, type ListingTradeKind } from '@/frontend/shared/utils/tradeMode';
-import { cn } from '@/frontend/shared/utils/cn';
+import { isClaimableSplitBoxListing, listingTradeKind } from '@/frontend/shared/utils/tradeMode';
 import { claimSplitBoxSlot } from '@/frontend/infrastructure/api/splitBoxApi';
+import { invalidateCachesAfterSplitBoxClaim } from '@/frontend/shared/utils/cacheInvalidation';
+import { cn } from '@/frontend/shared/utils/cn';
 
-const CART_TABS: { key: ListingTradeKind; label: string }[] = [
+type CartTab = 'sell' | 'split' | 'swap';
+
+const CART_TABS: { key: CartTab; label: string }[] = [
   { key: 'sell', label: '販售' },
-  { key: 'split', label: '拆盒團' },
+  { key: 'split', label: '拆盒考慮' },
   { key: 'swap', label: '交換' },
 ];
 
-const TAB_HINTS: Record<ListingTradeKind, string> = {
+const TAB_HINTS: Record<CartTab, string> = {
   sell: '勾選商品後可一次下單。',
-  split: '勾選款式後點擊「確認認領」即完成認領，無需另外跳頁。',
+  split: '這裡是你考慮認領的拆盒款式。勾選後點「確認認領」即完成認領；被別人搶先認領的款式可直接移除。',
   swap: '點擊貼文填寫交換申請表單。',
 };
 
@@ -77,25 +80,34 @@ function SellCartItemRow({
 function SplitCartItemRow({
   item,
   selected,
+  claimable,
+  claimed,
+  claimError,
   onToggle,
   onRemove,
   onOpen,
-  claimed,
-  claimError,
 }: {
   item: Listing;
   selected: boolean;
+  claimable: boolean;
+  claimed?: boolean;
+  claimError?: string;
   onToggle: () => void;
   onRemove: () => void;
   onOpen: () => void;
-  claimed?: boolean;
-  claimError?: string;
 }) {
+  const takenByOthers = !claimable && !claimed;
   return (
     <div
       className={cn(
         'rounded-2xl border-2 bg-white shadow-none p-3 flex gap-3',
-        claimed ? 'border-green-400 bg-green-50' : claimError ? 'border-secondary/50' : 'border-outline'
+        claimed
+          ? 'border-green-400 bg-green-50'
+          : takenByOthers
+            ? 'border-secondary/40 bg-secondary/5'
+            : claimError
+              ? 'border-secondary/50'
+              : 'border-outline'
       )}
     >
       <label className="pt-1">
@@ -103,8 +115,8 @@ function SplitCartItemRow({
           type="checkbox"
           checked={selected}
           onChange={onToggle}
-          disabled={claimed}
-          className="h-4 w-4 accent-black"
+          disabled={!claimable || claimed}
+          className="h-4 w-4 accent-black disabled:opacity-40"
           aria-label={`選擇 ${item.title}`}
         />
       </label>
@@ -113,6 +125,8 @@ function SplitCartItemRow({
         <p className="card-title-2 text-sm font-bold leading-snug text-on-surface">{item.title}</p>
         {claimed ? (
           <p className="text-xs font-bold text-green-600 mt-1">已成功認領 ✓</p>
+        ) : takenByOthers ? (
+          <p className="text-xs font-bold text-secondary mt-1">目前已被別人認領</p>
         ) : claimError ? (
           <p className="text-xs font-bold text-secondary mt-1">{claimError}</p>
         ) : (
@@ -175,7 +189,7 @@ function IntentCartItemRow({
   );
 }
 
-function isCartTab(raw: string | null): raw is ListingTradeKind {
+function isCartTab(raw: string | null): raw is CartTab {
   return raw === 'sell' || raw === 'split' || raw === 'swap';
 }
 
@@ -183,7 +197,7 @@ export default function CartPage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get('tab');
-  const { cartItems, removeFromCart } = useAppState();
+  const { cartItems, removeFromCart, refreshUserData } = useAppState();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectedSplitIds, setSelectedSplitIds] = useState<string[]>([]);
   const [claiming, setClaiming] = useState(false);
@@ -191,14 +205,15 @@ export default function CartPage() {
   const [claimErrors, setClaimErrors] = useState<Record<string, string>>({});
 
   const itemsByKind = useMemo(() => {
-    const map: Record<ListingTradeKind, Listing[]> = { sell: [], split: [], swap: [] };
+    const map: Record<CartTab, Listing[]> = { sell: [], split: [], swap: [] };
     for (const item of cartItems) {
-      map[listingTradeKind(item)].push(item);
+      const kind = listingTradeKind(item);
+      map[kind].push(item);
     }
     return map;
   }, [cartItems]);
 
-  const activeTab: ListingTradeKind = useMemo(() => {
+  const activeTab: CartTab = useMemo(() => {
     if (isCartTab(tabParam)) return tabParam;
     const firstWithItems = CART_TABS.find((t) => itemsByKind[t.key].length > 0);
     return firstWithItems?.key ?? 'sell';
@@ -208,10 +223,13 @@ export default function CartPage() {
   const splitItems = itemsByKind.split;
   const activeItems = itemsByKind[activeTab];
 
+  const isSplitClaimable = (item: Listing) =>
+    isClaimableSplitBoxListing(item) && !claimSuccess.has(item.id);
+
   const selectedSellItems = sellItems.filter((item) => selectedIds.includes(item.id));
   const selectedSellTotal = selectedSellItems.reduce((sum, item) => sum + itemPriceNumber(item), 0);
 
-  const setActiveTab = (tab: ListingTradeKind) => {
+  const setActiveTab = (tab: CartTab) => {
     setSearchParams(tab === 'sell' ? {} : { tab }, { replace: true });
   };
 
@@ -247,28 +265,29 @@ export default function CartPage() {
     );
   };
 
+  const claimableSplitItems = splitItems.filter(isSplitClaimable);
+
   const toggleSelectAllSplit = () => {
-    const claimableIds = splitItems
-      .filter((i) => !claimSuccess.has(i.id))
-      .map((i) => i.id);
-    const allSelected =
-      claimableIds.length > 0 && claimableIds.every((id) => selectedSplitIds.includes(id));
+    const ids = claimableSplitItems.map((i) => i.id);
+    const allSelected = ids.length > 0 && ids.every((id) => selectedSplitIds.includes(id));
     if (allSelected) {
-      setSelectedSplitIds((prev) => prev.filter((id) => !claimableIds.includes(id)));
+      setSelectedSplitIds((prev) => prev.filter((id) => !ids.includes(id)));
     } else {
-      setSelectedSplitIds((prev) => [...new Set([...prev, ...claimableIds])]);
+      setSelectedSplitIds((prev) => [...new Set([...prev, ...ids])]);
     }
   };
 
   const handleConfirmClaim = async () => {
-    const toClaimItems = splitItems.filter((i) => selectedSplitIds.includes(i.id));
-    if (!toClaimItems.length || claiming) return;
+    const toClaim = splitItems.filter(
+      (i) => selectedSplitIds.includes(i.id) && isSplitClaimable(i)
+    );
+    if (!toClaim.length || claiming) return;
     setClaiming(true);
     setClaimErrors({});
     const succeeded: string[] = [];
     const newErrors: Record<string, string> = {};
 
-    for (const item of toClaimItems) {
+    for (const item of toClaim) {
       if (!item.splitBoxGroupId || !item.splitBoxSlotId) {
         newErrors[item.id] = '缺少拆盒團資訊';
         continue;
@@ -281,15 +300,16 @@ export default function CartPage() {
       }
     }
 
+    if (succeeded.length > 0) {
+      invalidateCachesAfterSplitBoxClaim();
+      void refreshUserData();
+    }
     setClaimSuccess((prev) => new Set([...prev, ...succeeded]));
     setClaimErrors(newErrors);
     setSelectedSplitIds((prev) => prev.filter((id) => !succeeded.includes(id)));
-
-    // 稍後自動移出購物車（讓使用者看到成功狀態再清除）
     setTimeout(() => {
       succeeded.forEach((id) => removeFromCart(id));
     }, 1800);
-
     setClaiming(false);
   };
 
@@ -298,14 +318,18 @@ export default function CartPage() {
     navigate(`/checkout?ids=${selectedSellItems.map((i) => i.id).join(',')}`);
   };
 
-  const tabCount = (kind: ListingTradeKind) => itemsByKind[kind].length;
+  const tabCount = (kind: CartTab) => itemsByKind[kind].length;
+  const visibleCartCount = sellItems.length + splitItems.length + itemsByKind.swap.length;
+  const allClaimableSelected =
+    claimableSplitItems.length > 0 &&
+    claimableSplitItems.every((i) => selectedSplitIds.includes(i.id));
 
   return (
     <div className="animate-in fade-in duration-500 pb-28">
       <TopBar showBack title="購物車" />
 
       <main className="pt-topbar-content px-5 w-full min-w-0 max-w-full">
-        {cartItems.length === 0 ? (
+        {visibleCartCount === 0 ? (
           <p className="text-sm text-on-surface-variant text-center py-20">購物車目前是空的。</p>
         ) : (
           <>
@@ -381,16 +405,13 @@ export default function CartPage() {
                       <button
                         type="button"
                         onClick={toggleSelectAllSplit}
-                        className="text-xs px-3 py-1 rounded-full border border-black/[0.12]"
+                        disabled={claimableSplitItems.length === 0}
+                        className="text-xs px-3 py-1 rounded-full border border-black/[0.12] disabled:opacity-40"
                       >
-                        {splitItems.filter((i) => !claimSuccess.has(i.id)).every((i) =>
-                          selectedSplitIds.includes(i.id)
-                        ) && splitItems.some((i) => !claimSuccess.has(i.id))
-                          ? '取消全選'
-                          : '全選'}
+                        {allClaimableSelected ? '取消全選' : '全選'}
                       </button>
                       <p className="text-xs text-on-surface-variant">
-                        已選 {selectedSplitIds.length} / {splitItems.filter((i) => !claimSuccess.has(i.id)).length} 件
+                        已選 {selectedSplitIds.length} / {claimableSplitItems.length} 件
                       </p>
                     </div>
                     {splitItems.map((item) => (
@@ -398,6 +419,9 @@ export default function CartPage() {
                         key={item.id}
                         item={item}
                         selected={selectedSplitIds.includes(item.id)}
+                        claimable={isSplitClaimable(item)}
+                        claimed={claimSuccess.has(item.id)}
+                        claimError={claimErrors[item.id]}
                         onToggle={() => toggleSelectedSplit(item.id)}
                         onRemove={() => removeFromCart(item.id)}
                         onOpen={() =>
@@ -405,8 +429,6 @@ export default function CartPage() {
                             ? navigate(`/split-box/${item.splitBoxGroupId}`)
                             : navigate(`/listing/${item.id}`)
                         }
-                        claimed={claimSuccess.has(item.id)}
-                        claimError={claimErrors[item.id]}
                       />
                     ))}
                   </>
@@ -455,6 +477,9 @@ export default function CartPage() {
                     ? '認領中…'
                     : `確認認領${selectedSplitIds.length > 0 ? `（${selectedSplitIds.length} 件）` : ''}`}
                 </button>
+                <p className="text-center text-[10px] text-on-surface-variant">
+                  送出認領僅代表有意加入，最終是否取得仍視拆盒團能否湊齊。
+                </p>
               </section>
             ) : null}
           </>

@@ -68,6 +68,21 @@ export function isSplitBoxListing(
   );
 }
 
+/** 拆盒貼文是否仍可在市集認領（slot 須為 available，且團仍為 open） */
+export function isClaimableSplitBoxListing(
+  item: Pick<
+    Listing,
+    'tradeMode' | 'splitBoxGroupId' | 'splitBoxSlotId' | 'splitBoxSlotStatus' | 'splitBoxGroupStatus'
+  >
+): boolean {
+  if (!isSplitBoxListing(item)) return false;
+  if (!item.splitBoxGroupId || !item.splitBoxSlotId) return false;
+  // 團狀態已知且非招募中 → 不可認領（含已關團、已湊齊、出貨、完成等）
+  if (item.splitBoxGroupStatus != null && item.splitBoxGroupStatus !== 'open') return false;
+  if (item.splitBoxSlotStatus == null) return true;
+  return item.splitBoxSlotStatus === 'available';
+}
+
 export type ListingTradeKind = 'sell' | 'split' | 'swap';
 
 export function listingTradeKind(

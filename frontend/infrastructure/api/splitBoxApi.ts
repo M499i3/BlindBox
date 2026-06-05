@@ -21,6 +21,12 @@ type ApiSlot = {
   status: string;
 };
 
+type ApiClaimedSlotBrief = {
+  id: string;
+  product_title: string;
+  product_image: string;
+};
+
 type ApiSummary = {
   id: string;
   title: string;
@@ -37,6 +43,7 @@ type ApiSummary = {
   price_per_slot: string;
   closes_at: string | null;
   created_at: string;
+  my_claimed_slots?: ApiClaimedSlotBrief[];
 };
 
 type ApiDetail = ApiSummary & {
@@ -84,6 +91,11 @@ function summaryToFrontend(g: ApiSummary): SplitBoxGroupSummary {
     pricePerSlot: g.price_per_slot,
     closesAt: g.closes_at,
     createdAt: g.created_at,
+    myClaimedSlots: (g.my_claimed_slots ?? []).map((s) => ({
+      id: s.id,
+      productTitle: s.product_title,
+      productImage: s.product_image,
+    })),
   };
 }
 

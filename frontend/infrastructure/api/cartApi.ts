@@ -24,6 +24,8 @@ type ApiListing = {
   seller_id?: string;
   split_box_group_id?: string | null;
   split_box_slot_id?: string | null;
+  split_box_slot_status?: string | null;
+  split_box_group_status?: string | null;
   quantity?: number;
 };
 
@@ -52,6 +54,8 @@ function toFrontend(l: ApiListing): Listing {
     quantity: l.quantity ?? 1,
     splitBoxGroupId: l.split_box_group_id ?? null,
     splitBoxSlotId: l.split_box_slot_id ?? null,
+    splitBoxSlotStatus: l.split_box_slot_status ?? null,
+    splitBoxGroupStatus: l.split_box_group_status ?? null,
   };
 }
 

@@ -35,6 +35,12 @@ export type SplitBoxSlot = {
   status: 'reserved' | 'available' | 'claimed';
 };
 
+export type SplitBoxClaimedSlotBrief = {
+  id: string;
+  productTitle: string;
+  productImage: string;
+};
+
 export type SplitBoxGroupSummary = {
   id: string;
   title: string;
@@ -51,6 +57,7 @@ export type SplitBoxGroupSummary = {
   pricePerSlot: string;
   closesAt: string | null;
   createdAt: string;
+  myClaimedSlots?: SplitBoxClaimedSlotBrief[];
 };
 
 export type SplitBoxGroupDetail = SplitBoxGroupSummary & {

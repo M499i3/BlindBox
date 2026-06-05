@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { navigateBack, navigateWithReturn } from '@/frontend/shared/utils/routeNavigation';
 import TopBar from '@/frontend/presentation/components/TopBar';
@@ -13,31 +13,44 @@ import {
   type SplitBoxSlot,
 } from '@/frontend/domain/entities/splitBox';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
+import { computeSplitBoxProgress } from '@/frontend/shared/utils/splitBoxProgress';
 import { cn } from '@/frontend/shared/utils/cn';
+
+const SLOT_SORT_ORDER: Record<SplitBoxSlot['status'], number> = {
+  available: 0,
+  claimed: 1,
+  reserved: 2,
+};
 
 function SlotCard({
   slot,
   disabled,
+  groupOpen,
+  isInConsideration,
+  onAddToConsideration,
   onClaim,
   onOpenListing,
-  isInCart,
-  onAddToCart,
 }: {
   slot: SplitBoxSlot;
   disabled: boolean;
+  groupOpen: boolean;
+  isInConsideration: boolean;
+  onAddToConsideration?: () => void;
   onClaim: () => void;
   onOpenListing?: (listingId: string) => void;
-  isInCart: boolean;
-  onAddToCart?: () => void;
 }) {
+  const isClaimable = slot.status === 'available' && groupOpen;
+
   const statusLabel =
     slot.status === 'reserved'
       ? '團主自留'
       : slot.status === 'claimed'
         ? '已認領'
-        : '可認領';
+        : groupOpen
+          ? '可認領'
+          : '未認領';
 
-  const canOpenListing = Boolean(slot.listingId && slot.status !== 'reserved');
+  const canOpenListing = Boolean(slot.listingId && isClaimable);
 
   return (
     <div
@@ -54,7 +67,7 @@ function SlotCard({
       }}
       className={cn(
         'overflow-hidden rounded-2xl border-2 bg-white shadow-[3px_3px_0_#111] text-left',
-        slot.status === 'available' ? 'border-outline' : 'border-black/15',
+        isClaimable ? 'border-outline' : 'border-black/15',
         canOpenListing && 'cursor-pointer active:opacity-95'
       )}
     >
@@ -65,7 +78,7 @@ function SlotCard({
         <span
           className={cn(
             'absolute top-2 left-2 rounded-full px-2 py-0.5 text-[9px] font-bold',
-            slot.status === 'available' ? 'bg-primary text-white' : 'bg-black/60 text-white'
+            isClaimable ? 'bg-primary text-white' : 'bg-black/60 text-white'
           )}
         >
           {statusLabel}
@@ -77,30 +90,35 @@ function SlotCard({
         {slot.claimedByName ? (
           <p className="text-[10px] text-on-surface-variant">認領：{slot.claimedByName}</p>
         ) : null}
-        {slot.status === 'available' && !disabled ? (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onClaim();
-            }}
-            className="w-full rounded-full border-2 border-black bg-black py-2 text-xs font-extrabold text-white"
-          >
-            認領此款
-          </button>
-        ) : null}
-        {slot.listingId && slot.status !== 'reserved' && onAddToCart ? (
-          <button
-            type="button"
-            disabled={isInCart}
-            onClick={(e) => {
-              e.stopPropagation();
-              onAddToCart();
-            }}
-            className="w-full rounded-full border-2 border-outline bg-white py-2 text-xs font-extrabold text-on-surface shadow-[2px_2px_0_#111] disabled:opacity-50"
-          >
-            {isInCart ? '已在購物車' : '加入購物車'}
-          </button>
+        {isClaimable && !disabled ? (
+          <div className="space-y-2">
+            <button
+              type="button"
+              disabled={!onAddToConsideration || isInConsideration}
+              onClick={(e) => {
+                e.stopPropagation();
+                onAddToConsideration?.();
+              }}
+              className={cn(
+                'w-full rounded-full border-2 border-outline py-2 text-xs font-extrabold shadow-[2px_2px_0_#111] disabled:opacity-70',
+                isInConsideration
+                  ? 'bg-secondary text-on-secondary'
+                  : 'bg-white text-on-background'
+              )}
+            >
+              {isInConsideration ? '已加入購物車' : '考慮一下（加購物車）'}
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onClaim();
+              }}
+              className="w-full rounded-full border-2 border-black bg-black py-2 text-xs font-extrabold text-white"
+            >
+              認領此款
+            </button>
+          </div>
         ) : null}
       </div>
     </div>
@@ -114,7 +132,6 @@ export default function SplitBoxDetail() {
   const { addToCart, isInCart } = useAppState();
   const [group, setGroup] = useState<SplitBoxGroupDetail | null>(null);
   const [loading, setLoading] = useState(true);
-  const [claimingId, setClaimingId] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -142,6 +159,10 @@ export default function SplitBoxDetail() {
     navigateWithReturn(navigate, `/split-box/${id}/apply?${params.toString()}`, location);
   };
 
+  const handleAddToConsideration = (listingId: string) => {
+    addToCart(listingId);
+  };
+
   const handleShip = async () => {
     if (!id) return;
     setActionLoading(true);
@@ -166,6 +187,19 @@ export default function SplitBoxDetail() {
     }
   };
 
+  const sortedSlots = useMemo(() => {
+    if (!group) return [];
+    return [...group.slots].sort(
+      (a, b) => (SLOT_SORT_ORDER[a.status] ?? 9) - (SLOT_SORT_ORDER[b.status] ?? 9)
+    );
+  }, [group]);
+
+  const myClaimedSlots = useMemo(() => {
+    if (!group) return [];
+    const ids = new Set(group.myClaimedSlotIds);
+    return group.slots.filter((s) => ids.has(s.id));
+  }, [group]);
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center pt-24 text-sm text-on-surface-variant">
@@ -189,8 +223,7 @@ export default function SplitBoxDetail() {
     );
   }
 
-  const claimableTotal = group.targetCount - group.reservedCount;
-  const progress = claimableTotal ? Math.round((group.claimedCount / claimableTotal) * 100) : 0;
+  const { filled, total, percent } = computeSplitBoxProgress(group);
   const canClaim = group.status === 'open' && !group.isOrganizer;
 
   return (
@@ -221,11 +254,11 @@ export default function SplitBoxDetail() {
             <div className="mb-1.5 flex justify-between text-[10px] font-bold">
               <span className="text-on-surface-variant">認領進度</span>
               <span>
-                {group.claimedCount} / {claimableTotal}
+                {filled} / {total}
               </span>
             </div>
             <div className="h-2 overflow-hidden rounded-full bg-neutral-100">
-              <div className="h-full rounded-full bg-accent-sky transition-all" style={{ width: `${progress}%` }} />
+              <div className="h-full rounded-full bg-accent-sky transition-all" style={{ width: `${percent}%` }} />
             </div>
             <div className="mt-3 flex flex-wrap gap-3 text-xs">
               <span>整盒 {group.totalPrice}</span>
@@ -237,6 +270,27 @@ export default function SplitBoxDetail() {
             ) : null}
           </div>
         </section>
+
+        {!group.isOrganizer && myClaimedSlots.length > 0 ? (
+          <section className="rounded-2xl border-2 border-primary/30 bg-primary/5 p-4">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-primary">你認領的款式</h2>
+            <div className="mt-3 space-y-2">
+              {myClaimedSlots.map((slot) => (
+                <div key={slot.id} className="flex items-center gap-3">
+                  <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-white">
+                    {slot.productImage ? (
+                      <img src={slot.productImage} alt="" className="h-full w-full object-contain p-1" referrerPolicy="no-referrer" />
+                    ) : null}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-bold text-on-surface">{slot.productTitle}</p>
+                    <p className="text-xs font-semibold text-primary">{slot.price}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         {error ? <p className="text-sm font-semibold text-secondary">{error}</p> : null}
 
@@ -265,21 +319,18 @@ export default function SplitBoxDetail() {
         <section>
           <h2 className="mb-3 text-sm font-extrabold">款式認領</h2>
           <div className="grid grid-cols-2 gap-3">
-            {group.slots.map((slot) => (
+            {sortedSlots.map((slot) => (
               <SlotCard
                 key={slot.id}
                 slot={slot}
                 disabled={!canClaim}
+                groupOpen={group.status === 'open'}
+                isInConsideration={Boolean(slot.listingId && isInCart(slot.listingId))}
+                onAddToConsideration={
+                  slot.listingId ? () => handleAddToConsideration(slot.listingId) : undefined
+                }
                 onClaim={() => handleClaim(slot.id)}
                 onOpenListing={(listingId) => navigate(`/listing/${listingId}`)}
-                isInCart={slot.listingId ? isInCart(slot.listingId) : false}
-                onAddToCart={
-                  slot.listingId && !group.isOrganizer
-                    ? () => {
-                        if (!isInCart(slot.listingId!)) addToCart(slot.listingId!);
-                      }
-                    : undefined
-                }
               />
             ))}
           </div>
