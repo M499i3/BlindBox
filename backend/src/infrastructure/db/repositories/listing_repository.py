@@ -28,6 +28,7 @@ _LIST_SELECT = """
         l.split_box_group_id,
         l.split_box_slot_id,
         ss.status AS split_box_slot_status,
+        sbg.status::text AS split_box_group_status,
         l.catalog_product_id,
         l.created_at,
         l.seller_id,
@@ -52,8 +53,9 @@ _LIST_SELECT = """
     LEFT JOIN ips i ON i.id = l.ip_id
     LEFT JOIN series ps ON ps.id = l.series_id
     LEFT JOIN split_box_slots ss ON ss.id = l.split_box_slot_id
+    LEFT JOIN split_box_groups sbg ON sbg.id = l.split_box_group_id
     WHERE l.status = 'active' AND l.deleted_at IS NULL
-      AND (l.split_box_slot_id IS NULL OR ss.status = 'available')
+      AND (l.split_box_slot_id IS NULL OR (ss.status = 'available' AND sbg.status = 'open'))
     ORDER BY l.created_at DESC
 """
 
@@ -119,6 +121,7 @@ _LISTING_BY_ID = """
         l.split_box_group_id,
         l.split_box_slot_id,
         ss.status AS split_box_slot_status,
+        sbg.status::text AS split_box_group_status,
         l.catalog_product_id,
         l.created_at,
         l.seller_id,
@@ -143,6 +146,7 @@ _LISTING_BY_ID = """
     LEFT JOIN ips i ON i.id = l.ip_id
     LEFT JOIN series ps ON ps.id = l.series_id
     LEFT JOIN split_box_slots ss ON ss.id = l.split_box_slot_id
+    LEFT JOIN split_box_groups sbg ON sbg.id = l.split_box_group_id
     WHERE l.id = %s AND l.deleted_at IS NULL
     LIMIT 1
 """
@@ -340,6 +344,7 @@ def _row_to_listing(row: dict) -> Listing:
         split_box_group_id=str(row["split_box_group_id"]) if row.get("split_box_group_id") else None,
         split_box_slot_id=str(row["split_box_slot_id"]) if row.get("split_box_slot_id") else None,
         split_box_slot_status=str(row["split_box_slot_status"]) if row.get("split_box_slot_status") else None,
+        split_box_group_status=str(row["split_box_group_status"]) if row.get("split_box_group_status") else None,
     )
 
 

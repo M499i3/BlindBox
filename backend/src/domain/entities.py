@@ -67,6 +67,7 @@ class Listing(BaseModel):
     split_box_group_id: str | None = None
     split_box_slot_id: str | None = None
     split_box_slot_status: str | None = None
+    split_box_group_status: str | None = None
 
 
 class CreateListingInput(BaseModel):

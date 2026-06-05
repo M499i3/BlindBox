@@ -24,22 +24,28 @@ const SLOT_SORT_ORDER: Record<SplitBoxSlot['status'], number> = {
 function SlotCard({
   slot,
   disabled,
+  groupOpen,
   onClaim,
   onOpenListing,
 }: {
   slot: SplitBoxSlot;
   disabled: boolean;
+  groupOpen: boolean;
   onClaim: () => void;
   onOpenListing?: (listingId: string) => void;
 }) {
+  const isClaimable = slot.status === 'available' && groupOpen;
+
   const statusLabel =
     slot.status === 'reserved'
       ? '團主自留'
       : slot.status === 'claimed'
         ? '已認領'
-        : '可認領';
+        : groupOpen
+          ? '可認領'
+          : '未認領';
 
-  const canOpenListing = Boolean(slot.listingId && slot.status === 'available');
+  const canOpenListing = Boolean(slot.listingId && isClaimable);
 
   return (
     <div
@@ -56,7 +62,7 @@ function SlotCard({
       }}
       className={cn(
         'overflow-hidden rounded-2xl border-2 bg-white shadow-[3px_3px_0_#111] text-left',
-        slot.status === 'available' ? 'border-outline' : 'border-black/15',
+        isClaimable ? 'border-outline' : 'border-black/15',
         canOpenListing && 'cursor-pointer active:opacity-95'
       )}
     >
@@ -67,7 +73,7 @@ function SlotCard({
         <span
           className={cn(
             'absolute top-2 left-2 rounded-full px-2 py-0.5 text-[9px] font-bold',
-            slot.status === 'available' ? 'bg-primary text-white' : 'bg-black/60 text-white'
+            isClaimable ? 'bg-primary text-white' : 'bg-black/60 text-white'
           )}
         >
           {statusLabel}
@@ -79,7 +85,7 @@ function SlotCard({
         {slot.claimedByName ? (
           <p className="text-[10px] text-on-surface-variant">認領：{slot.claimedByName}</p>
         ) : null}
-        {slot.status === 'available' && !disabled ? (
+        {isClaimable && !disabled ? (
           <button
             type="button"
             onClick={(e) => {
@@ -290,6 +296,7 @@ export default function SplitBoxDetail() {
                 key={slot.id}
                 slot={slot}
                 disabled={!canClaim}
+                groupOpen={group.status === 'open'}
                 onClaim={() => handleClaim(slot.id)}
                 onOpenListing={(listingId) => navigate(`/listing/${listingId}`)}
               />

@@ -24,6 +24,7 @@ export type Listing = {
   splitBoxGroupId?: string | null;
   splitBoxSlotId?: string | null;
   splitBoxSlotStatus?: string | null;
+  splitBoxGroupStatus?: string | null;
   isSeeded?: boolean;
 };
 
