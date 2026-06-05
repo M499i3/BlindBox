@@ -6,8 +6,19 @@ import psycopg2.extensions
 from fastapi import APIRouter, Depends, Query
 
 from api.dependencies import get_current_user_id, get_db
-from application.order_service import change_order_status, list_my_orders, place_order
-from domain.entities import CreateOrderRequest, OrderCreated, OrderSummary, UpdateOrderStatusRequest
+from application.order_service import (
+    change_order_status,
+    list_my_orders,
+    place_order,
+    submit_order_rating,
+)
+from domain.entities import (
+    CreateOrderRequest,
+    OrderCreated,
+    OrderSummary,
+    SubmitRatingRequest,
+    UpdateOrderStatusRequest,
+)
 
 router = APIRouter()
 
@@ -38,3 +49,13 @@ def patch_order_status(
     conn: psycopg2.extensions.connection = Depends(get_db),
 ) -> OrderCreated:
     return change_order_status(conn, user_id, order_id, body.status)
+
+
+@router.post("/{order_id}/rating", status_code=204)
+def post_order_rating(
+    order_id: str,
+    body: SubmitRatingRequest,
+    user_id: str = Depends(get_current_user_id),
+    conn: psycopg2.extensions.connection = Depends(get_db),
+) -> None:
+    submit_order_rating(conn, user_id, order_id, body)

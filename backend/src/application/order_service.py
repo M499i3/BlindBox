@@ -4,7 +4,7 @@ import uuid
 import psycopg2.extensions
 from fastapi import HTTPException
 
-from domain.entities import OrderCreated, OrderSummary
+from domain.entities import OrderCreated, OrderSummary, RatingItem, SubmitRatingRequest
 from infrastructure.db.repositories.chat_repository import (
     apply_order_status_to_chat,
     get_listing_for_chat,
@@ -15,6 +15,11 @@ from infrastructure.db.repositories.order_repository import (
     get_order_by_id,
     get_orders_for_user,
     update_order_status,
+)
+from infrastructure.db.repositories.rating_repository import (
+    get_ratings_for_user,
+    has_rated_order,
+    insert_rating,
 )
 
 _BUYER_TRANSITIONS: dict[str, set[str]] = {
@@ -253,3 +258,49 @@ def change_order_status(
         status=status,
         status_label=_STATUS_LABELS.get(status, status),
     )
+
+
+def submit_order_rating(
+    conn: psycopg2.extensions.connection,
+    user_id: str,
+    order_id: str,
+    req: SubmitRatingRequest,
+) -> None:
+    order = get_order_by_id(conn, order_id)
+    if not order:
+        raise HTTPException(status_code=404, detail="找不到訂單")
+
+    buyer_id = str(order["buyer_id"])
+    seller_id = str(order["seller_id"])
+
+    # Only the buyer can rate the seller
+    if user_id != buyer_id:
+        raise HTTPException(status_code=403, detail="只有買家可以評價賣家")
+
+    if str(order["status"]) != "completed":
+        raise HTTPException(status_code=400, detail="訂單尚未完成，無法評價")
+
+    if has_rated_order(conn, order_id, user_id):
+        raise HTTPException(status_code=409, detail="您已評價過此訂單")
+
+    if not (1 <= req.score <= 5):
+        raise HTTPException(status_code=422, detail="評分必須在 1 到 5 之間")
+
+    insert_rating(
+        conn,
+        order_id=order_id,
+        rater_id=user_id,
+        ratee_id=seller_id,
+        score=req.score,
+        comment=req.comment,
+    )
+
+
+def list_user_ratings(
+    conn: psycopg2.extensions.connection,
+    ratee_id: str,
+    *,
+    limit: int = 50,
+    offset: int = 0,
+) -> list[RatingItem]:
+    return get_ratings_for_user(conn, ratee_id, limit=limit, offset=offset)

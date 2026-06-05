@@ -5,6 +5,7 @@ export type OrderSummary = {
   listingId: string;
   title: string;
   image: string;
+  counterpartyId: string;
   counterpartyName: string;
   status: string;
   statusLabel: string;
@@ -17,6 +18,7 @@ type ApiOrder = {
   listing_id: string;
   title: string;
   image: string;
+  counterparty_id: string;
   counterparty_name: string;
   status: string;
   status_label: string;
@@ -30,6 +32,7 @@ function toFrontend(o: ApiOrder): OrderSummary {
     listingId: o.listing_id,
     title: o.title,
     image: o.image,
+    counterpartyId: o.counterparty_id ?? '',
     counterpartyName: o.counterparty_name,
     status: o.status,
     statusLabel: o.status_label,
@@ -94,4 +97,18 @@ export async function updateOrderStatus(
     }
   );
   return createdToFrontend(item);
+}
+
+export async function submitRating(
+  orderId: string,
+  score: number,
+  comment?: string
+): Promise<void> {
+  await apiFetch<void>(
+    `/api/orders/${encodeURIComponent(orderId)}/rating`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ score, comment: comment || null }),
+    }
+  );
 }

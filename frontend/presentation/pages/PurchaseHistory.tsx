@@ -78,12 +78,18 @@ export default function PurchaseHistory() {
     setUpdatingId(orderId);
     try {
       const updated = await updateOrderStatus(orderId, 'completed');
+      const order = orders.find((o) => o.id === orderId);
       setOrders((prev) =>
         prev.map((o) =>
           o.id === orderId
             ? { ...o, status: updated.status, statusLabel: updated.statusLabel }
             : o
         )
+      );
+      // Navigate to rate-seller page
+      const sellerName = encodeURIComponent(order?.counterpartyName ?? '賣家');
+      navigate(
+        `/rate-seller?orderId=${encodeURIComponent(orderId)}&sellerName=${sellerName}`
       );
     } catch (e) {
       console.error(e);

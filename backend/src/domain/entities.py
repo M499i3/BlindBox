@@ -154,6 +154,7 @@ class OrderSummary(BaseModel):
     listing_id: str
     title: str
     image: str
+    counterparty_id: str
     counterparty_name: str
     status: str
     status_label: str
@@ -341,3 +342,17 @@ class ClaimSplitBoxSlotInput(BaseModel):
 
 class ShipSplitBoxInput(BaseModel):
     shipping_note: str | None = None
+
+
+class SubmitRatingRequest(BaseModel):
+    score: int
+    comment: str | None = None
+
+
+class RatingItem(BaseModel):
+    id: str
+    rater_id: str
+    rater_name: str
+    score: int
+    comment: str | None
+    created_at: str

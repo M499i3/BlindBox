@@ -13,6 +13,7 @@ type Props = {
   listingCreatedAt?: string;
   activeListingCount?: number;
   onActiveListingsClick?: () => void;
+  onRatingsClick?: () => void;
   showContact?: boolean;
   onContact?: () => void;
   contactDisabled?: boolean;
@@ -33,6 +34,7 @@ export default function SellerInfoModal({
   listingCreatedAt,
   activeListingCount,
   onActiveListingsClick,
+  onRatingsClick,
   showContact = false,
   onContact,
   contactDisabled = false,
@@ -105,18 +107,38 @@ export default function SellerInfoModal({
                       ID: {displayId}
                     </p>
                   ) : null}
-                  <div className="mt-3 flex items-center justify-center gap-2 rounded-full border border-black/[0.08] bg-white px-3 py-1">
-                    <span
-                      className="material-symbols-outlined text-base text-amber-500"
-                      style={{ fontVariationSettings: "'FILL' 1" }}
+                  {onRatingsClick ? (
+                    <button
+                      type="button"
+                      onClick={onRatingsClick}
+                      className="mt-3 flex items-center justify-center gap-2 rounded-full border border-black/[0.08] bg-white px-3 py-1 active:bg-black/[0.03] transition-colors"
                     >
-                      star
-                    </span>
-                    <span className="text-sm font-bold text-on-surface">{ratingAvg.toFixed(1)}</span>
-                    <span className="text-xs text-on-surface-variant">
-                      | {ratingCount} 則評價 · {transactionCount} 筆成交
-                    </span>
-                  </div>
+                      <span
+                        className="material-symbols-outlined text-base text-amber-500"
+                        style={{ fontVariationSettings: "'FILL' 1" }}
+                      >
+                        star
+                      </span>
+                      <span className="text-sm font-bold text-on-surface">{ratingAvg.toFixed(1)}</span>
+                      <span className="text-xs text-on-surface-variant">
+                        | {ratingCount} 則評價 · {transactionCount} 筆成交
+                      </span>
+                      <span className="material-symbols-outlined text-xs text-on-surface-variant">chevron_right</span>
+                    </button>
+                  ) : (
+                    <div className="mt-3 flex items-center justify-center gap-2 rounded-full border border-black/[0.08] bg-white px-3 py-1">
+                      <span
+                        className="material-symbols-outlined text-base text-amber-500"
+                        style={{ fontVariationSettings: "'FILL' 1" }}
+                      >
+                        star
+                      </span>
+                      <span className="text-sm font-bold text-on-surface">{ratingAvg.toFixed(1)}</span>
+                      <span className="text-xs text-on-surface-variant">
+                        | {ratingCount} 則評價 · {transactionCount} 筆成交
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">

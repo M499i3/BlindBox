@@ -521,6 +521,16 @@ export default function ListingDetail() {
                 }
               : undefined
           }
+          onRatingsClick={
+            listing.sellerId
+              ? () => {
+                  setSellerModalOpen(false);
+                  navigate(
+                    `/seller-reviews/${encodeURIComponent(listing.sellerId!)}?name=${encodeURIComponent(listing.sellerName)}`
+                  );
+                }
+              : undefined
+          }
           showContact={!isOwnListingPost && !contactBlockedBySwap && !isSwapPost}
           onContact={handleContactSeller}
           contactDisabled={contacting || contactBlockedBySwap}

@@ -29,12 +29,12 @@ def _orders_sql(role: str) -> tuple[str, str, str]:
     if role == "seller":
         return (
             "o.seller_id = %s",
-            "u.display_name AS counterparty_name",
+            "u.id::text AS counterparty_id, u.display_name AS counterparty_name",
             "JOIN users u ON u.id = o.buyer_id",
         )
     return (
         "o.buyer_id = %s",
-        "u.display_name AS counterparty_name",
+        "u.id::text AS counterparty_id, u.display_name AS counterparty_name",
         "JOIN users u ON u.id = o.seller_id",
     )
 
@@ -82,6 +82,7 @@ def get_orders_for_user(
                 listing_id=str(r["listing_id"]),
                 title=r.get("title") or "",
                 image=r.get("image_url") or "",
+                counterparty_id=str(r.get("counterparty_id") or ""),
                 counterparty_name=r.get("counterparty_name") or "",
                 status=status,
                 status_label=_STATUS_LABELS.get(status, status),

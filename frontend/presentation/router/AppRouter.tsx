@@ -28,6 +28,8 @@ import Login from '@/frontend/presentation/pages/Login';
 import SplitBoxDetail from '@/frontend/presentation/pages/SplitBoxDetail';
 import SplitBoxClaimApply from '@/frontend/presentation/pages/SplitBoxClaimApply';
 import MySplitBoxes from '@/frontend/presentation/pages/MySplitBoxes';
+import RateSellerPage from '@/frontend/presentation/pages/RateSellerPage';
+import SellerReviewsPage from '@/frontend/presentation/pages/SellerReviewsPage';
 
 function ShopRedirect() {
   const [searchParams] = useSearchParams();
@@ -64,6 +66,7 @@ export default function AppRouter() {
             <Route path="/notifications" element={<NotificationsHub />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/rate-seller" element={<RateSellerPage />} />
           </Route>
 
           <Route element={<ScrollLayout />}>
@@ -76,6 +79,7 @@ export default function AppRouter() {
             <Route path="/series/:id" element={<SeriesDetail />} />
             <Route path="/subseries" element={<SubseriesDetail />} />
             <Route path="/chat/:id" element={<ChatDetail />} />
+            <Route path="/seller-reviews/:userId" element={<SellerReviewsPage />} />
           </Route>
         </Route>
       </Routes>

@@ -97,13 +97,22 @@ export default function Profile() {
             <p className="text-xs font-semibold text-on-primary-container tracking-wider uppercase opacity-60">
               ID: {displayId || '—'}
             </p>
-            <div className="flex items-center justify-center gap-2 mt-2 px-3 py-1 bg-white rounded-full border border-black/[0.08]">
+            <button
+              type="button"
+              onClick={() =>
+                navigate(
+                  `/seller-reviews/${encodeURIComponent(user?.id ?? '')}?name=${encodeURIComponent(displayName || user?.displayName || '我')}`
+                )
+              }
+              className="flex items-center justify-center gap-2 mt-2 px-3 py-1 bg-white rounded-full border border-black/[0.08] active:bg-black/[0.03] transition-colors"
+            >
               <span className="material-symbols-outlined text-amber-500 text-base" style={{ fontVariationSettings: "'FILL' 1" }}>
                 star
               </span>
               <span className="font-bold text-sm text-on-surface">{ratingAvg.toFixed(1)}</span>
               <span className="text-on-surface-variant text-xs">| {ratingCount} 則評價 · {transactionCount} 筆成交</span>
-            </div>
+              <span className="material-symbols-outlined text-xs text-on-surface-variant">chevron_right</span>
+            </button>
           </div>
         </section>
 
