@@ -22,15 +22,7 @@ const SLOT_SORT_ORDER: Record<SplitBoxSlot['status'], number> = {
   reserved: 2,
 };
 
-function SlotCard({
-  slot,
-  disabled,
-  groupOpen,
-  isInConsideration,
-  onAddToConsideration,
-  onClaim,
-  onOpenListing,
-}: {
+const SlotCard: React.FC<{
   slot: SplitBoxSlot;
   disabled: boolean;
   groupOpen: boolean;
@@ -38,7 +30,15 @@ function SlotCard({
   onAddToConsideration?: () => void;
   onClaim: () => void;
   onOpenListing?: (listingId: string) => void;
-}) {
+}> = ({
+  slot,
+  disabled,
+  groupOpen,
+  isInConsideration,
+  onAddToConsideration,
+  onClaim,
+  onOpenListing,
+}) => {
   const isClaimable = slot.status === 'available' && groupOpen;
 
   const statusLabel =
@@ -123,7 +123,7 @@ function SlotCard({
       </div>
     </div>
   );
-}
+};
 
 export default function SplitBoxDetail() {
   const { id } = useParams();

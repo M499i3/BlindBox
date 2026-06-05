@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type DependencyList } from 'react';
 
 const DEFAULT_STALE_MS = 10 * 60 * 1000;
 
@@ -110,7 +110,7 @@ export function useOnCacheInvalidate(callback: () => void, prefix?: string): voi
 export function useCachedFetch<T>(
   key: string | null,
   fetcher: () => Promise<T>,
-  deps: React.DependencyList,
+  deps: DependencyList,
   opts?: { staleMs?: number; enabled?: boolean; initial?: T }
 ): { data: T | undefined; loading: boolean; refreshing: boolean } {
   const enabled = opts?.enabled !== false && key != null;

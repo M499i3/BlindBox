@@ -205,7 +205,7 @@ export default function Explore() {
                   ? '搜尋中…'
                   : `「${activeQuery}」的結果${
                       searchResult
-                        ? `（${searchResult.brands.length + searchResult.series.length + searchResult.products.length}）`
+                        ? `（${searchResult.brands.length + searchResult.series.length + searchResult.products.length} 筆）`
                         : ''
                     }`}
               </p>

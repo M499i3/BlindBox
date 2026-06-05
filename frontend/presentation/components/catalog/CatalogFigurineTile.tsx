@@ -17,7 +17,7 @@ function stopAction(e: React.MouseEvent) {
   e.preventDefault();
 }
 
-export default function CatalogFigurineTile({
+const CatalogFigurineTile: React.FC<Props> = ({
   title,
   image,
   isWished,
@@ -25,7 +25,7 @@ export default function CatalogFigurineTile({
   onClick,
   onToggleWish,
   onToggleOwned,
-}: Props) {
+}) => {
   return (
     <motion.div whileTap={onClick ? { scale: 0.97 } : undefined} className="flex flex-col">
       <div className="relative aspect-square overflow-hidden rounded-2xl border-2 border-outline bg-neutral-50 shadow-[3px_3px_0_#111]">
@@ -86,4 +86,6 @@ export default function CatalogFigurineTile({
       </p>
     </motion.div>
   );
-}
+};
+
+export default CatalogFigurineTile;

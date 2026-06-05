@@ -21,7 +21,7 @@ function stopAction(e: React.MouseEvent) {
   e.preventDefault();
 }
 
-export default function CatalogBrowseRow({
+const CatalogBrowseRow: React.FC<Props> = ({
   title,
   subtitle,
   image,
@@ -32,7 +32,7 @@ export default function CatalogBrowseRow({
   onToggleWish,
   onToggleOwned,
   className,
-}: Props) {
+}) => {
   const showActions = onToggleWish || onToggleOwned;
 
   return (
@@ -103,4 +103,6 @@ export default function CatalogBrowseRow({
       ) : null}
     </motion.div>
   );
-}
+};
+
+export default CatalogBrowseRow;

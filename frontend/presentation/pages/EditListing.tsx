@@ -187,7 +187,7 @@ type FormProps = {
   onCancel: () => void;
 };
 
-function EditListingForm({
+const EditListingForm: React.FC<FormProps> = ({
   listing,
   isSplit,
   isSwap,
@@ -197,7 +197,7 @@ function EditListingForm({
   submitting,
   onSave,
   onCancel,
-}: FormProps) {
+}) => {
   const initialImages = resolveListingImages(listing.images, listing.image);
   const catalog = useCatalogListingForm({
     initialPicker: isSplit ? undefined : pickerInitial,
@@ -439,4 +439,4 @@ function EditListingForm({
       </main>
     </div>
   );
-}
+};

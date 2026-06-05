@@ -22,7 +22,7 @@ type Props = {
   collection: ProductCollectionApi;
 };
 
-function ProgressBadge({ collected, total }: { collected: number; total: number }) {
+function ProgressBadge({ collected, total }: { collected: number; total: number }): React.JSX.Element {
   return (
     <span className="shrink-0 rounded-full border-2 border-outline bg-white px-2 py-0.5 text-[11px] font-bold text-primary">
       {formatProgress({ collected, total })}
@@ -30,19 +30,21 @@ function ProgressBadge({ collected, total }: { collected: number; total: number 
   );
 }
 
-function HierarchyCard({
-  title,
-  subtitle,
-  image,
-  progress,
-  onClick,
-}: {
+type HierarchyCardProps = {
   title: string;
   subtitle?: string;
   image?: string;
   progress: { collected: number; total: number };
   onClick: () => void;
-}) {
+};
+
+const HierarchyCard: React.FC<HierarchyCardProps> = ({
+  title,
+  subtitle,
+  image,
+  progress,
+  onClick,
+}) => {
   return (
     <button
       type="button"
@@ -69,7 +71,7 @@ function HierarchyCard({
       <span className="material-symbols-outlined text-on-surface-variant">chevron_right</span>
     </button>
   );
-}
+};
 
 export default function CollectionTreeModal({ open, onClose, collection }: Props) {
   const navigate = useNavigate();

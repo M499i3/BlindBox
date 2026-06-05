@@ -12,15 +12,11 @@ import {
 } from '@/frontend/domain/entities/splitBox';
 import { computeSplitBoxProgress } from '@/frontend/shared/utils/splitBoxProgress';
 
-function GroupRow({
-  group,
-  showClaimedSlots,
-  onClick,
-}: {
+const GroupRow: React.FC<{
   group: SplitBoxGroupSummary;
   showClaimedSlots?: boolean;
   onClick: () => void;
-}) {
+}> = ({ group, showClaimedSlots, onClick }) => {
   const { filled, total } = computeSplitBoxProgress(group);
   const claimedLabels = (group.myClaimedSlots ?? []).map((s) => s.productTitle).filter(Boolean);
   return (
@@ -48,7 +44,7 @@ function GroupRow({
       <span className="material-symbols-outlined text-on-surface-variant">chevron_right</span>
     </button>
   );
-}
+};
 
 export default function MySplitBoxes() {
   const location = useLocation();

@@ -29,19 +29,13 @@ function itemPriceNumber(item: Listing): number {
   return Number.isFinite(n) ? n : 0;
 }
 
-function SellCartItemRow({
-  item,
-  selected,
-  onToggle,
-  onRemove,
-  onOpen,
-}: {
+const SellCartItemRow: React.FC<{
   item: Listing;
   selected: boolean;
   onToggle: () => void;
   onRemove: () => void;
   onOpen: () => void;
-}) {
+}> = ({ item, selected, onToggle, onRemove, onOpen }) => {
   return (
     <div className="rounded-2xl border-2 border-outline bg-white shadow-none p-3 flex gap-3">
       <label className="pt-1">
@@ -76,18 +70,9 @@ function SellCartItemRow({
       </div>
     </div>
   );
-}
+};
 
-function SplitCartItemRow({
-  item,
-  selected,
-  claimable,
-  claimed,
-  claimError,
-  onToggle,
-  onRemove,
-  onOpen,
-}: {
+const SplitCartItemRow: React.FC<{
   item: Listing;
   selected: boolean;
   claimable: boolean;
@@ -96,7 +81,7 @@ function SplitCartItemRow({
   onToggle: () => void;
   onRemove: () => void;
   onOpen: () => void;
-}) {
+}> = ({ item, selected, claimable, claimed, claimError, onToggle, onRemove, onOpen }) => {
   const takenByOthers = !claimable && !claimed;
   return (
     <div
@@ -152,17 +137,13 @@ function SplitCartItemRow({
       </div>
     </div>
   );
-}
+};
 
-function IntentCartItemRow({
-  item,
-  onRemove,
-  onProceed,
-}: {
+const IntentCartItemRow: React.FC<{
   item: Listing;
   onRemove: () => void;
   onProceed: () => void;
-}) {
+}> = ({ item, onRemove, onProceed }) => {
   return (
     <div className="rounded-2xl border-2 border-outline bg-white shadow-none p-3 flex gap-3">
       <ListingCardImage src={item.image} alt={item.title} className="w-20 h-20 rounded-xl" />
@@ -188,7 +169,7 @@ function IntentCartItemRow({
       </div>
     </div>
   );
-}
+};
 
 function isCartTab(raw: string | null): raw is CartTab {
   return raw === 'sell' || raw === 'split' || raw === 'swap';

@@ -19,14 +19,14 @@ type EntryCardProps = {
   onRemove: () => void;
 };
 
-function IdealSwapEntryCard({
+const IdealSwapEntryCard: React.FC<EntryCardProps> = ({
   index,
   initial,
   reservedIds,
   canRemove,
   onChange,
   onRemove,
-}: EntryCardProps) {
+}) => {
   const picker = useCatalogProductPicker({ initial });
   const lastEmitted = useRef('');
   const styleOptions = picker.styleOptions.filter(
@@ -92,7 +92,7 @@ function IdealSwapEntryCard({
       />
     </div>
   );
-}
+};
 
 type Props = {
   offerCatalogProductId: string;
