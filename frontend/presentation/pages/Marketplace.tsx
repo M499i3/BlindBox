@@ -23,6 +23,7 @@ import { TOPBAR_RIGHT_ICON_SIZE } from '@/frontend/presentation/constants/topbar
 import { useListingCardActions } from '@/frontend/presentation/hooks/useListingCardActions';
 import { isOwnListing } from '@/frontend/shared/utils/listingOwnership';
 import { navigateWithReturn } from '@/frontend/shared/utils/routeNavigation';
+import { computeSplitBoxProgress } from '@/frontend/shared/utils/splitBoxProgress';
 
 function isRealListing(item: Listing): boolean {
   if (item.isSeeded) return false;
@@ -331,7 +332,7 @@ export default function Marketplace() {
                 ) : (
                   <div className="space-y-3">
                     {splitBoxes.map((g) => {
-                      const claimable = g.targetCount - g.reservedCount;
+                      const { filled, total } = computeSplitBoxProgress(g);
                       return (
                         <button
                           key={g.id}
@@ -355,7 +356,7 @@ export default function Marketplace() {
                             <p className="text-[10px] font-bold uppercase tracking-wider text-secondary">拆盒團</p>
                             <p className="truncate text-sm font-extrabold">{g.title}</p>
                             <p className="mt-0.5 text-[11px] text-on-surface-variant">
-                              {SPLIT_BOX_STATUS_LABEL[g.status] ?? g.status} · {g.claimedCount}/{claimable} · {g.pricePerSlot}/款
+                              {SPLIT_BOX_STATUS_LABEL[g.status] ?? g.status} · {filled}/{total} · {g.pricePerSlot}/款
                             </p>
                           </div>
                           <span className="material-symbols-outlined shrink-0 text-on-surface-variant">chevron_right</span>

@@ -12,6 +12,7 @@ import {
   type SplitBoxGroupDetail,
   type SplitBoxSlot,
 } from '@/frontend/domain/entities/splitBox';
+import { computeSplitBoxProgress } from '@/frontend/shared/utils/splitBoxProgress';
 import { cn } from '@/frontend/shared/utils/cn';
 
 const PROCESS_STEPS = [
@@ -72,10 +73,7 @@ export default function SplitBoxClaimApply() {
     [group, slotIdParam, listingIdParam]
   );
 
-  const claimableTotal = group ? group.targetCount - group.reservedCount : 0;
-  const progress = claimableTotal
-    ? Math.round((group!.claimedCount / claimableTotal) * 100)
-    : 0;
+  const progressInfo = group ? computeSplitBoxProgress(group) : { filled: 0, total: 0, percent: 0 };
 
   const slotUnavailable =
     !slot || slot.status === 'reserved' || slot.status === 'claimed';
@@ -186,11 +184,11 @@ export default function SplitBoxClaimApply() {
             <div className="mb-1.5 flex justify-between text-[10px] font-bold">
               <span className="text-on-surface-variant">認領進度</span>
               <span>
-                {group.claimedCount} / {claimableTotal}
+                {progressInfo.filled} / {progressInfo.total}
               </span>
             </div>
             <div className="h-2 overflow-hidden rounded-full bg-neutral-100">
-              <div className="h-full rounded-full bg-accent-sky transition-all" style={{ width: `${progress}%` }} />
+              <div className="h-full rounded-full bg-accent-sky transition-all" style={{ width: `${progressInfo.percent}%` }} />
             </div>
             <div className="mt-3 flex flex-wrap gap-3 text-xs">
               <span>整盒 {group.totalPrice}</span>

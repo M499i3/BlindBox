@@ -8,6 +8,7 @@ from psycopg2.extras import execute_values
 
 from domain.entities import (
     CreateSplitBoxInput,
+    SplitBoxClaimedSlotBrief,
     SplitBoxGroupDetail,
     SplitBoxGroupSummary,
     SplitBoxSlot,
@@ -71,7 +72,11 @@ _SLOT_SELECT = """
 """
 
 
-def _row_to_summary(row: dict) -> SplitBoxGroupSummary:
+def _row_to_summary(
+    row: dict,
+    *,
+    my_claimed_slots: list[SplitBoxClaimedSlotBrief] | None = None,
+) -> SplitBoxGroupSummary:
     return SplitBoxGroupSummary(
         id=str(row["id"]),
         title=row["title"] or "",
@@ -88,7 +93,40 @@ def _row_to_summary(row: dict) -> SplitBoxGroupSummary:
         price_per_slot=_format_price(row.get("price_per_slot_amount"), "TWD"),
         closes_at=str(row["closes_at"]) if row.get("closes_at") else None,
         created_at=str(row.get("created_at") or ""),
+        my_claimed_slots=my_claimed_slots or [],
     )
+
+
+def _claimed_slots_for_user(
+    conn: psycopg2.extensions.connection,
+    user_id: str,
+    group_ids: list[str],
+) -> dict[str, list[SplitBoxClaimedSlotBrief]]:
+    if not group_ids:
+        return {}
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            SELECT id, group_id, product_title, product_image
+            FROM split_box_slots
+            WHERE claimed_by_user_id = %s AND group_id = ANY(%s::uuid[])
+            ORDER BY product_title
+            """,
+            (user_id, group_ids),
+        )
+        rows = cur.fetchall()
+    by_group: dict[str, list[SplitBoxClaimedSlotBrief]] = {}
+    for r in rows:
+        row = dict(r)
+        gid = str(row["group_id"])
+        by_group.setdefault(gid, []).append(
+            SplitBoxClaimedSlotBrief(
+                id=str(row["id"]),
+                product_title=row.get("product_title") or "",
+                product_image=row.get("product_image") or "",
+            )
+        )
+    return by_group
 
 
 def _hydrate_slot_inputs_from_catalog(
@@ -260,6 +298,16 @@ def list_split_box_groups_for_user(
                 (user_id,),
             )
             rows = cur.fetchall()
+        summaries = [dict(r) for r in rows]
+        group_ids = [str(r["id"]) for r in summaries]
+        claimed_by_group = _claimed_slots_for_user(conn, user_id, group_ids)
+        return [
+            _row_to_summary(
+                r,
+                my_claimed_slots=claimed_by_group.get(str(r["id"]), []),
+            )
+            for r in summaries
+        ]
     else:
         with conn.cursor() as cur:
             cur.execute(
@@ -522,6 +570,14 @@ def claim_split_box_slot(
             WHERE id = %s
             """,
             (user_id, slot_id),
+        )
+        cur.execute(
+            """
+            UPDATE listings
+            SET status = 'sold', updated_at = now()
+            WHERE split_box_slot_id = %s AND status = 'active'
+            """,
+            (slot_id,),
         )
         cur.execute(
             """

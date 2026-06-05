@@ -10,9 +10,19 @@ import {
   SPLIT_BOX_STATUS_LABEL,
   type SplitBoxGroupSummary,
 } from '@/frontend/domain/entities/splitBox';
+import { computeSplitBoxProgress } from '@/frontend/shared/utils/splitBoxProgress';
 
-function GroupRow({ group, onClick }: { group: SplitBoxGroupSummary; onClick: () => void }) {
-  const claimable = group.targetCount - group.reservedCount;
+function GroupRow({
+  group,
+  showClaimedSlots,
+  onClick,
+}: {
+  group: SplitBoxGroupSummary;
+  showClaimedSlots?: boolean;
+  onClick: () => void;
+}) {
+  const { filled, total } = computeSplitBoxProgress(group);
+  const claimedLabels = (group.myClaimedSlots ?? []).map((s) => s.productTitle).filter(Boolean);
   return (
     <button
       type="button"
@@ -27,8 +37,13 @@ function GroupRow({ group, onClick }: { group: SplitBoxGroupSummary; onClick: ()
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-bold">{group.title}</p>
         <p className="mt-0.5 text-[11px] text-on-surface-variant">
-          {SPLIT_BOX_STATUS_LABEL[group.status] ?? group.status} · {group.claimedCount}/{claimable} 已認領
+          {SPLIT_BOX_STATUS_LABEL[group.status] ?? group.status} · {filled}/{total} 進度
         </p>
+        {showClaimedSlots && claimedLabels.length > 0 ? (
+          <p className="mt-0.5 truncate text-[11px] font-semibold text-primary">
+            已認領：{claimedLabels.join('、')}
+          </p>
+        ) : null}
       </div>
       <span className="material-symbols-outlined text-on-surface-variant">chevron_right</span>
     </button>
@@ -116,6 +131,7 @@ export default function MySplitBoxes() {
               <GroupRow
                 key={g.id}
                 group={g}
+                showClaimedSlots={tab === 'joined'}
                 onClick={() => navigateWithReturn(navigate, `/split-box/${g.id}`, location)}
               />
             ))}

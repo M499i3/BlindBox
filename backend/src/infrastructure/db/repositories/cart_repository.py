@@ -25,7 +25,7 @@ def get_cart_listings(
     listings = []
     for lid in ids:
         item = get_listing_by_id(conn, lid)
-        if item:
+        if item and not item.split_box_slot_id:
             listings.append(item)
     return listings
 
@@ -35,11 +35,20 @@ def add_to_cart(
 ) -> None:
     with conn.cursor() as cur:
         cur.execute(
-            "SELECT seller_id FROM listings WHERE id = %s AND deleted_at IS NULL",
+            """
+            SELECT seller_id, split_box_slot_id
+            FROM listings WHERE id = %s AND deleted_at IS NULL
+            """,
             (listing_id,),
         )
         row = cur.fetchone()
-        if row and str(row["seller_id"]) == user_id:
+        if not row:
+            from fastapi import HTTPException
+            raise HTTPException(status_code=404, detail="找不到貼文")
+        if row.get("split_box_slot_id"):
+            from fastapi import HTTPException
+            raise HTTPException(status_code=400, detail="拆盒款式請直接認領，無法加入購物車")
+        if str(row["seller_id"]) == user_id:
             from fastapi import HTTPException
             raise HTTPException(status_code=403, detail="無法將自己的貼文加入購物車")
         cur.execute(
