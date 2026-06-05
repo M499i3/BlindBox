@@ -26,7 +26,7 @@ DEFAULT_JSON = REPO_ROOT / "frontend" / "data" / "koca-popmart-showcase.json"
 
 sys.path.insert(0, str(SCRIPTS_DIR))
 
-from catalog_seed_lib import build_seed_products, load_showcase  # noqa: E402
+from catalog_seed_lib import build_seed_products, is_koca_blind_box_product, load_showcase  # noqa: E402
 from catalog_seed_ops import load_catalog_products, seed_catalog_on_cursor  # noqa: E402
 from rich_demo_seed_lib import build_rich_seed_bundle, ensure_seed_users, load_catalog_products as load_db_catalog  # noqa: E402
 from seed_app_data import run_app_seed  # noqa: E402
@@ -254,6 +254,7 @@ def run(*, json_path: Path, dry_run: bool, do_reset: bool) -> None:
         if do_reset:
             print("  - TRUNCATE 20 張業務表")
         print(f"  - 圖鑑：~{len(products)} products")
+        print("  - catalog_product_metrics：從 KOCA JSON 匯入指標並重算 heat_score")
         print("  - 應用：5 users, 20 listings, 4 拆盒團, ~16 slots, …")
         return
 
@@ -301,6 +302,18 @@ def run(*, json_path: Path, dry_run: bool, do_reset: bool) -> None:
                 empty = [t for t in ALL_TABLES if _count_rows(cur, t) == 0]
                 if empty:
                     raise SystemExit(f"下列表仍為空：{', '.join(empty)}")
+
+        print("\n📈 匯入 catalog_product_metrics 並重算 heat_score…")
+        sys.path.insert(0, str(BACKEND_ROOT / "src"))
+        from application.catalog_heat_service import compute_catalog_heat, import_koca_metrics  # noqa: E402
+
+        koca_products = [
+            p for p in (showcase.get("products") or []) if is_koca_blind_box_product(p)
+        ]
+        with conn:
+            imported = import_koca_metrics(conn, koca_products)
+            computed = compute_catalog_heat(conn)
+        print(f"   KOCA 指標匯入 {imported} 筆；heat 重算 {computed} 筆")
 
         print("\n✅ 全庫種子完成")
         print("\n測試帳號（密碼皆 password）：")
