@@ -40,12 +40,18 @@ from __future__ import annotations
 import argparse
 import os
 import re
+import sys
 import time
+from pathlib import Path
 from typing import Any
 
 import psycopg2
 import psycopg2.extras
 import requests
+
+BACKEND_SRC = Path(__file__).resolve().parents[1] / "backend" / "src"
+if str(BACKEND_SRC) not in sys.path:
+    sys.path.insert(0, str(BACKEND_SRC))
 
 # ---------------------------------------------------------------------------
 # Config
@@ -391,6 +397,12 @@ def main() -> int:
     print(f"Skipped (duplicate): {total_duplicate}")
     print(f"New rows {'(DRY-RUN) ' if args.dry_run else ''}inserted: {total_new}")
     print("=" * 60)
+
+    if not args.dry_run and total_new > 0:
+        print("\n📊 重算 price stats…")
+        from application.catalog_heat_service import compute_price_stats  # noqa: E402
+        updated = compute_price_stats(conn)
+        print(f"   已更新 {updated} 筆商品的成交統計")
 
     cur.close()
     conn.close()

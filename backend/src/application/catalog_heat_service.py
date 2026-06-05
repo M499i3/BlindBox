@@ -290,3 +290,61 @@ def import_koca_metrics(
 
     conn.commit()
     return len(koca_fields_by_product_id)
+
+
+def compute_price_stats(conn: psycopg2.extensions.connection) -> int:
+    """Pre-compute per-product price stats from price_history into catalog_product_metrics.
+
+    Populates:
+      last_traded_price / last_traded_at  — most recent completed trade
+      prev_traded_price                   — second-most-recent (for % change)
+      price_90d_min / price_90d_max       — 90-day range
+      price_90d_count                     — number of trades in last 90 days
+    """
+    _ensure_metrics_rows(conn)
+
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            WITH ranked AS (
+                SELECT
+                    catalog_product_id,
+                    price_amount,
+                    traded_at,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY catalog_product_id ORDER BY traded_at DESC
+                    ) AS rn
+                FROM price_history
+                WHERE catalog_product_id IS NOT NULL
+            ),
+            stats AS (
+                SELECT
+                    catalog_product_id,
+                    MAX(CASE WHEN rn = 1 THEN price_amount END) AS last_traded_price,
+                    MAX(CASE WHEN rn = 1 THEN traded_at    END) AS last_traded_at,
+                    MAX(CASE WHEN rn = 2 THEN price_amount END) AS prev_traded_price,
+                    MIN(CASE WHEN traded_at >= now() - interval '90 days'
+                             THEN price_amount END)             AS price_90d_min,
+                    MAX(CASE WHEN traded_at >= now() - interval '90 days'
+                             THEN price_amount END)             AS price_90d_max,
+                    COUNT(CASE WHEN traded_at >= now() - interval '90 days'
+                               THEN 1 END)::int                 AS price_90d_count
+                FROM ranked
+                GROUP BY catalog_product_id
+            )
+            UPDATE catalog_product_metrics m
+            SET last_traded_price = s.last_traded_price,
+                last_traded_at    = s.last_traded_at,
+                prev_traded_price = s.prev_traded_price,
+                price_90d_min     = s.price_90d_min,
+                price_90d_max     = s.price_90d_max,
+                price_90d_count   = COALESCE(s.price_90d_count, 0),
+                computed_at       = now()
+            FROM stats s
+            WHERE m.catalog_product_id = s.catalog_product_id
+            """
+        )
+        updated = cur.rowcount
+
+    conn.commit()
+    return updated

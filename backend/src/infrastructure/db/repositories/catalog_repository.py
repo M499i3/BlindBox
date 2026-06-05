@@ -19,11 +19,18 @@ _PRODUCT_SELECT = """
         i.slug AS ip_slug,
         i.name AS ip_name,
         ps.slug AS series_slug,
-        ps.name AS series_name
+        ps.name AS series_name,
+        cpm.last_traded_price,
+        cpm.last_traded_at,
+        cpm.prev_traded_price,
+        cpm.price_90d_min,
+        cpm.price_90d_max,
+        COALESCE(cpm.price_90d_count, 0) AS price_90d_count
     FROM catalog_products cp
     LEFT JOIN ips i ON i.id = cp.ip_id
     LEFT JOIN brands b ON b.id = i.brand_id
     LEFT JOIN series ps ON ps.id = cp.series_id
+    LEFT JOIN catalog_product_metrics cpm ON cpm.catalog_product_id = cp.id
 """
 
 _PRODUCT_BY_EXTERNAL_ID = _PRODUCT_SELECT + """
@@ -88,6 +95,7 @@ def _format_price(amount: int | None, currency: str | None) -> str:
 
 def _row_to_product(row: dict) -> CatalogProduct:
     product_id = row["external_id"] or str(row["id"])
+    last_traded_at = row.get("last_traded_at")
     return CatalogProduct(
         id=product_id,
         title=row["title"],
@@ -100,6 +108,12 @@ def _row_to_product(row: dict) -> CatalogProduct:
         ip_name=row.get("ip_name"),
         series_slug=row.get("series_slug"),
         series_name=row.get("series_name"),
+        last_traded_price=row.get("last_traded_price"),
+        last_traded_at=last_traded_at.isoformat() if last_traded_at else None,
+        prev_traded_price=row.get("prev_traded_price"),
+        price_90d_min=row.get("price_90d_min"),
+        price_90d_max=row.get("price_90d_max"),
+        price_90d_count=int(row.get("price_90d_count") or 0),
     )
 
 

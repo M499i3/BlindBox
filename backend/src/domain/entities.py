@@ -17,6 +17,13 @@ class CatalogProduct(BaseModel):
     ip_name: str | None = None
     series_slug: str | None = None
     series_name: str | None = None
+    # price history stats (pre-computed from price_history table)
+    last_traded_price: int | None = None
+    last_traded_at: str | None = None
+    prev_traded_price: int | None = None
+    price_90d_min: int | None = None
+    price_90d_max: int | None = None
+    price_90d_count: int = 0
 
 
 class CatalogShowcase(BaseModel):

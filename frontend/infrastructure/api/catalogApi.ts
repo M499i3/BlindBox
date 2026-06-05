@@ -20,6 +20,12 @@ type ApiProduct = {
   ip_name?: string | null;
   series_slug?: string | null;
   series_name?: string | null;
+  last_traded_price?: number | null;
+  last_traded_at?: string | null;
+  prev_traded_price?: number | null;
+  price_90d_min?: number | null;
+  price_90d_max?: number | null;
+  price_90d_count?: number;
 };
 
 type ApiSearchSeries = {
@@ -46,6 +52,12 @@ function toFrontend(p: ApiProduct): CatalogProduct {
     ipName: p.ip_name ?? undefined,
     seriesSlug: p.series_slug ?? undefined,
     seriesName: p.series_name ?? undefined,
+    lastTradedPrice: p.last_traded_price ?? null,
+    lastTradedAt: p.last_traded_at ?? null,
+    prevTradedPrice: p.prev_traded_price ?? null,
+    price90dMin: p.price_90d_min ?? null,
+    price90dMax: p.price_90d_max ?? null,
+    price90dCount: p.price_90d_count ?? 0,
   };
 }
 

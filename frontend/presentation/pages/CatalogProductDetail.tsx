@@ -7,6 +7,64 @@ import { useCatalogProduct, deriveBrandLabel } from '@/frontend/presentation/hoo
 import { useProductCollection } from '@/frontend/presentation/hooks/useProductCollection';
 import { buildMarketplaceSearchUrl } from '@/frontend/shared/utils/shopNavigation';
 import { deriveSeriesName } from '@/frontend/shared/utils/deriveSeriesName';
+import type { CatalogProduct } from '@/frontend/domain/entities/catalog';
+
+function formatNtd(amount: number): string {
+  return `NT$${amount.toLocaleString('zh-TW')}`;
+}
+
+function PriceStatsSection({ product }: { product: CatalogProduct }) {
+  const { lastTradedPrice, prevTradedPrice, price90dMin, price90dMax, price90dCount } = product;
+
+  if (!lastTradedPrice) return null;
+
+  const changePct =
+    prevTradedPrice && prevTradedPrice > 0
+      ? Math.round(((lastTradedPrice - prevTradedPrice) / prevTradedPrice) * 100)
+      : null;
+  const isUp = changePct !== null && changePct >= 0;
+  const arrow = changePct === null ? '' : isUp ? '↗' : '↘';
+  const changeLabel =
+    changePct === null
+      ? ''
+      : `${arrow}(${isUp ? '+' : ''}${changePct}%)`;
+
+  const hasRange = price90dMin != null && price90dMax != null;
+
+  return (
+    <section className="rounded-2xl border-2 border-outline bg-white shadow-[4px_4px_0_#111] p-4 space-y-3">
+      <p className="text-[10px] font-black uppercase tracking-wider text-on-surface">成交行情</p>
+
+      <div className="flex items-end justify-between gap-3">
+        <div>
+          <p className="text-[11px] text-on-surface-variant font-semibold">最近成交</p>
+          <p className="text-xl font-extrabold text-on-surface leading-tight">
+            {formatNtd(lastTradedPrice)}
+            {changeLabel && (
+              <span className={`ml-1.5 text-sm font-bold ${isUp ? 'text-rose-500' : 'text-emerald-600'}`}>
+                {changeLabel}
+              </span>
+            )}
+          </p>
+        </div>
+        {hasRange && (
+          <div className="text-right">
+            <p className="text-[11px] text-on-surface-variant font-semibold">90 天區間</p>
+            <p className="text-sm font-bold text-on-surface whitespace-nowrap">
+              {formatNtd(price90dMin!)} – {formatNtd(price90dMax!)}
+            </p>
+          </div>
+        )}
+      </div>
+
+      {price90dCount != null && price90dCount > 0 && (
+        <p className="text-[11px] text-on-surface-variant">
+          近 90 天共 {price90dCount} 筆成交紀錄
+        </p>
+      )}
+    </section>
+  );
+}
 
 function stopAction(e: React.MouseEvent) {
   e.stopPropagation();
@@ -107,6 +165,8 @@ export default function CatalogProductDetail() {
                 <p className="mt-2 text-sm font-bold text-primary">參考價 {product.price}</p>
               ) : null}
             </div>
+
+            <PriceStatsSection product={product} />
 
             <PriceTrendChart seed={product.id} currentPriceText={product.price} />
 

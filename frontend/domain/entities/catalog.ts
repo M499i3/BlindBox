@@ -11,6 +11,13 @@ export type CatalogProduct = {
   ipName?: string;
   seriesSlug?: string;
   seriesName?: string;
+  // price history stats
+  lastTradedPrice?: number | null;
+  lastTradedAt?: string | null;
+  prevTradedPrice?: number | null;
+  price90dMin?: number | null;
+  price90dMax?: number | null;
+  price90dCount?: number;
 };
 
 export type CatalogBanner = {
