@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import CatalogFieldsSection from '@/frontend/presentation/components/listing/CatalogFieldsSection';
 import IdealSwapTargetsSection, {
   createInitialIdealSwapEntries,
@@ -39,6 +39,7 @@ import {
 } from '@/frontend/shared/utils/listingPickerInitial';
 import type { CatalogProductPickerValue } from '@/frontend/presentation/hooks/useCatalogProductPicker';
 import { cn } from '@/frontend/shared/utils/cn';
+import { navigateBack } from '@/frontend/shared/utils/routeNavigation';
 
 function idealEntriesFromListing(listing: Listing): IdealSwapEntry[] {
   const { idealTargets } = parseIdealSwapFromDescription(listing.description);
@@ -51,6 +52,7 @@ function idealEntriesFromListing(listing: Listing): IdealSwapEntry[] {
 
 export default function EditListing() {
   const { id = '' } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const { userId, updateListing } = useAppState();
   const [listing, setListing] = useState<Listing | null>(null);
@@ -135,7 +137,7 @@ export default function EditListing() {
         <p className="text-sm text-on-surface-variant mb-4">找不到貼文或無權限編輯。</p>
         <button
           type="button"
-          onClick={() => navigate(-1)}
+          onClick={() => navigateBack(navigate, location)}
           className="premium-gradient text-white px-6 py-3 rounded-full text-sm font-bold"
         >
           返回

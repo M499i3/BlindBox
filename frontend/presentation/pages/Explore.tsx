@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import CatalogFigurineTile from '@/frontend/presentation/components/catalog/CatalogFigurineTile';
 import { cn } from '@/frontend/shared/utils/cn';
 import { useProductCollection } from '@/frontend/presentation/hooks/useProductCollection';
+import { navigateWithReturn } from '@/frontend/shared/utils/routeNavigation';
 import {
   deriveBrandLabel,
   useCatalogBrands,
@@ -17,8 +18,11 @@ import { popmartIpImageForName, popmartIpImageForSlug } from '@/frontend/lib/pop
 import { deriveSeriesName, FALLBACK_SERIES } from '@/frontend/shared/utils/deriveSeriesName';
 
 export default function Explore() {
+  const location = useLocation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const go = (to: string) => navigateWithReturn(navigate, to, location);
+
   const mock = isMockDataEnabled();
   const { requestWishProduct, toggleProductOwned, isWished, isOwned } = useProductCollection();
 
@@ -221,7 +225,7 @@ export default function Explore() {
                     <button
                       key={b.slug ?? b.name}
                       type="button"
-                      onClick={() => navigate(`/brand/${encodeURIComponent(b.slug ?? b.name)}`)}
+                      onClick={() => go(`/brand/${encodeURIComponent(b.slug ?? b.name)}`)}
                       className="px-3 py-2 rounded-full border border-black/[0.12] bg-white text-xs font-bold text-on-surface active:scale-95"
                     >
                       {b.name}
@@ -243,7 +247,7 @@ export default function Explore() {
                     <button
                       key={`${brandSlug}-${s.slug}`}
                       type="button"
-                      onClick={() => navigate(href)}
+                      onClick={() => go(href)}
                       className="w-full glass-card shadow-[4px_4px_0_#111] rounded-2xl overflow-hidden flex items-center gap-4 p-4 text-left"
                     >
                       <div className="w-16 h-16 rounded-2xl overflow-hidden bg-neutral-100 shrink-0 border border-black/[0.08]">
@@ -276,7 +280,7 @@ export default function Explore() {
                       image={p.image}
                       isWished={isWished(p.id)}
                       isOwned={isOwned(p.id)}
-                      onClick={() => navigate(`/catalog/${p.id}`)}
+                      onClick={() => go(`/catalog/${p.id}`)}
                       onToggleWish={(e) => {
                         e.stopPropagation();
                         requestWishProduct(p.id);
@@ -446,7 +450,7 @@ export default function Explore() {
                     <button
                       key={s.name}
                       type="button"
-                      onClick={() => navigate(href)}
+                      onClick={() => go(href)}
                       className="w-full glass-card shadow-[4px_4px_0_#111] rounded-2xl overflow-hidden flex items-center gap-4 p-4 text-left"
                     >
                       <div className="w-16 h-16 rounded-2xl overflow-hidden bg-neutral-100 shrink-0 border border-black/[0.08]">

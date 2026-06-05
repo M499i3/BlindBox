@@ -1,10 +1,11 @@
 import React, { useMemo } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import CatalogHero from '@/frontend/presentation/components/catalog/CatalogHero';
 import CatalogBrowseRow from '@/frontend/presentation/components/catalog/CatalogBrowseRow';
 import CatalogSectionHeading from '@/frontend/presentation/components/catalog/CatalogSectionHeading';
 import { deriveSeriesName } from '@/frontend/shared/utils/catalogHierarchy';
+import { navigateWithReturn } from '@/frontend/shared/utils/routeNavigation';
 import {
   filterProductsByIp,
   productLinesFromProducts,
@@ -21,6 +22,7 @@ import { isMockDataEnabled } from '@/frontend/lib/popmartShowcase';
 
 export default function SeriesDetail() {
   const { id: ipRouteSlug = '' } = useParams();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const mock = isMockDataEnabled();
@@ -144,11 +146,13 @@ export default function SeriesDetail() {
                       name: line.name,
                       ip: ipName,
                     });
-                    navigate(`/subseries?${qs.toString()}`);
+                    navigateWithReturn(navigate, `/subseries?${qs.toString()}`, location);
                     return;
                   }
-                  navigate(
-                    `/subseries?ip=${encodeURIComponent(ipName)}&name=${encodeURIComponent(line.name)}`
+                  navigateWithReturn(
+                    navigate,
+                    `/subseries?ip=${encodeURIComponent(ipName)}&name=${encodeURIComponent(line.name)}`,
+                    location
                   );
                 }}
                 isAllWished={line.productIds.length > 0 ? isAllWished(line.productIds) : undefined}

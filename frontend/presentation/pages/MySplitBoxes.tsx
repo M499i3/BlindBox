@@ -83,7 +83,7 @@ export default function MySplitBoxes() {
             <button
               key={t.key}
               type="button"
-              onClick={() => setSearchParams({ tab: t.key })}
+              onClick={() => setSearchParams({ tab: t.key }, { replace: true })}
               className={`rounded-full border-2 px-4 py-2 text-xs font-bold ${
                 tab === t.key ? 'border-black bg-black text-white' : 'border-outline bg-white'
               }`}

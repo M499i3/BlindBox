@@ -115,7 +115,7 @@ export default function Chat() {
                 <button
                   key={cat.type}
                   type="button"
-                  onClick={() => navigate(`/notifications?type=${cat.type}`)}
+                  onClick={() => navigate(`/notifications?type=${cat.type}`, { replace: true })}
                   className="glass-card rounded-2xl px-2 py-3 text-center shadow-[2px_2px_0_#111] active:opacity-95"
                 >
                   <span

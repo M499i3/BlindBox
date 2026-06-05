@@ -413,7 +413,7 @@ export default function Marketplace() {
                 whileTap={{ scale: 0.98 }}
                 onClick={() => {
                   saveHomeScroll();
-                  navigate(`/catalog/${item.id}`);
+                  navigateWithReturn(navigate, `/catalog/${item.id}`, location, { from: '/' });
                 }}
                 className="min-w-[160px] flex flex-col gap-stack-md text-left"
               >

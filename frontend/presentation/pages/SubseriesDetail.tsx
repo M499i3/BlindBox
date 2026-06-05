@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import CatalogHero from '@/frontend/presentation/components/catalog/CatalogHero';
 import CatalogFigurineTile from '@/frontend/presentation/components/catalog/CatalogFigurineTile';
@@ -8,9 +8,11 @@ import { useProductCollection } from '@/frontend/presentation/hooks/useProductCo
 import { deriveBrandLabel, useCatalogBrands, useCatalogProducts } from '@/frontend/presentation/hooks/useCatalog';
 import { isMockDataEnabled } from '@/frontend/lib/popmartShowcase';
 import { deriveSeriesName } from '@/frontend/shared/utils/deriveSeriesName';
+import { navigateWithReturn } from '@/frontend/shared/utils/routeNavigation';
 
 export default function SubseriesDetail() {
   const [params] = useSearchParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const mock = isMockDataEnabled();
   const { requestWishProduct, toggleProductOwned, isWished, isOwned } = useProductCollection();
@@ -113,7 +115,7 @@ export default function SubseriesDetail() {
                 image={p.image}
                 isWished={isWished(p.id)}
                 isOwned={isOwned(p.id)}
-                onClick={() => navigate(`/catalog/${p.id}`)}
+                onClick={() => navigateWithReturn(navigate, `/catalog/${p.id}`, location)}
                 onToggleWish={(e) => {
                   e.stopPropagation();
                   requestWishProduct(p.id);

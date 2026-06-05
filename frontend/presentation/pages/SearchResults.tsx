@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import ListingProductCard from '@/frontend/presentation/components/ListingProductCard';
 import { useProductCollection } from '@/frontend/presentation/hooks/useProductCollection';
@@ -8,6 +8,7 @@ import { filterListingsByFuzzyQuery } from '@/frontend/shared/utils/searchListin
 import { useListingCardActions } from '@/frontend/presentation/hooks/useListingCardActions';
 import { isOwnListing } from '@/frontend/shared/utils/listingOwnership';
 import { isSwapListing } from '@/frontend/shared/utils/tradeMode';
+import { navigateWithReturn } from '@/frontend/shared/utils/routeNavigation';
 import type { Listing } from '@/frontend/domain/entities/listing';
 
 function openListingPath(item: Listing) {
@@ -15,6 +16,7 @@ function openListingPath(item: Listing) {
 }
 
 export default function SearchResults() {
+  const location = useLocation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const initialQ = searchParams.get('q') ?? '';
@@ -58,9 +60,9 @@ export default function SearchResults() {
     e.preventDefault();
     const q = draft.trim();
     if (sellerId) {
-      setSearchParams(q ? { seller: sellerId, q } : { seller: sellerId });
+      setSearchParams(q ? { seller: sellerId, q } : { seller: sellerId }, { replace: true });
     } else {
-      setSearchParams(q ? { q } : {});
+      setSearchParams(q ? { q } : {}, { replace: true });
     }
   };
 
@@ -78,7 +80,7 @@ export default function SearchResults() {
           ? 'border-primary/50 text-primary'
           : 'border-primary-fixed-dim text-primary-fixed-dim'
       }
-      onClick={() => navigate(openListingPath(item))}
+      onClick={() => navigateWithReturn(navigate, openListingPath(item), location)}
       isWished={isListingWished(item)}
       isOwned={isListingOwned(item)}
       onToggleWish={(e) => {

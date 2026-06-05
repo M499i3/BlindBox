@@ -212,7 +212,7 @@ export default function CartPage() {
   const selectedSellTotal = selectedSellItems.reduce((sum, item) => sum + itemPriceNumber(item), 0);
 
   const setActiveTab = (tab: ListingTradeKind) => {
-    setSearchParams(tab === 'sell' ? {} : { tab });
+    setSearchParams(tab === 'sell' ? {} : { tab }, { replace: true });
   };
 
   const toggleSelected = (id: string) => {

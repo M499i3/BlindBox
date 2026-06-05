@@ -34,7 +34,7 @@ export default function ProfileEdit() {
 
   const onSave = async () => {
     await updateProfile({ displayName: localDisplayName, bio: localBio });
-    navigate(-1);
+    navigate('/profile');
   };
 
   return (

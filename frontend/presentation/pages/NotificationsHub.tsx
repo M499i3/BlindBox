@@ -100,6 +100,7 @@ export default function NotificationsHub() {
         <TopBar
           title={title}
           showBack
+          onBack={() => navigate('/notifications', { replace: true })}
           rightElement={
             focusUnread ? (
               <button
@@ -201,7 +202,7 @@ export default function NotificationsHub() {
               <button
                 key={cat.type}
                 type="button"
-                onClick={() => navigate(`/notifications?type=${cat.type}`)}
+                onClick={() => navigate(`/notifications?type=${cat.type}`, { replace: true })}
                 className="glass-card flex w-full items-center gap-4 rounded-2xl p-4 text-left shadow-[4px_4px_0_#111] active:opacity-95"
               >
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-surface-container-high">

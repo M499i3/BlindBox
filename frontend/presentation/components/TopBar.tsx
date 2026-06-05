@@ -5,6 +5,7 @@ import CartIcon from '@/frontend/presentation/components/CartIcon';
 import { TOPBAR_HEIGHT, TOPBAR_RIGHT_ICON_SIZE } from '@/frontend/presentation/constants/topbar';
 import { NAV_TAB_ICONS, resolveNavTabKey } from '@/frontend/presentation/constants/navTabIcons';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
+import { navigateBack } from '@/frontend/shared/utils/routeNavigation';
 
 const TOPBAR_TITLE_ICON_SIZE = 36;
 
@@ -18,7 +19,6 @@ interface TopBarProps {
 export default function TopBar({ title, showBack, onBack, rightElement }: TopBarProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  const backTarget = (location.state as { from?: string } | null)?.from;
   const { cartIds } = useAppState();
   const isHomeLogo = !title && !showBack;
   const navTabKey = title ? resolveNavTabKey(location.pathname, title) : null;
@@ -46,8 +46,7 @@ export default function TopBar({ title, showBack, onBack, rightElement }: TopBar
                 onBack();
                 return;
               }
-              if (backTarget) navigate(backTarget);
-              else navigate(-1);
+              navigateBack(navigate, location);
             }}
             className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-outline bg-white shadow-[3px_3px_0_#111] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none active:bg-accent-sky transition-all shrink-0"
             aria-label="返回"
