@@ -58,6 +58,7 @@ const SlotCard: React.FC<{
   shipping,
 }) => {
   const isClaimable = slot.status === 'available' && groupOpen;
+  const isMutedSlot = slot.status === 'reserved' || (slot.status === 'available' && !groupOpen);
 
   const statusLabel =
     slot.status === 'reserved'
@@ -90,7 +91,7 @@ const SlotCard: React.FC<{
       className={cn(
         'overflow-hidden rounded-2xl border-2 bg-white shadow-[3px_3px_0_#111] text-left',
         isClaimable ? 'border-outline' : 'border-black/15',
-        slot.status === 'reserved' && 'opacity-50',
+        isMutedSlot && 'opacity-50',
         canOpenListing && 'cursor-pointer active:opacity-95'
       )}
     >
