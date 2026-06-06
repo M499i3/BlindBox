@@ -19,11 +19,21 @@ import { computeSplitBoxProgress } from '@/frontend/shared/utils/splitBoxProgres
 import { cn } from '@/frontend/shared/utils/cn';
 
 const SLOT_SORT_ORDER: Record<SplitBoxSlot['status'], number> = {
+  // default order (used for non-organizer / non-established views)
   available: 0,
   claimed: 1,
   reserved: 2,
   shipped: 3,
   received: 4,
+};
+
+const ORGANIZER_ESTABLISHED_ORDER: Record<SplitBoxSlot['status'], number> = {
+  // For organizer viewing an established group: claimed -> shipped -> reserved -> received -> available
+  claimed: 0,
+  shipped: 1,
+  reserved: 2,
+  received: 3,
+  available: 4,
 };
 
 const SlotCard: React.FC<{
@@ -242,9 +252,8 @@ export default function SplitBoxDetail() {
 
   const sortedSlots = useMemo(() => {
     if (!group) return [];
-    return [...group.slots].sort(
-      (a, b) => (SLOT_SORT_ORDER[a.status] ?? 9) - (SLOT_SORT_ORDER[b.status] ?? 9)
-    );
+    const order = group.isOrganizer && (group.status === 'full' || group.status === 'shipping') ? ORGANIZER_ESTABLISHED_ORDER : SLOT_SORT_ORDER;
+    return [...group.slots].sort((a, b) => (order[a.status] ?? 9) - (order[b.status] ?? 9));
   }, [group]);
 
   const myClaimedSlots = useMemo(() => {
