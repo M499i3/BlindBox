@@ -631,7 +631,7 @@ export default function ListingDetail() {
                   }}
                   className={`w-full py-4 rounded-full text-sm font-bold ${cartButtonClass}`}
                 >
-                  {inCart ? '已加入購物車（點我移除）' : '考慮一下（加購物車）'}
+                  {inCart ? '已加入購物車（點我移除）' : '加入購物車'}
                 </button>
               ) : null}
               <button

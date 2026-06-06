@@ -129,7 +129,7 @@ const SlotCard: React.FC<{
                   : 'bg-white text-on-background'
               )}
             >
-              {isInConsideration ? '已加入購物車' : '考慮一下（加購物車）'}
+              {isInConsideration ? '已加入購物車' : '加入購物車'}
             </button>
             <button
               type="button"

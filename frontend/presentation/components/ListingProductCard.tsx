@@ -140,9 +140,9 @@ export default function ListingProductCard({
                   'flex h-9 w-full items-center justify-center gap-1.5 rounded-full border-2 border-outline px-2 text-xs font-extrabold text-on-background shadow-[3px_3px_0_#111] transition-transform active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-80',
                   isInCart ? 'bg-secondary text-on-secondary' : 'bg-white hover:bg-secondary/10'
                 )}
-                aria-label={isInCart ? '已加入購物車' : '考慮一下（加購物車）'}
+                aria-label={isInCart ? '已加入購物車' : '加入購物車'}
               >
-                <span className="truncate">{isInCart ? '已加入購物車' : '考慮一下（加購物車）'}</span>
+                <span className="truncate">{isInCart ? '已加入購物車' : '加入購物車'}</span>
               </button>
               <button
                 type="button"
