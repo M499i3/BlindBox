@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { navigateWithReturn } from '@/frontend/shared/utils/routeNavigation';
 import CollectionTreeModal from '@/frontend/presentation/components/CollectionTreeModal';
@@ -7,6 +7,7 @@ import UserAvatar from '@/frontend/presentation/components/UserAvatar';
 import { useProductCollection } from '@/frontend/presentation/hooks/useProductCollection';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
 import { useAuth } from '@/frontend/presentation/providers/AuthProvider';
+import { getUnreadCount } from '@/frontend/infrastructure/api/notificationsApi';
 import { cn } from '@/frontend/shared/utils/cn';
 
 function formatStatCount(n: number | null): string {
@@ -32,6 +33,11 @@ export default function Profile() {
   const collection = useProductCollection();
   const { logout, user } = useAuth();
   const [activeModal, setActiveModal] = useState<null | 'collection'>(null);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    getUnreadCount().then(setUnreadCount).catch(() => {});
+  }, []);
 
   const stats = [
     {
@@ -77,11 +83,19 @@ export default function Profile() {
             </button>
             <button
               type="button"
-              onClick={() => navigateWithReturn(navigate, '/notifications', location)}
-              className="text-black"
-              aria-label="通知"
+              onClick={() => {
+                setUnreadCount(0);
+                navigateWithReturn(navigate, '/notifications', location);
+              }}
+              className="relative text-black"
+              aria-label={unreadCount > 0 ? `通知（${unreadCount} 則未讀）` : '通知'}
             >
               <span className="material-symbols-outlined">notifications</span>
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-extrabold leading-none text-white">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
             </button>
           </>
         }

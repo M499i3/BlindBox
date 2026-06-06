@@ -66,6 +66,11 @@ export async function markAllNotificationsRead(): Promise<void> {
   await apiFetch<unknown>('/api/notifications/read-all', { method: 'PATCH' });
 }
 
+export async function getUnreadCount(): Promise<number> {
+  const items = await apiFetch<ApiNotification[]>('/api/notifications');
+  return items.filter((n) => !n.is_read).length;
+}
+
 export async function deleteNotification(notificationId: string): Promise<void> {
   await apiFetch<unknown>(`/api/notifications/${encodeURIComponent(notificationId)}`, {
     method: 'DELETE',
