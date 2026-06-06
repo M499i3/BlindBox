@@ -360,7 +360,7 @@ export default function Explore() {
                 </div>
 
                 {(dbIpsLoading || brandProductsLoading) && !mock ? (
-                  <p className="text-sm text-on-surface-variant px-1">載入 IP…</p>
+                  <p className="text-sm text-on-surface-variant px-1">資料讀取中…</p>
                 ) : ipOptions.length === 0 ? (
                   <div className="glass-card rounded-2xl border-[2.5px] border-accent-amber p-5 shadow-[4px_4px_0_#111]">
                     <p className="text-sm text-on-surface-variant">此品牌暫無可用的 IP 資料。</p>
@@ -432,13 +432,17 @@ export default function Explore() {
 
               <div className="space-y-3">
                 {selectedIp && seriesOptions.length === 0 && (
-                  <div className="glass-card shadow-[4px_4px_0_#111] rounded-2xl p-5">
-                    <p className="text-sm text-on-surface-variant">
-                      {mock
-                        ? '此 IP 暫無可辨識的系列。'
-                        : '此 IP 暫無可辨識的系列名稱，請點上方 IP 或改用搜尋。'}
-                    </p>
-                  </div>
+                  brandProductsLoading && !mock ? (
+                    <p className="text-sm text-on-surface-variant px-1">資料讀取中…</p>
+                  ) : (
+                    <div className="glass-card shadow-[4px_4px_0_#111] rounded-2xl p-5">
+                      <p className="text-sm text-on-surface-variant">
+                        {mock
+                          ? '此 IP 暫無可辨識的系列。'
+                          : '此 IP 暫無可辨識的系列名稱，請點上方 IP 或改用搜尋。'}
+                      </p>
+                    </div>
+                  )
                 )}
 
                 {seriesOptions.map((s) => {
