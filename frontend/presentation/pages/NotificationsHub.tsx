@@ -178,18 +178,10 @@ export default function NotificationsHub() {
                     aria-hidden="true"
                   />
                   <div className="min-w-0 flex-1 space-y-2">
-                    <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+                    <div className="flex min-w-0 items-center">
                       <h2 className={cn('min-w-0 flex-1 text-sm font-extrabold', n.isRead ? 'text-on-surface-variant' : 'text-on-surface')}>
                         {n.title}
                       </h2>
-                      <span
-                        className={cn(
-                          'rounded-full px-2 py-0.5 text-[10px] font-bold',
-                          n.isRead ? 'bg-neutral-100 text-on-surface-variant' : 'bg-primary text-white'
-                        )}
-                      >
-                        {n.isRead ? '已讀' : '未讀'}
-                      </span>
                     </div>
                     <p className="whitespace-pre-line text-sm leading-relaxed text-on-surface-variant">
                       {n.body}
