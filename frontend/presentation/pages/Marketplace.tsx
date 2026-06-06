@@ -176,6 +176,15 @@ export default function Marketplace() {
     return pool;
   }, [listingPool, mode, query, showFilterView]);
 
+  const visibleSplitBoxes = useMemo(() => {
+    if (!showFilterView || mode !== 'unbox') return [];
+    return splitBoxes.filter((group) => {
+      if (group.status !== 'open') return false;
+      if (userId && group.organizerId === userId) return false;
+      return true;
+    });
+  }, [mode, showFilterView, splitBoxes, userId]);
+
   const homeReturnPath = useMemo(() => {
     const q = query.trim();
     return q ? `/?mode=${mode}&q=${encodeURIComponent(q)}` : `/?mode=${mode}`;
@@ -350,13 +359,13 @@ export default function Marketplace() {
             {mode === 'unbox' ? (
               <div>
                 <h3 className="mb-3 text-sm font-extrabold text-on-surface">拆盒團</h3>
-                {splitBoxes.length === 0 ? (
+                {visibleSplitBoxes.length === 0 ? (
                   <p className="py-16 text-center text-sm text-on-surface-variant">
                     {query.trim() ? '找不到符合的拆盒團' : '暫無拆盒團，點右下角 ＋ 發起拆盒團'}
                   </p>
                 ) : (
                   <div className="space-y-3">
-                    {splitBoxes.map((g) => {
+                    {visibleSplitBoxes.map((g) => {
                       const { filled, total } = computeSplitBoxProgress(g);
                       return (
                         <button

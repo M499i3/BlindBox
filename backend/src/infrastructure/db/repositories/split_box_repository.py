@@ -268,7 +268,7 @@ def list_open_split_box_groups(
         cur.execute(
             f"""
             {_GROUP_SUMMARY_SELECT}
-            WHERE g.status IN ('open', 'full', 'shipping')
+            WHERE g.status = 'open'
             ORDER BY g.created_at DESC
             LIMIT %s
             """,
