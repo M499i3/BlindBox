@@ -40,6 +40,11 @@ function formatDateTime(iso: string): string {
   }
 }
 
+function notificationActionLabel(n: NotificationItem): string {
+  if (n.actionUrl) return '查看詳情';
+  return n.isRead ? '' : '標記已讀';
+}
+
 export default function NotificationsHub() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -92,6 +97,15 @@ export default function NotificationsHub() {
     }
   };
 
+  const handleNotificationAction = async (n: NotificationItem) => {
+    if (!n.isRead) {
+      await handleMarkRead(n.id);
+    }
+    if (n.actionUrl) {
+      navigateWithReturn(navigate, n.actionUrl, location);
+    }
+  };
+
   const hasUnread = items.some((n) => !n.isRead);
   const focusUnread = filteredSorted.some((n) => !n.isRead);
 
@@ -129,56 +143,82 @@ export default function NotificationsHub() {
             </div>
           )}
           {filteredSorted.map((n) => {
-            const handleNavigate = n.actionUrl
-              ? async () => {
-                  await handleMarkRead(n.id);
-                  navigateWithReturn(navigate, n.actionUrl!, location);
-                }
-              : undefined;
+            const actionLabel = notificationActionLabel(n);
+            const clickable = Boolean(n.actionUrl || !n.isRead);
 
             return (
               <article
                 key={n.id}
-                onClick={handleNavigate ? () => void handleNavigate() : undefined}
+                role={clickable ? 'button' : undefined}
+                tabIndex={clickable ? 0 : undefined}
+                onClick={clickable ? () => void handleNotificationAction(n) : undefined}
+                onKeyDown={
+                  clickable
+                    ? (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          void handleNotificationAction(n);
+                        }
+                      }
+                    : undefined
+                }
                 className={cn(
-                  'glass-card rounded-2xl p-5 shadow-[4px_4px_0_#111]',
-                  !n.isRead && 'ring-2 ring-primary/20',
-                  handleNavigate && 'cursor-pointer active:opacity-90 transition-opacity'
+                  'glass-card rounded-2xl p-4 shadow-[4px_4px_0_#111] transition-all',
+                  n.isRead ? 'border-outline/70 bg-white/80 opacity-75' : 'border-primary/40 bg-primary/[0.04] ring-2 ring-primary/15',
+                  clickable && 'cursor-pointer active:translate-x-0.5 active:translate-y-0.5 active:shadow-none'
                 )}
+                aria-label={actionLabel ? `${n.title}，${actionLabel}` : n.title}
               >
-                <div className="mb-2 flex items-start justify-between gap-2">
-                  <div className="min-w-0 flex-1">
-                    <h2 className="text-sm font-bold text-on-surface">{n.title}</h2>
-                    <p className="mt-1 text-[10px] font-semibold text-on-surface-variant">
-                      {formatDateTime(n.createdAt)}
-                    </p>
-                  </div>
-                  <div className="flex shrink-0 items-center gap-2">
-                    {!n.isRead && (
-                      <span className="text-[10px] font-bold uppercase text-primary">未讀</span>
+                <div className="flex items-start gap-3">
+                  <span
+                    className={cn(
+                      'mt-1 h-2.5 w-2.5 shrink-0 rounded-full',
+                      n.isRead ? 'bg-transparent ring-1 ring-outline' : 'bg-primary shadow-[0_0_0_4px_rgb(247_104_91_/_0.12)]'
                     )}
-                    <button
-                      type="button"
-                      onClick={(e) => { e.stopPropagation(); void handleDelete(n.id); }}
-                      className="text-[10px] font-bold uppercase text-on-surface-variant"
-                      aria-label="刪除"
-                    >
-                      刪除
-                    </button>
+                    aria-hidden="true"
+                  />
+                  <div className="min-w-0 flex-1 space-y-2">
+                    <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+                      <h2 className={cn('min-w-0 flex-1 text-sm font-extrabold', n.isRead ? 'text-on-surface-variant' : 'text-on-surface')}>
+                        {n.title}
+                      </h2>
+                      <span
+                        className={cn(
+                          'rounded-full px-2 py-0.5 text-[10px] font-bold',
+                          n.isRead ? 'bg-neutral-100 text-on-surface-variant' : 'bg-primary text-white'
+                        )}
+                      >
+                        {n.isRead ? '已讀' : '未讀'}
+                      </span>
+                    </div>
+                    <p className="whitespace-pre-line text-sm leading-relaxed text-on-surface-variant">
+                      {n.body}
+                    </p>
+                    <div className="flex min-w-0 items-center justify-between gap-3">
+                      <p className="min-w-0 truncate text-[10px] font-semibold text-on-surface-variant">
+                        {formatDateTime(n.createdAt)}
+                      </p>
+                      {actionLabel && (
+                        <div className="flex shrink-0 items-center gap-1 text-xs font-bold text-primary">
+                          <span>{actionLabel}</span>
+                          {n.actionUrl ? (
+                            <span className="material-symbols-outlined text-base">chevron_right</span>
+                          ) : (
+                            <span className="material-symbols-outlined text-base">done</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-                <p className="whitespace-pre-line text-sm leading-relaxed text-on-surface-variant">
-                  {n.body}
-                </p>
-                {!n.isRead && !n.actionUrl && (
                   <button
                     type="button"
-                    onClick={(e) => { e.stopPropagation(); void handleMarkRead(n.id); }}
-                    className="mt-3 text-xs font-bold text-primary"
+                    onClick={(e) => { e.stopPropagation(); void handleDelete(n.id); }}
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-on-surface-variant transition-colors active:bg-black/[0.05]"
+                    aria-label="刪除通知"
                   >
-                    標記已讀
+                    <span className="material-symbols-outlined text-base">delete</span>
                   </button>
-                )}
+                </div>
               </article>
             );
           })}
