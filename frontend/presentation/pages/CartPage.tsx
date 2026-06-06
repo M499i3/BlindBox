@@ -5,8 +5,10 @@ import TopBar from '@/frontend/presentation/components/TopBar';
 import ListingCardImage from '@/frontend/presentation/components/ListingCardImage';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
 import type { Listing } from '@/frontend/domain/entities/listing';
+import type { SwapProposal } from '@/frontend/domain/entities/swapProposal';
 import { isClaimableSplitBoxListing, listingTradeKind } from '@/frontend/shared/utils/tradeMode';
 import { claimSplitBoxSlot } from '@/frontend/infrastructure/api/splitBoxApi';
+import { getMySwapProposalForListing } from '@/frontend/infrastructure/api/swapProposalsApi';
 import { invalidateCachesAfterSplitBoxClaim } from '@/frontend/shared/utils/cacheInvalidation';
 import { cn } from '@/frontend/shared/utils/cn';
 
@@ -37,8 +39,8 @@ const SellCartItemRow: React.FC<{
   onOpen: () => void;
 }> = ({ item, selected, onToggle, onRemove, onOpen }) => {
   return (
-    <div className="rounded-2xl border-2 border-outline bg-white shadow-none p-3 flex gap-3">
-      <label className="pt-1">
+    <div className="rounded-2xl border-2 border-outline bg-white shadow-none p-3 flex items-center gap-3">
+      <label className="shrink-0" onClick={(e) => e.stopPropagation()}>
         <input
           type="checkbox"
           checked={selected}
@@ -47,27 +49,25 @@ const SellCartItemRow: React.FC<{
           aria-label={`選擇 ${item.title}`}
         />
       </label>
-      <ListingCardImage src={item.image} alt={item.title} className="w-20 h-20 rounded-xl" />
-      <div className="flex-1 min-w-0">
-        <p className="card-title-2 text-sm font-bold leading-snug text-on-surface">{item.title}</p>
-        <p className="text-sm font-black text-primary mt-1">{item.price || '—'}</p>
-        <div className="flex gap-2 mt-2">
-          <button
-            type="button"
-            onClick={onOpen}
-            className="text-xs px-3 py-1 rounded-full border border-black/[0.12]"
-          >
-            查看
-          </button>
-          <button
-            type="button"
-            onClick={onRemove}
-            className="text-xs px-3 py-1 rounded-full border border-black/[0.12] text-on-surface-variant"
-          >
-            移除
-          </button>
+      <button
+        type="button"
+        onClick={onOpen}
+        className="flex flex-1 min-w-0 items-center gap-3 text-left"
+      >
+        <ListingCardImage src={item.image} alt={item.title} className="w-16 h-16 rounded-xl shrink-0" />
+        <div className="flex-1 min-w-0">
+          <p className="card-title-2 text-sm font-bold leading-snug text-on-surface">{item.title}</p>
+          <p className="text-sm font-black text-primary mt-1">{item.price || '—'}</p>
         </div>
-      </div>
+      </button>
+      <button
+        type="button"
+        onClick={onRemove}
+        className="shrink-0 p-2 rounded-full text-red-500 active:bg-red-50 transition-colors"
+        aria-label="移除"
+      >
+        <span className="material-symbols-outlined text-xl">delete</span>
+      </button>
     </div>
   );
 };
@@ -86,7 +86,7 @@ const SplitCartItemRow: React.FC<{
   return (
     <div
       className={cn(
-        'rounded-2xl border-2 bg-white shadow-none p-3 flex gap-3',
+        'rounded-2xl border-2 bg-white shadow-none p-3 flex items-center gap-3',
         claimed
           ? 'border-green-400 bg-green-50'
           : takenByOthers
@@ -96,7 +96,7 @@ const SplitCartItemRow: React.FC<{
               : 'border-outline'
       )}
     >
-      <label className="pt-1">
+      <label className="shrink-0" onClick={(e) => e.stopPropagation()}>
         <input
           type="checkbox"
           checked={selected}
@@ -106,66 +106,78 @@ const SplitCartItemRow: React.FC<{
           aria-label={`選擇 ${item.title}`}
         />
       </label>
-      <ListingCardImage src={item.image} alt={item.title} className="w-20 h-20 rounded-xl" />
-      <div className="flex-1 min-w-0">
-        <p className="card-title-2 text-sm font-bold leading-snug text-on-surface">{item.title}</p>
-        {claimed ? (
-          <p className="text-xs font-bold text-green-600 mt-1">已成功認領 ✓</p>
-        ) : takenByOthers ? (
-          <p className="text-xs font-bold text-secondary mt-1">目前已被別人認領</p>
-        ) : claimError ? (
-          <p className="text-xs font-bold text-secondary mt-1">{claimError}</p>
-        ) : (
-          <p className="text-sm font-black text-primary mt-1">{item.price || '拆盒團'}</p>
-        )}
-        <div className="flex gap-2 mt-2">
-          <button
-            type="button"
-            onClick={onOpen}
-            className="text-xs px-3 py-1 rounded-full border border-black/[0.12]"
-          >
-            查看
-          </button>
-          <button
-            type="button"
-            onClick={onRemove}
-            className="text-xs px-3 py-1 rounded-full border border-black/[0.12] text-on-surface-variant"
-          >
-            移除
-          </button>
+      <button
+        type="button"
+        onClick={onOpen}
+        className="flex flex-1 min-w-0 items-center gap-3 text-left"
+      >
+        <ListingCardImage src={item.image} alt={item.title} className="w-16 h-16 rounded-xl shrink-0" />
+        <div className="flex-1 min-w-0">
+          <p className="card-title-2 text-sm font-bold leading-snug text-on-surface">{item.title}</p>
+          {claimed ? (
+            <p className="text-xs font-bold text-green-600 mt-1">已成功認領 ✓</p>
+          ) : takenByOthers ? (
+            <p className="text-xs font-bold text-secondary mt-1">目前已被別人認領</p>
+          ) : claimError ? (
+            <p className="text-xs font-bold text-secondary mt-1">{claimError}</p>
+          ) : (
+            <p className="text-sm font-black text-primary mt-1">{item.price || '拆盒團'}</p>
+          )}
         </div>
-      </div>
+      </button>
+      <button
+        type="button"
+        onClick={onRemove}
+        className="shrink-0 p-2 rounded-full text-red-500 active:bg-red-50 transition-colors"
+        aria-label="移除"
+      >
+        <span className="material-symbols-outlined text-xl">delete</span>
+      </button>
     </div>
   );
 };
 
 const IntentCartItemRow: React.FC<{
   item: Listing;
+  proposal: SwapProposal | null;
   onRemove: () => void;
-  onProceed: () => void;
-}> = ({ item, onRemove, onProceed }) => {
+  onOpen: () => void;
+}> = ({ item, proposal, onRemove, onOpen }) => {
+  const hasProposal = proposal !== null;
   return (
     <div className="rounded-2xl border-2 border-outline bg-white shadow-none p-3 flex gap-3">
-      <ListingCardImage src={item.image} alt={item.title} className="w-20 h-20 rounded-xl" />
-      <div className="flex-1 min-w-0">
-        <p className="card-title-2 text-sm font-bold leading-snug text-on-surface">{item.title}</p>
-        <p className="text-sm font-black text-primary mt-1">可交換</p>
-        <div className="flex flex-wrap gap-2 mt-2">
-          <button
-            type="button"
-            onClick={onProceed}
-            className="text-xs px-3 py-1.5 rounded-full border-2 border-black bg-black font-bold text-white"
-          >
-            前往申請交換
-          </button>
-          <button
-            type="button"
-            onClick={onRemove}
-            className="text-xs px-3 py-1 rounded-full border border-black/[0.12] text-on-surface-variant"
-          >
-            移除
-          </button>
+      <button
+        type="button"
+        onClick={onOpen}
+        className="flex flex-1 min-w-0 items-center gap-3 text-left"
+      >
+        <ListingCardImage src={item.image} alt={item.title} className="w-16 h-16 rounded-xl shrink-0" />
+        <div className="flex-1 min-w-0">
+          <p className="card-title-2 text-sm font-bold leading-snug text-on-surface">{item.title}</p>
+          <p className="text-sm font-black text-primary mt-1">可交換</p>
+          {hasProposal && (
+            <p className="text-[10px] text-on-surface-variant mt-0.5">
+              申請狀態：{proposal!.status === 'pending' ? '待對方回覆' : proposal!.status === 'accepted' ? '已接受' : proposal!.status}
+            </p>
+          )}
         </div>
+      </button>
+      <div className="flex flex-col items-end justify-between gap-2 shrink-0">
+        <button
+          type="button"
+          onClick={onRemove}
+          className="p-1.5 rounded-full text-red-500 active:bg-red-50 transition-colors"
+          aria-label="移除"
+        >
+          <span className="material-symbols-outlined text-xl">delete</span>
+        </button>
+        <button
+          type="button"
+          onClick={onOpen}
+          className="text-xs px-3 py-1.5 rounded-full border-2 border-black bg-black font-bold text-white whitespace-nowrap"
+        >
+          {hasProposal ? '查看我的申請' : '前往申請交換'}
+        </button>
       </div>
     </div>
   );
@@ -186,6 +198,7 @@ export default function CartPage() {
   const [claiming, setClaiming] = useState(false);
   const [claimSuccess, setClaimSuccess] = useState<Set<string>>(new Set());
   const [claimErrors, setClaimErrors] = useState<Record<string, string>>({});
+  const [swapProposals, setSwapProposals] = useState<Record<string, SwapProposal | null>>({});
 
   const itemsByKind = useMemo(() => {
     const map: Record<CartTab, Listing[]> = { sell: [], split: [], swap: [] };
@@ -195,6 +208,28 @@ export default function CartPage() {
     }
     return map;
   }, [cartItems]);
+
+  // Fetch existing swap proposals for all swap cart items
+  useEffect(() => {
+    const swapItems = itemsByKind.swap;
+    if (swapItems.length === 0) return;
+    let cancelled = false;
+    Promise.all(
+      swapItems.map(async (item) => {
+        try {
+          const proposal = await getMySwapProposalForListing(item.id);
+          return [item.id, proposal] as const;
+        } catch {
+          return [item.id, null] as const;
+        }
+      })
+    ).then((entries) => {
+      if (!cancelled) {
+        setSwapProposals(Object.fromEntries(entries));
+      }
+    });
+    return () => { cancelled = true; };
+  }, [itemsByKind.swap]);
 
   const activeTab: CartTab = useMemo(() => {
     if (isCartTab(tabParam)) return tabParam;
@@ -428,8 +463,9 @@ export default function CartPage() {
                     <IntentCartItemRow
                       key={item.id}
                       item={item}
+                      proposal={swapProposals[item.id] ?? null}
                       onRemove={() => removeFromCart(item.id)}
-                      onProceed={() => navigateWithReturn(navigate, `/listing/${item.id}`, location)}
+                      onOpen={() => navigateWithReturn(navigate, `/listing/${item.id}`, location)}
                     />
                   ))
                 )}
