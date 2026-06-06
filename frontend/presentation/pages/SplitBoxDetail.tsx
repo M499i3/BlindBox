@@ -19,10 +19,10 @@ import { computeSplitBoxProgress } from '@/frontend/shared/utils/splitBoxProgres
 import { cn } from '@/frontend/shared/utils/cn';
 
 const SLOT_SORT_ORDER: Record<SplitBoxSlot['status'], number> = {
-  // default order (used for non-organizer / non-established views)
+  // 可認領 → 團主自留 → 其餘
   available: 0,
-  claimed: 1,
-  reserved: 2,
+  reserved: 1,
+  claimed: 2,
   shipped: 3,
   received: 4,
 };
@@ -90,6 +90,7 @@ const SlotCard: React.FC<{
       className={cn(
         'overflow-hidden rounded-2xl border-2 bg-white shadow-[3px_3px_0_#111] text-left',
         isClaimable ? 'border-outline' : 'border-black/15',
+        slot.status === 'reserved' && 'opacity-50',
         canOpenListing && 'cursor-pointer active:opacity-95'
       )}
     >
