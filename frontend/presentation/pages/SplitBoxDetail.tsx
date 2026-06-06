@@ -5,7 +5,9 @@ import TopBar from '@/frontend/presentation/components/TopBar';
 import {
   completeSplitBox,
   getSplitBox,
+  receiveSplitBoxSlot,
   shipSplitBox,
+  shipSplitBoxSlot,
 } from '@/frontend/infrastructure/api/splitBoxApi';
 import {
   SPLIT_BOX_STATUS_LABEL,
@@ -20,6 +22,8 @@ const SLOT_SORT_ORDER: Record<SplitBoxSlot['status'], number> = {
   available: 0,
   claimed: 1,
   reserved: 2,
+  shipped: 3,
+  received: 4,
 };
 
 const SlotCard: React.FC<{
@@ -30,6 +34,8 @@ const SlotCard: React.FC<{
   onAddToConsideration?: () => void;
   onClaim: () => void;
   onOpenListing?: (listingId: string) => void;
+  onShip?: () => void;
+  shipping?: boolean;
 }> = ({
   slot,
   disabled,
@@ -38,16 +44,22 @@ const SlotCard: React.FC<{
   onAddToConsideration,
   onClaim,
   onOpenListing,
+  onShip,
+  shipping,
 }) => {
   const isClaimable = slot.status === 'available' && groupOpen;
 
   const statusLabel =
     slot.status === 'reserved'
       ? '團主自留'
-      : slot.status === 'claimed'
-        ? '已認領'
-        : groupOpen
-          ? '可認領'
+      : slot.status === 'received'
+        ? '已收貨'
+        : slot.status === 'shipped'
+          ? '已出貨'
+          : slot.status === 'claimed'
+          ? '已認領'
+          : groupOpen
+            ? '可認領'
           : '未認領';
 
   const canOpenListing = Boolean(slot.listingId && isClaimable);
@@ -120,6 +132,19 @@ const SlotCard: React.FC<{
             </button>
           </div>
         ) : null}
+        {onShip && slot.status === 'claimed' ? (
+          <button
+            type="button"
+            disabled={shipping}
+            onClick={(e) => {
+              e.stopPropagation();
+              onShip();
+            }}
+            className="w-full rounded-full border-2 border-black bg-black py-2 text-xs font-extrabold text-white disabled:opacity-50"
+          >
+            {shipping ? '…' : '已出貨'}
+          </button>
+        ) : null}
       </div>
     </div>
   );
@@ -133,6 +158,8 @@ export default function SplitBoxDetail() {
   const [group, setGroup] = useState<SplitBoxGroupDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
+  const [slotShipping, setSlotShipping] = useState<string | null>(null);
+  const [slotReceiving, setSlotReceiving] = useState<string | null>(null);
   const [error, setError] = useState('');
 
   const load = useCallback(async () => {
@@ -184,6 +211,32 @@ export default function SplitBoxDetail() {
       setError(e instanceof Error ? e.message : '操作失敗');
     } finally {
       setActionLoading(false);
+    }
+  };
+
+  const handleReceiveSlot = async (slotId: string) => {
+    if (!id || slotReceiving) return;
+    setSlotReceiving(slotId);
+    setError('');
+    try {
+      setGroup(await receiveSplitBoxSlot(id, slotId));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : '操作失敗');
+    } finally {
+      setSlotReceiving(null);
+    }
+  };
+
+  const handleShipSlot = async (slotId: string) => {
+    if (!id || slotShipping) return;
+    setSlotShipping(slotId);
+    setError('');
+    try {
+      setGroup(await shipSplitBoxSlot(id, slotId));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : '操作失敗');
+    } finally {
+      setSlotShipping(null);
     }
   };
 
@@ -274,20 +327,37 @@ export default function SplitBoxDetail() {
         {!group.isOrganizer && myClaimedSlots.length > 0 ? (
           <section className="rounded-2xl border-2 border-primary/30 bg-primary/5 p-4">
             <h2 className="text-xs font-bold uppercase tracking-wider text-primary">你認領的款式</h2>
-            <div className="mt-3 space-y-2">
-              {myClaimedSlots.map((slot) => (
-                <div key={slot.id} className="flex items-center gap-3">
-                  <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-white">
-                    {slot.productImage ? (
-                      <img src={slot.productImage} alt="" className="h-full w-full object-contain p-1" referrerPolicy="no-referrer" />
+            <div className="mt-3 space-y-3">
+              {myClaimedSlots.map((slot) => {
+                const isShipped = slot.status === 'shipped';
+                const isReceived = slot.status === 'received';
+                return (
+                  <div key={slot.id} className="flex items-center gap-3">
+                    <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-white">
+                      {slot.productImage ? (
+                        <img src={slot.productImage} alt="" className="h-full w-full object-contain p-1" referrerPolicy="no-referrer" />
+                      ) : null}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-bold text-on-surface">{slot.productTitle}</p>
+                      <p className="text-xs font-semibold text-primary">{slot.price}</p>
+                      <p className={`text-[10px] font-bold mt-0.5 ${isReceived ? 'text-emerald-600' : isShipped ? 'text-blue-500' : 'text-on-surface-variant'}`}>
+                        {isReceived ? '已收貨' : isShipped ? '已出貨' : '未出貨'}
+                      </p>
+                    </div>
+                    {isShipped ? (
+                      <button
+                        type="button"
+                        disabled={slotReceiving === slot.id}
+                        onClick={() => void handleReceiveSlot(slot.id)}
+                        className="shrink-0 rounded-full border-2 border-black bg-black px-3 py-1.5 text-xs font-bold text-white disabled:opacity-50"
+                      >
+                        {slotReceiving === slot.id ? '…' : '完成訂單'}
+                      </button>
                     ) : null}
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-bold text-on-surface">{slot.productTitle}</p>
-                    <p className="text-xs font-semibold text-primary">{slot.price}</p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
         ) : null}
@@ -301,20 +371,10 @@ export default function SplitBoxDetail() {
             onClick={handleShip}
             className="w-full rounded-full border-2 border-black bg-black py-3 text-sm font-extrabold text-white disabled:opacity-50"
           >
-            標記已出貨
+            {actionLoading ? '處理中…' : '成立拆盒團'}
           </button>
         ) : null}
 
-        {group.isOrganizer && group.status === 'shipping' ? (
-          <button
-            type="button"
-            disabled={actionLoading}
-            onClick={handleComplete}
-            className="w-full rounded-full border-2 border-outline bg-white py-3 text-sm font-extrabold shadow-[3px_3px_0_#111] disabled:opacity-50"
-          >
-            標記拆盒團完成
-          </button>
-        ) : null}
 
         <section>
           <h2 className="mb-3 text-sm font-extrabold">款式認領</h2>
@@ -333,6 +393,8 @@ export default function SplitBoxDetail() {
                 onOpenListing={(listingId) =>
                   navigateWithReturn(navigate, `/listing/${listingId}`, location)
                 }
+                onShip={group.isOrganizer && group.status === 'shipping' ? () => void handleShipSlot(slot.id) : undefined}
+                shipping={slotShipping === slot.id}
               />
             ))}
           </div>

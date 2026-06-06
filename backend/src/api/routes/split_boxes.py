@@ -14,7 +14,9 @@ from application.split_box_service import (
     list_groups,
     list_my_joined,
     list_my_organized,
+    receive_single_slot,
     ship_group,
+    ship_single_slot,
 )
 from domain.entities import (
     ClaimSplitBoxSlotInput,
@@ -86,6 +88,26 @@ def ship_split_box(
     conn: psycopg2.extensions.connection = Depends(get_db),
 ) -> SplitBoxGroupDetail:
     return ship_group(conn, user_id, group_id, data)
+
+
+@router.post("/{group_id}/slots/{slot_id}/ship", response_model=SplitBoxGroupDetail)
+def ship_split_box_slot(
+    group_id: str,
+    slot_id: str,
+    user_id: Annotated[str, Depends(get_current_user_id)],
+    conn: psycopg2.extensions.connection = Depends(get_db),
+) -> SplitBoxGroupDetail:
+    return ship_single_slot(conn, user_id, group_id, slot_id)
+
+
+@router.post("/{group_id}/slots/{slot_id}/receive", response_model=SplitBoxGroupDetail)
+def receive_split_box_slot(
+    group_id: str,
+    slot_id: str,
+    user_id: Annotated[str, Depends(get_current_user_id)],
+    conn: psycopg2.extensions.connection = Depends(get_db),
+) -> SplitBoxGroupDetail:
+    return receive_single_slot(conn, user_id, group_id, slot_id)
 
 
 @router.post("/{group_id}/complete", response_model=SplitBoxGroupDetail)

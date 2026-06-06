@@ -32,7 +32,7 @@ export type SplitBoxSlot = {
   claimedByName: string | null;
   claimedAt: string | null;
   price: string;
-  status: 'reserved' | 'available' | 'claimed';
+  status: 'reserved' | 'available' | 'claimed' | 'shipped' | 'received';
 };
 
 export type SplitBoxClaimedSlotBrief = {

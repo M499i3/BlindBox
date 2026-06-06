@@ -12,6 +12,8 @@ from infrastructure.db.repositories.split_box_repository import (
     list_open_split_box_groups,
     list_split_box_groups_for_user,
     mark_split_box_shipped,
+    receive_slot,
+    ship_slot,
 )
 
 
@@ -77,6 +79,30 @@ def ship_group(
 ) -> SplitBoxGroupDetail:
     try:
         return mark_split_box_shipped(conn, user_id, group_id, data.shipping_note)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+def ship_single_slot(
+    conn: psycopg2.extensions.connection,
+    user_id: str,
+    group_id: str,
+    slot_id: str,
+) -> SplitBoxGroupDetail:
+    try:
+        return ship_slot(conn, user_id, group_id, slot_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+def receive_single_slot(
+    conn: psycopg2.extensions.connection,
+    user_id: str,
+    group_id: str,
+    slot_id: str,
+) -> SplitBoxGroupDetail:
+    try:
+        return receive_slot(conn, user_id, group_id, slot_id)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 

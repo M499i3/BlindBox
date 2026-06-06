@@ -46,11 +46,31 @@ const GroupRow: React.FC<{
   );
 };
 
+const ORGANIZER_STATUS_TAGS = ['全部', '招募中', '已成立', '已完成'] as const;
+const JOINED_STATUS_TAGS = ['全部', '招募中', '已成立', '出貨中', '已完成'] as const;
+
+// Map display tag → group status values
+const ORGANIZER_TAG_STATUSES: Record<string, string[]> = {
+  '全部': [],
+  '招募中': ['open'],
+  '已成立': ['full', 'shipping'],
+  '已完成': ['completed', 'cancelled', 'expired'],
+};
+
+const JOINED_TAG_STATUSES: Record<string, string[]> = {
+  '全部': [],
+  '招募中': ['open'],
+  '已成立': ['full'],
+  '出貨中': ['shipping'],
+  '已完成': ['completed', 'cancelled', 'expired'],
+};
+
 export default function MySplitBoxes() {
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const tab = searchParams.get('tab') === 'joined' ? 'joined' : 'organized';
+  const [statusTag, setStatusTag] = useState('全部');
   const [organized, setOrganized] = useState<SplitBoxGroupSummary[]>([]);
   const [joined, setJoined] = useState<SplitBoxGroupSummary[]>([]);
   const [loading, setLoading] = useState(true);
@@ -66,7 +86,13 @@ export default function MySplitBoxes() {
       .finally(() => setLoading(false));
   }, []);
 
-  const items = tab === 'joined' ? joined : organized;
+  const allItems = tab === 'joined' ? joined : organized;
+  const tagMap = tab === 'joined' ? JOINED_TAG_STATUSES : ORGANIZER_TAG_STATUSES;
+  const items =
+    statusTag === '全部'
+      ? allItems
+      : allItems.filter((g) => (tagMap[statusTag] ?? []).includes(g.status));
+  const tags = tab === 'joined' ? JOINED_STATUS_TAGS : ORGANIZER_STATUS_TAGS;
 
   return (
     <div className="animate-in fade-in pb-28 duration-500">
@@ -93,12 +119,27 @@ export default function MySplitBoxes() {
             <button
               key={t.key}
               type="button"
-              onClick={() => setSearchParams({ tab: t.key }, { replace: true })}
+              onClick={() => { setSearchParams({ tab: t.key }, { replace: true }); setStatusTag('全部'); }}
               className={`rounded-full border-2 px-4 py-2 text-xs font-bold ${
                 tab === t.key ? 'border-black bg-black text-white' : 'border-outline bg-white'
               }`}
             >
               {t.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+          {tags.map((tag) => (
+            <button
+              key={tag}
+              type="button"
+              onClick={() => setStatusTag(tag)}
+              className={`shrink-0 rounded-full border-2 px-3 py-1 text-[11px] font-bold transition-all active:scale-95 ${
+                statusTag === tag ? 'border-black bg-black text-white' : 'border-outline bg-white text-on-surface-variant'
+              }`}
+            >
+              {tag}
             </button>
           ))}
         </div>

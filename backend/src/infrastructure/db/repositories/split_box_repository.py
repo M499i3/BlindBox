@@ -690,12 +690,128 @@ def mark_split_box_shipped(
         create_notification(
             conn,
             user_id=pid,
-            title="拆盒團已出貨",
-            body="團主已標記出貨，請留意物流資訊。",
+            title="拆盒團已成立",
+            body="你參與的拆盒團已成立，團主即將出貨，請留意物流資訊。",
             action_url=f"/split-box/{group_id}",
         )
 
     detail = get_split_box_group_detail(conn, group_id, organizer_id)
+    assert detail is not None
+    return detail
+
+
+def ship_slot(
+    conn: psycopg2.extensions.connection,
+    organizer_id: str,
+    group_id: str,
+    slot_id: str,
+) -> SplitBoxGroupDetail:
+    """Mark a single claimed slot as shipped; auto-complete group when all slots are shipped."""
+    with conn.cursor() as cur:
+        cur.execute(
+            "SELECT organizer_id, status::text FROM split_box_groups WHERE id = %s",
+            (group_id,),
+        )
+        group_row = cur.fetchone()
+        if not group_row:
+            raise ValueError("找不到拆盒團")
+        if str(group_row["organizer_id"]) != organizer_id:
+            raise ValueError("只有團主可以標記出貨")
+        if group_row["status"] != "shipping":
+            raise ValueError("拆盒團尚未成立，無法標記單件出貨")
+
+        cur.execute(
+            """
+            UPDATE split_box_slots
+            SET status = 'shipped'
+            WHERE id = %s AND group_id = %s AND status = 'claimed'
+            RETURNING claimed_by_user_id, product_title
+            """,
+            (slot_id, group_id),
+        )
+        slot_row = cur.fetchone()
+        if not slot_row:
+            raise ValueError("找不到可出貨的格位")
+
+        # Notify the participant
+        participant_id = str(slot_row["claimed_by_user_id"]) if slot_row.get("claimed_by_user_id") else None
+
+        # Check if all claimed slots are now shipped → auto-complete
+        cur.execute(
+            """
+            SELECT COUNT(*) FILTER (WHERE status = 'claimed') AS pending,
+                   COUNT(*) FILTER (WHERE status = 'shipped') AS shipped
+            FROM split_box_slots
+            WHERE group_id = %s
+            """,
+            (group_id,),
+        )
+        counts = cur.fetchone()
+        all_shipped = (counts["pending"] == 0) if counts else False
+
+        if all_shipped:
+            cur.execute(
+                "UPDATE split_box_groups SET status = 'completed', updated_at = now() WHERE id = %s",
+                (group_id,),
+            )
+
+        conn.commit()
+
+    if participant_id:
+        create_notification(
+            conn,
+            user_id=participant_id,
+            title="你的款式已出貨",
+            body=f"「{slot_row['product_title']}」已由團主標記出貨，請留意物流資訊。",
+            action_url=f"/split-box/{group_id}",
+        )
+
+    detail = get_split_box_group_detail(conn, group_id, organizer_id)
+    assert detail is not None
+    return detail
+
+
+def receive_slot(
+    conn: psycopg2.extensions.connection,
+    user_id: str,
+    group_id: str,
+    slot_id: str,
+) -> SplitBoxGroupDetail:
+    """Participant confirms receipt of their slot. Auto-completes group when all slots received."""
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            UPDATE split_box_slots
+            SET status = 'received'
+            WHERE id = %s AND group_id = %s AND claimed_by_user_id = %s AND status = 'shipped'
+            RETURNING id
+            """,
+            (slot_id, group_id, user_id),
+        )
+        if not cur.fetchone():
+            raise ValueError("找不到可確認收貨的格位")
+
+        # Auto-complete group when all claimed/shipped/received slots are now received
+        cur.execute(
+            """
+            SELECT COUNT(*) FILTER (WHERE status IN ('claimed', 'shipped')) AS pending
+            FROM split_box_slots
+            WHERE group_id = %s
+            """,
+            (group_id,),
+        )
+        counts = cur.fetchone()
+        all_received = (counts["pending"] == 0) if counts else False
+
+        if all_received:
+            cur.execute(
+                "UPDATE split_box_groups SET status = 'completed', updated_at = now() WHERE id = %s",
+                (group_id,),
+            )
+
+        conn.commit()
+
+    detail = get_split_box_group_detail(conn, group_id, user_id)
     assert detail is not None
     return detail
 

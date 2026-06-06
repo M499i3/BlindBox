@@ -179,6 +179,22 @@ export async function shipSplitBox(groupId: string, shippingNote?: string): Prom
   return detailToFrontend(data);
 }
 
+export async function receiveSplitBoxSlot(groupId: string, slotId: string): Promise<SplitBoxGroupDetail> {
+  const data = await apiFetch<ApiDetail>(
+    `/api/split-boxes/${encodeURIComponent(groupId)}/slots/${encodeURIComponent(slotId)}/receive`,
+    { method: 'POST' }
+  );
+  return detailToFrontend(data);
+}
+
+export async function shipSplitBoxSlot(groupId: string, slotId: string): Promise<SplitBoxGroupDetail> {
+  const data = await apiFetch<ApiDetail>(
+    `/api/split-boxes/${encodeURIComponent(groupId)}/slots/${encodeURIComponent(slotId)}/ship`,
+    { method: 'POST' }
+  );
+  return detailToFrontend(data);
+}
+
 export async function completeSplitBox(groupId: string): Promise<SplitBoxGroupDetail> {
   const data = await apiFetch<ApiDetail>(`/api/split-boxes/${groupId}/complete`, {
     method: 'POST',

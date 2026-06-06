@@ -159,7 +159,12 @@ export default function Marketplace() {
     }
     let fromListings = Array.from(map.values());
     if (userId) {
-      fromListings = fromListings.filter((item) => !isOwnListing(item, userId));
+      fromListings = fromListings.filter((item) => {
+        // Hide own listings; also explicitly hide own split box group listings
+        if (isOwnListing(item, userId)) return false;
+        if (isSplitBoxListing(item) && item.sellerId === userId) return false;
+        return true;
+      });
     }
     return fromListings.filter(isMarketplaceVisibleListing);
   }, [posts, userId]);
