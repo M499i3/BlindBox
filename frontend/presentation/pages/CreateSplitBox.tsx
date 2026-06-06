@@ -48,6 +48,7 @@ export default function CreateSplitBox({ embedded = false, onBack }: Props) {
   const [productsLoading, setProductsLoading] = useState(false);
   const [reservedIds, setReservedIds] = useState<Set<string>>(new Set());
   const [title, setTitle] = useState('');
+  const [titleTouched, setTitleTouched] = useState(false);
   const [totalPrice, setTotalPrice] = useState('');
   const [description, setDescription] = useState('');
   const [shipping, setShipping] = useState('7-11 店到店');
@@ -125,15 +126,15 @@ export default function CreateSplitBox({ embedded = false, onBack }: Props) {
   }, [productLine, ip]);
 
   useEffect(() => {
-    if (productLine && !title) setTitle(`${productLine} 拆盒團`);
-  }, [productLine, title]);
+    if (productLine && !titleTouched) setTitle(`${productLine} 拆盒團`);
+  }, [productLine, titleTouched]);
 
   const claimableCount = styles.length - reservedIds.size;
   const pricePreview = useMemo(() => {
     const total = Number(totalPrice) || 0;
-    if (!claimableCount || !total) return '';
-    return `約 NT$ ${Math.floor(total / claimableCount)} / 款`;
-  }, [totalPrice, claimableCount]);
+    if (!styles.length || !total) return '';
+    return `約 NT$ ${Math.floor(total / styles.length)} / 款`;
+  }, [totalPrice, styles.length]);
 
   const toggleReserved = (id: string) => {
     setReservedIds((prev) => {
@@ -344,7 +345,14 @@ export default function CreateSplitBox({ embedded = false, onBack }: Props) {
           <p className={LISTING_SECTION}>團購設定</p>
           <div className="space-y-1.5">
             <label className={LISTING_LABEL}>拆盒團名稱</label>
-            <input className={LISTING_FIELD} value={title} onChange={(e) => setTitle(e.target.value)} />
+            <input
+              className={LISTING_FIELD}
+              value={title}
+              onChange={(e) => {
+                setTitle(e.target.value);
+                setTitleTouched(true);
+              }}
+            />
           </div>
           <div className="space-y-1.5">
             <label className={LISTING_LABEL}>整盒參考價（NT$）</label>

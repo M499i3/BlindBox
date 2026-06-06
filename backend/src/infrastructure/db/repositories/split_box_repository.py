@@ -399,7 +399,9 @@ def create_split_box_group(
     non_reserved = [s for s in data.slots if not s.reserved_by_host]
     if not non_reserved:
         raise ValueError("至少需要一個可認領的款式")
-    default_slot_amount = total_amount // len(non_reserved) if non_reserved else 0
+    # Use full box total (all slots in the series) to divide the total amount,
+    # not only the remaining claimable count after the organizer's reserved slots.
+    default_slot_amount = total_amount // len(data.slots) if data.slots else 0
     shipping_ui = data.shipping or "7-11 店到店"
     methods_db = [_SHIPPING_MAP.get(shipping_ui, "711_store")]
 
