@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'motion/react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { navigateWithReturn } from '@/frontend/shared/utils/routeNavigation';
 import TopBar from '@/frontend/presentation/components/TopBar';
 import UserAvatar from '@/frontend/presentation/components/UserAvatar';
@@ -54,10 +54,13 @@ function matchesTab(order: OrderSummary, tab: FilterTab): boolean {
 export default function SellingHistory() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const focusOrderId = searchParams.get('orderId');
   const [orders, setOrders] = useState<OrderSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<FilterTab>('pending');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const focusRef = useRef<HTMLDivElement | null>(null);
 
   const loadOrders = useCallback(() => {
     setLoading(true);
@@ -70,6 +73,22 @@ export default function SellingHistory() {
   useEffect(() => {
     void loadOrders();
   }, [loadOrders]);
+
+  // When focusOrderId is set, switch to the tab that contains it
+  useEffect(() => {
+    if (!focusOrderId || orders.length === 0) return;
+    const target = orders.find((o) => o.id === focusOrderId);
+    if (!target) return;
+    const tab = TABS.find((t) => matchesTab(target, t.key));
+    if (tab) setActiveTab(tab.key);
+  }, [focusOrderId, orders]);
+
+  // Scroll to the focused order after tab switch
+  useEffect(() => {
+    if (!focusOrderId || !focusRef.current) return;
+    const timer = setTimeout(() => focusRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+    return () => clearTimeout(timer);
+  }, [focusOrderId, activeTab]);
 
   const filteredOrders = useMemo(
     () => orders.filter((o) => matchesTab(o, activeTab)),
@@ -124,12 +143,15 @@ export default function SellingHistory() {
         )}
 
         <div className="space-y-4">
-          {filteredOrders.map((order) => (
+          {filteredOrders.map((order) => {
+            const isFocused = order.id === focusOrderId;
+            return (
             <motion.div
               key={order.id}
+              ref={isFocused ? focusRef : null}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="glass-card rounded-2xl p-4 flex flex-col gap-4"
+              className={`glass-card rounded-2xl p-4 flex flex-col gap-4 transition-shadow ${isFocused ? 'ring-2 ring-primary shadow-lg' : ''}`}
             >
               <div className="flex justify-between items-start gap-2">
                 <div className="flex gap-4 min-w-0">
@@ -193,7 +215,8 @@ export default function SellingHistory() {
                 </div>
               </div>
             </motion.div>
-          ))}
+            );
+          })}
         </div>
       </main>
     </div>

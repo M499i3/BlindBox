@@ -252,7 +252,7 @@ def create_swap_proposal(
         ntype="trade",
         title="有人想和你交換",
         body=f"{result.proposer_name} 想用「{result.offered_listing.item_name or result.offered_listing.title}」交換你的「{result.wanted_listing.item_name or result.wanted_listing.title}」。",
-        action_url=f"/swap-proposals/{wanted_listing_id}",
+        action_url=f"/listing/{wanted_listing_id}",
     )
     return result
 

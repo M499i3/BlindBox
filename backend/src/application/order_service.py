@@ -162,7 +162,7 @@ def place_order(
         ntype="trade",
         title="新訂單通知",
         body=f"有人購買了你的商品「{listing.get('item_name') or listing.get('title') or '商品'}」。",
-        action_url="/sales-history",
+        action_url=f"/profile/selling?orderId={order['id']}",
     )
     return OrderCreated(
         id=str(order["id"]),
