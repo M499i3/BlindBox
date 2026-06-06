@@ -128,49 +128,60 @@ export default function NotificationsHub() {
               <p className="text-sm text-on-surface-variant">尚無{title}</p>
             </div>
           )}
-          {filteredSorted.map((n) => (
-            <article
-              key={n.id}
-              className={cn(
-                'glass-card rounded-2xl p-5 shadow-[4px_4px_0_#111]',
-                !n.isRead && 'ring-2 ring-primary/20'
-              )}
-            >
-              <div className="mb-2 flex items-start justify-between gap-2">
-                <div className="min-w-0 flex-1">
-                  <h2 className="text-sm font-bold text-on-surface">{n.title}</h2>
-                  <p className="mt-1 text-[10px] font-semibold text-on-surface-variant">
-                    {formatDateTime(n.createdAt)}
-                  </p>
+          {filteredSorted.map((n) => {
+            const handleNavigate = n.actionUrl
+              ? async () => {
+                  await handleMarkRead(n.id);
+                  navigateWithReturn(navigate, n.actionUrl!, location);
+                }
+              : undefined;
+
+            return (
+              <article
+                key={n.id}
+                onClick={handleNavigate ? () => void handleNavigate() : undefined}
+                className={cn(
+                  'glass-card rounded-2xl p-5 shadow-[4px_4px_0_#111]',
+                  !n.isRead && 'ring-2 ring-primary/20',
+                  handleNavigate && 'cursor-pointer active:opacity-90 transition-opacity'
+                )}
+              >
+                <div className="mb-2 flex items-start justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <h2 className="text-sm font-bold text-on-surface">{n.title}</h2>
+                    <p className="mt-1 text-[10px] font-semibold text-on-surface-variant">
+                      {formatDateTime(n.createdAt)}
+                    </p>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-2">
+                    {!n.isRead && (
+                      <span className="text-[10px] font-bold uppercase text-primary">未讀</span>
+                    )}
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); void handleDelete(n.id); }}
+                      className="text-[10px] font-bold uppercase text-on-surface-variant"
+                      aria-label="刪除"
+                    >
+                      刪除
+                    </button>
+                  </div>
                 </div>
-                <div className="flex shrink-0 items-center gap-2">
-                  {!n.isRead && (
-                    <span className="text-[10px] font-bold uppercase text-primary">未讀</span>
-                  )}
+                <p className="whitespace-pre-line text-sm leading-relaxed text-on-surface-variant">
+                  {n.body}
+                </p>
+                {!n.isRead && !n.actionUrl && (
                   <button
                     type="button"
-                    onClick={() => handleDelete(n.id)}
-                    className="text-[10px] font-bold uppercase text-on-surface-variant"
-                    aria-label="刪除"
+                    onClick={(e) => { e.stopPropagation(); void handleMarkRead(n.id); }}
+                    className="mt-3 text-xs font-bold text-primary"
                   >
-                    刪除
+                    標記已讀
                   </button>
-                </div>
-              </div>
-              <p className="whitespace-pre-line text-sm leading-relaxed text-on-surface-variant">
-                {n.body}
-              </p>
-              {!n.isRead && (
-                <button
-                  type="button"
-                  onClick={() => handleMarkRead(n.id)}
-                  className="mt-3 text-xs font-bold text-primary"
-                >
-                  標記已讀
-                </button>
-              )}
-            </article>
-          ))}
+                )}
+              </article>
+            );
+          })}
         </main>
       </div>
     );
