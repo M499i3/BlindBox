@@ -7,6 +7,7 @@ import ListingImageCarousel from '@/frontend/presentation/components/ListingImag
 import CollectionOverlayActions from '@/frontend/presentation/components/CollectionOverlayActions';
 import { useProductCollection } from '@/frontend/presentation/hooks/useProductCollection';
 import { useAppState } from '@/frontend/presentation/providers/AppStateProvider';
+import { listingTradeKind } from '@/frontend/shared/utils/tradeMode';
 
 export default function MyListings() {
   const navigate = useNavigate();
@@ -64,12 +65,14 @@ export default function MyListings() {
                 onToggleOwned={() => toggleOwnedFromListing(p)}
               />
               <span className="absolute top-2 right-2 text-[8px] font-bold bg-black/55 text-white px-2 py-0.5 rounded">
-                上架中
+                {listingTradeKind(p) === 'swap' ? '可交換' : '上架中'}
               </span>
             </div>
             <div className="p-3">
               <p className="card-title-2 text-xs font-bold leading-snug text-on-surface">{p.title}</p>
-              <p className="text-sm font-bold text-primary mt-1">{p.price}</p>
+              <p className="text-sm font-bold text-primary mt-1">
+                {listingTradeKind(p) === 'swap' ? '可交換' : p.price}
+              </p>
             </div>
           </motion.button>
         ))}
